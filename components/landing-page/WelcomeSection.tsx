@@ -11,7 +11,7 @@ export function WelcomeSection() {
           overflow: hidden;
           margin-top: 30px;
           padding: 70px 0 80px;
-          background: #fdfdfc;
+          background: #ffffff;
         }
 
         .welcomeInner {
@@ -217,18 +217,13 @@ export function WelcomeSection() {
           z-index: -1;
           width: 190px;
           height: 350px;
-          color: #f1dfc5;
+          color: #e2ece7;
           opacity: .4;
           transform: rotate(13deg);
         }
 
         .welcomeWave {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          z-index: -1;
-          width: 100%;
-          height: 105px;
+          display: none;
         }
 
         @media (max-width: 1200px) {

@@ -228,7 +228,7 @@ export function HeroSection({ onOpenSearch }: HeroSectionProps) {
         >
           <path
             d="M0,60 C380,140 1060,140 1440,50 L1440,160 L0,160 Z"
-            fill="#faf9f5"
+            fill="#ffffff"
           />
         </svg>
 

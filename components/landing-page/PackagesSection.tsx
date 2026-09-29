@@ -129,7 +129,7 @@ export function PackagesSection() {
       <style>{`
         .packagesSection {
           padding: 60px 0 75px;
-          background: linear-gradient(180deg, #edf5f5 0%, #f6faf9 40%, #eaf4f5 100%);
+          background: #ffffff;
           overflow: hidden;
         }
 

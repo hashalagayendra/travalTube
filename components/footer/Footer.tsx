@@ -11,7 +11,7 @@ export function Footer() {
           justify-content: space-between;
           gap: 20px;
           padding: 32px 8%;
-          background: #f7faf8;
+          background: #ffffff;
           border-top: 1px solid rgba(7, 62, 54, 0.1);
         }
 
