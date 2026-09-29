@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 interface BrandProps {
   className?: string;
 }
@@ -30,9 +32,9 @@ export function Brand({ className }: BrandProps) {
           .brandMark { width: 36px; }
         }
       `}</style>
-      <a
+      <Link
         className={`brand ${className || ""}`}
-        href="#home"
+        href="/"
         aria-label="TravelTube Lanka home"
       >
         <svg className="brandMark" viewBox="0 0 76 64" aria-hidden="true">
@@ -69,7 +71,7 @@ export function Brand({ className }: BrandProps) {
             EXPLORE · EXPERIENCE · SRI LANKA
           </span>
         </span>
-      </a>
+      </Link>
     </>
   );
 }

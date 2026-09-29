@@ -1,25 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Brand } from "@/components/ui/Brand";
 import { Icon } from "@/components/ui/Icon";
 
 interface NavbarProps {
   onOpenSearch?: () => void;
+  activePage?: string;
 }
 
 const navigation = [
-  ["Home", "home"],
-  ["About Us", "about"],
-  ["Tour Packages", "packages"],
-  ["Services", "services"],
-  ["Destination", "destinations"],
-  ["Things To Do", "packages"],
-  ["Gallery", "gallery"],
-  ["Contact Us", "contact"],
+  { label: "Home", href: "/", id: "home" },
+  { label: "About Us", href: "/about", id: "about" },
+  { label: "Tour Packages", href: "/#packages", id: "packages" },
+  { label: "Services", href: "/#services", id: "services" },
+  { label: "Destination", href: "/#destinations", id: "destinations" },
+  { label: "Things To Do", href: "/#packages", id: "things" },
+  { label: "Gallery", href: "/#gallery", id: "gallery" },
+  { label: "Contact Us", href: "/#contact", id: "contact" },
 ];
 
-export function Navbar({ onOpenSearch }: NavbarProps) {
+export function Navbar({ onOpenSearch, activePage = "home" }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -36,7 +38,7 @@ export function Navbar({ onOpenSearch }: NavbarProps) {
         .headerActions { display: flex; gap: 15px; align-items: center; }
         .searchButton, .menuButton { width: 40px; height: 40px; border: 0; border-radius: 50%; background: #ffffff; color: #073e36; display: grid; place-items: center; }
         .searchButton svg, .menuButton svg { width: 19px; height: 19px; }
-        .planButton { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 42px; padding: 0 23px; background: #003f3b; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 28px; color: white; font-size: 11px; white-space: nowrap; transition: background .2s, transform .2s; }
+        .planButton { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 42px; padding: 0 23px; background: #003f3b; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 28px; color: white; font-size: 11px; white-space: nowrap; transition: background .2s, transform .2s; text-decoration: none; }
         .planButton:hover { background: #086157; transform: translateY(-2px); }
         .planButton svg { width: 17px; height: 17px; }
         .menuButton { display: none; }
@@ -76,30 +78,39 @@ export function Navbar({ onOpenSearch }: NavbarProps) {
           className={`navigation ${menuOpen ? "navigationOpen" : ""}`}
           aria-label="Main navigation"
         >
-          {navigation.map(([label, target]) => (
-            <a
-              key={target}
-              className={target === "home" ? "activeLink" : ""}
-              href={`#${target}`}
-              onClick={() => setMenuOpen(false)}
-              aria-current={target === "home" ? "page" : undefined}
-            >
-              {label}
-            </a>
-          ))}
+          {navigation.map((item) => {
+            const isActive = item.id === activePage;
+            return (
+              <Link
+                key={item.label}
+                className={isActive ? "activeLink" : ""}
+                href={item.href}
+                scroll={false}
+                onClick={() => setMenuOpen(false)}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="headerActions">
           <button
+            type="button"
             className="searchButton"
             aria-label="Search destinations"
-            onClick={onOpenSearch}
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenSearch?.();
+            }}
           >
             <Icon name="search" />
           </button>
-          <a className="planButton" href="#contact">
+          <Link className="planButton" href="/#contact" scroll={false}>
             Plan Your Trip <Icon name="arrow" />
-          </a>
+          </Link>
           <button
+            type="button"
             className="menuButton"
             aria-label={menuOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={menuOpen}

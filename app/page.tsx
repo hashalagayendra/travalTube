@@ -14,6 +14,16 @@ import { Footer } from "@/components/footer";
 export default function Home() {
   const searchDialog = useRef<HTMLDialogElement>(null);
 
+  const handleOpenSearch = () => {
+    if (typeof window !== "undefined") {
+      const scrollPos = window.scrollY;
+      searchDialog.current?.showModal();
+      window.scrollTo({ top: scrollPos, behavior: "instant" });
+    } else {
+      searchDialog.current?.showModal();
+    }
+  };
+
   return (
     <>
       <style>{`
@@ -24,7 +34,7 @@ export default function Home() {
         Skip to content
       </a>
       <main id="main-content">
-        <HeroSection onOpenSearch={() => searchDialog.current?.showModal()} />
+        <HeroSection onOpenSearch={handleOpenSearch} />
         <TourOptionsSection />
         <WelcomeSection />
         <PackagesSection />

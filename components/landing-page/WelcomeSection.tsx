@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 
 export function WelcomeSection() {
@@ -320,12 +321,12 @@ export function WelcomeSection() {
               we help our clients plan their journeys with confidence and
               convenience.
             </p>
-            <a
+            <Link
               className="welcomeReadMore"
-              href="https://traveltube.lk/about-us.php"
+              href="/about"
             >
               READ MORE <Icon name="arrow" />
-            </a>
+            </Link>
             <div className="welcomeSocial">
               <p className="socialHeading">
                 Visit Us On <span />

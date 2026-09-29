@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Brand } from "@/components/ui/Brand";
 
 export function Footer() {
@@ -407,22 +408,22 @@ export function Footer() {
               <h3 className="footerTitle">Useful Links</h3>
               <ul className="footerLinksList">
                 <li>
-                  <a href="#home">Home</a>
+                  <Link href="/">Home</Link>
                 </li>
                 <li>
-                  <a href="#about">About us</a>
+                  <Link href="/about">About us</Link>
                 </li>
                 <li>
-                  <a href="#services">Services</a>
+                  <Link href="/#services">Services</Link>
                 </li>
                 <li>
-                  <a href="#destinations">Destination</a>
+                  <Link href="/#destinations">Destination</Link>
                 </li>
                 <li>
-                  <a href="#packages">Thing to do</a>
+                  <Link href="/#packages">Thing to do</Link>
                 </li>
                 <li>
-                  <a href="#gallery">Gallery</a>
+                  <Link href="/#gallery">Gallery</Link>
                 </li>
               </ul>
             </div>

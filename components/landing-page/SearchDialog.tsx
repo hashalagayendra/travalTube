@@ -1,6 +1,7 @@
 "use client";
 
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { journeys } from "./data";
 
@@ -11,6 +12,7 @@ interface SearchDialogProps {
 
 export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) {
   const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const matches = journeys.filter((journey) =>
     `${journey.name} ${journey.tags} ${journey.style}`
@@ -18,20 +20,59 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
       .includes(query.toLowerCase())
   );
 
+  // Focus input without scrolling the document
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const observer = new MutationObserver(() => {
+      if (dialog.open) {
+        // Prevent background scrolling while open
+        document.body.style.overflow = "hidden";
+        setTimeout(() => {
+          inputRef.current?.focus({ preventScroll: true });
+        }, 30);
+      } else {
+        document.body.style.overflow = "";
+      }
+    });
+
+    observer.observe(dialog, { attributes: true, attributeFilter: ["open"] });
+
+    const handleClose = () => {
+      document.body.style.overflow = "";
+    };
+    dialog.addEventListener("close", handleClose);
+
+    return () => {
+      observer.disconnect();
+      dialog.removeEventListener("close", handleClose);
+      document.body.style.overflow = "";
+    };
+  }, [dialogRef]);
+
   return (
     <>
       <style>{`
         .searchDialog {
+          position: fixed;
+          inset: 0;
+          margin: auto;
           width: min(540px, calc(100% - 36px));
+          max-height: min(620px, 86vh);
           padding: 32px;
           color: #073e36;
           border: 0;
           border-radius: 20px;
           box-shadow: 0 24px 80px rgba(7, 29, 22, 0.35);
           background: #ffffff;
+          overflow-y: auto;
+          z-index: 99999;
         }
 
         .searchDialog::backdrop {
+          position: fixed;
+          inset: 0;
           background: rgba(7, 29, 22, 0.78);
           backdrop-filter: blur(6px);
         }
@@ -60,6 +101,7 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
           border-radius: 50%;
           display: grid;
           place-items: center;
+          cursor: pointer;
           transition: background .2s, color .2s;
         }
 
@@ -99,7 +141,7 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
 
         .searchResults {
           margin-top: 18px;
-          max-height: 320px;
+          max-height: 300px;
           overflow-y: auto;
         }
 
@@ -113,6 +155,7 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
           font-weight: 600;
           color: #073e36;
           transition: color .2s;
+          text-decoration: none;
         }
 
         .searchResults a:hover {
@@ -159,6 +202,7 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
         <div className="dialogHeader">
           <h2 id="search-title">Where would you like to go?</h2>
           <button
+            type="button"
             aria-label="Close search"
             onClick={() => dialogRef.current?.close()}
           >
@@ -169,26 +213,31 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
           Search a destination or travel style
         </label>
         <input
+          ref={inputRef}
           id="destination-search"
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Try Sigiriya, Ella or beaches…"
-          autoFocus
         />
         <div className="searchResults">
           {matches.map((journey) => (
-            <a
+            <Link
               key={journey.name}
-              href="#packages"
-              onClick={() => onSelectJourney(journey.style)}
+              href="/#packages"
+              scroll={false}
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectJourney(journey.style);
+                dialogRef.current?.close();
+              }}
             >
               <span>
                 {journey.name}
                 <small>{journey.tags}</small>
               </span>
               <Icon name="arrow" />
-            </a>
+            </Link>
           ))}
           {matches.length === 0 && (
             <p>No matching journeys. Try “Kandy”, “coast” or “nature”.</p>
