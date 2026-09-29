@@ -1,28 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import {
   HeroSection,
   TourOptionsSection,
   WelcomeSection,
   PackagesSection,
-  ExperiencesSection,
-  ContactSection,
   SearchDialog,
-  journeys,
 } from "@/components/landing-page";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
-  const [travelStyle, setTravelStyle] = useState(journeys[0].style);
-  const [tripReady, setTripReady] = useState(false);
   const searchDialog = useRef<HTMLDialogElement>(null);
-
-  function chooseJourney(style: string) {
-    setTravelStyle(style);
-    setTripReady(false);
-    searchDialog.current?.close();
-  }
 
   return (
     <>
@@ -38,18 +27,11 @@ export default function Home() {
         <TourOptionsSection />
         <WelcomeSection />
         <PackagesSection />
-        <ExperiencesSection />
-        <ContactSection
-          travelStyle={travelStyle}
-          setTravelStyle={setTravelStyle}
-          tripReady={tripReady}
-          setTripReady={setTripReady}
-        />
       </main>
       <Footer />
       <SearchDialog
         dialogRef={searchDialog}
-        onSelectJourney={chooseJourney}
+        onSelectJourney={() => searchDialog.current?.close()}
       />
     </>
   );

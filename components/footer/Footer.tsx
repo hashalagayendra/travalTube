@@ -74,7 +74,7 @@ export function Footer() {
           }
         }
       `}</style>
-      <footer className="footer">
+      <footer id="contact" className="footer">
         <Brand />
         <p>Explore. Experience. Sri Lanka.</p>
         <small>

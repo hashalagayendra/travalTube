@@ -180,7 +180,7 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
           {matches.map((journey) => (
             <a
               key={journey.name}
-              href="#contact"
+              href="#packages"
               onClick={() => onSelectJourney(journey.style)}
             >
               <span>

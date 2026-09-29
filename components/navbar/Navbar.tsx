@@ -14,7 +14,7 @@ const navigation = [
   ["Tour Packages", "packages"],
   ["Services", "services"],
   ["Destination", "destinations"],
-  ["Things To Do", "experiences"],
+  ["Things To Do", "packages"],
   ["Gallery", "gallery"],
   ["Contact Us", "contact"],
 ];
