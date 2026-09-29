@@ -88,6 +88,20 @@ export function TourOptionsSection() {
           padding: 14px 14px 22px 14px;
           border: 1px solid rgba(226, 234, 230, 0.9);
           text-decoration: none;
+          transition: border-color .25s ease;
+        }
+
+        .tourCard:hover {
+          border-color: #bad5ce;
+        }
+
+        .tourCard:hover .cardActionText {
+          color: #f06c2f;
+        }
+
+        .tourCard:hover .cardArrow {
+          background: #073e36;
+          color: #ffffff;
         }
 
         .cardMedia {
@@ -132,7 +146,7 @@ export function TourOptionsSection() {
         }
 
         .badgeOrange {
-          background: #fef0df;
+          background: #fff0e8;
           color: #f0642b;
         }
 
@@ -173,6 +187,7 @@ export function TourOptionsSection() {
           font-weight: 700;
           color: #073e36;
           letter-spacing: -0.2px;
+          transition: color .2s ease;
         }
 
         .cardArrow {
@@ -181,6 +196,7 @@ export function TourOptionsSection() {
           border-radius: 50%;
           display: grid;
           place-items: center;
+          transition: background .2s ease, color .2s ease;
         }
 
         .cardArrow svg {
@@ -194,7 +210,7 @@ export function TourOptionsSection() {
         }
 
         .arrowOrange {
-          background: #fef0df;
+          background: #fff0e8;
           color: #f0642b;
         }
 

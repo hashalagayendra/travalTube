@@ -133,7 +133,12 @@ export function WelcomeSection() {
         }
 
         .socialLink:hover {
-          border-color: #c5ded7;
+          border-color: #bad5ce;
+        }
+
+        .socialLink:hover > svg {
+          color: #f0642b;
+          transform: translateX(3px);
         }
 
         .twitterLink {
@@ -173,6 +178,7 @@ export function WelcomeSection() {
           margin-left: auto;
           flex-shrink: 0;
           color: #073e36;
+          transition: color .2s ease, transform .2s ease;
         }
 
         .welcomeCollage {
