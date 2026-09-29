@@ -1,138 +1,510 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { Icon } from "@/components/ui/Icon";
 
 interface TourPackage {
   id: number;
   name: string;
   days: string;
-  tags: string;
-  type: string;
+  locations: string;
+  description: string;
+  rating: number;
+  reviews: number;
+  price: string;
+  image: string;
   alt: string;
 }
 
 const tourPackages: TourPackage[] = [
   {
     id: 14,
-    name: "Classic Mini Tour",
+    name: "Classic Cultural Tour",
     days: "5 Days",
-    tags: "Sigiriya · Dambulla · Kandy",
-    type: "Round tour",
-    alt: "An elephant beside a safari jeep in Sri Lanka",
+    locations: "Sigiriya / Kandy / Dambulla",
+    description:
+      "Explore ancient wonders, royal heritage and Sri Lanka’s rich cultural heart.",
+    rating: 4.8,
+    reviews: 120,
+    price: "US$ 420",
+    image: "/images/sigiriya.jpg",
+    alt: "Sigiriya rock fortress rising above lush green forest at sunset",
   },
   {
     id: 16,
     name: "Culture & Heritage Tour",
     days: "7 Days",
-    tags: "Kandy · Cultural Triangle",
-    type: "Round tour",
+    locations: "Kandy / Cultural Triangle / Sigiriya",
+    description:
+      "Discover sacred temples, royal palaces and UNESCO world heritage treasures.",
+    rating: 4.9,
+    reviews: 98,
+    price: "US$ 580",
+    image: "/images/package-16.jpg",
     alt: "The illuminated Temple of the Tooth in Kandy",
   },
   {
     id: 18,
     name: "Family Holidays Sri Lanka",
     days: "13 Days",
-    tags: "Beaches · Nature · Family",
-    type: "Round tour",
+    locations: "Bentota / Yala / Ella / Kandy",
+    description:
+      "A joyful family journey combining wildlife safaris, scenic trains and sunny beaches.",
+    rating: 4.9,
+    reviews: 145,
+    price: "US$ 980",
+    image: "/images/package-18.jpg",
     alt: "Buddhist statues and painted ceilings in a Sri Lankan cave temple",
   },
   {
     id: 19,
     name: "Honeymoon in Paradise",
     days: "11 Days",
-    tags: "Romance · Beaches · Discovery",
-    type: "Round tour",
+    locations: "Mirissa / Nuwara Eliya / Ella",
+    description:
+      "Romantic getaways with tea-plantation retreats, coastal sunsets and private dining.",
+    rating: 5.0,
+    reviews: 84,
+    price: "US$ 890",
+    image: "/images/package-19.jpg",
     alt: "Ancient stone architecture and a Buddha statue in Polonnaruwa",
   },
   {
     id: 20,
     name: "Beach Holiday Tour",
     days: "12 Days",
-    tags: "South Coast · Relaxation",
-    type: "Round tour",
+    locations: "Galle / Bentota / Mirissa",
+    description:
+      "Golden coastlines, turquoise waves, whale watching and tropical ocean breezes.",
+    rating: 4.7,
+    reviews: 110,
+    price: "US$ 750",
+    image: "/images/package-20.jpg",
     alt: "Travelers relaxing under a blue umbrella on a Sri Lankan beach",
   },
   {
     id: 3,
-    name: "Yala Safari",
+    name: "Yala Safari Adventure",
     days: "1 Day",
-    tags: "Wildlife · Nature · Adventure",
-    type: "Day tour",
+    locations: "Yala National Park / Tissamaharama",
+    description:
+      "Thrilling leopard tracking, wild elephants and vibrant birdlife on a guided safari.",
+    rating: 4.8,
+    reviews: 215,
+    price: "US$ 140",
+    image: "/images/package-3.jpg",
     alt: "Elephants crossing a road beside a safari jeep",
   },
   {
     id: 13,
-    name: "Ella Tour",
+    name: "Ella Scenic Highlands",
     days: "1 Day",
-    tags: "Scenic Train · Mountains",
-    type: "Day tour",
+    locations: "Ella / Nine Arch Bridge / Little Adam’s Peak",
+    description:
+      "Iconic blue train journeys, mist-covered mountain peaks and roaring waterfalls.",
+    rating: 4.9,
+    reviews: 180,
+    price: "US$ 130",
+    image: "/images/package-13.jpg",
     alt: "A blue train crossing the Nine Arch Bridge in Ella",
   },
 ];
 
 export function PackagesSection() {
+  const [showAll, setShowAll] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  function scroll(direction: "left" | "right") {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === "left" ? -410 : 410;
+      scrollContainerRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  }
+
   return (
     <>
       <style>{`
         .packagesSection {
-          padding: 35px 0 45px;
-          background: linear-gradient(180deg, #edf5f5, #f5faf9 45%, #eaf4f5);
+          padding: 60px 0 75px;
+          background: linear-gradient(180deg, #edf5f5 0%, #f6faf9 40%, #eaf4f5 100%);
+          overflow: hidden;
         }
-        .packagesInner { width: min(1400px, 90%); margin: 0 auto; }
-        .packagesHeader { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
-        .packagesHeading { display: flex; align-items: center; gap: 17px; }
-        .packagesHeading h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 27px; color: #10465b; font-weight: 700; line-height: 1.2; letter-spacing: -.5px; }
-        .packagesSubtitle { display: flex; align-items: center; gap: 13px; color: #566a73; font-size: 10px; line-height: 1.5; }
-        .packagesSubtitle::before { content: ""; width: 27px; height: 2px; flex-shrink: 0; background: #f1a047; }
-        .viewAllPackages { display: inline-flex; align-items: center; gap: 8px; color: #126764; font-size: 10px; font-weight: 600; white-space: nowrap; }
-        .viewAllPackages:hover { text-decoration: underline; text-underline-offset: 4px; }
-        .viewAllPackages svg { width: 16px; height: 16px; }
-        .packageGrid {
+
+        .packagesInner {
+          width: min(1360px, 92%);
+          margin: 0 auto;
+        }
+
+        .packagesHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+
+        .packagesHeading {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .packagesHeading h2 {
+          margin: 0;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 32px;
+          color: #073e36;
+          font-weight: 700;
+          line-height: 1.2;
+          letter-spacing: -.5px;
+        }
+
+        .packagesSubtitle {
+          display: flex;
+          align-items: center;
+          gap: 13px;
+          color: #556c75;
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .packagesSubtitle::before {
+          content: "";
+          width: 27px;
+          height: 2px;
+          flex-shrink: 0;
+          background: #e8a838;
+        }
+
+        .packagesActions {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .scrollControls {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .scrollArrowBtn {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 1px solid #d4e3e0;
+          background: #ffffff;
+          color: #073e36;
           display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 22px;
+          place-items: center;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(7, 62, 54, 0.06);
+          transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
         }
+
+        .scrollArrowBtn:hover {
+          background: #e6f3e5;
+          border-color: #bad5ce;
+          color: #073e36;
+          transform: scale(1.05);
+        }
+
+        .scrollArrowBtn svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .viewAllButton {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid #d4e3e0;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: #073e36;
+          font-size: 12px;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 24px;
+          white-space: nowrap;
+          box-shadow: 0 2px 6px rgba(7, 62, 54, 0.05);
+          transition: color 0.2s, background 0.2s, border-color 0.2s;
+        }
+
+        .viewAllButton:hover {
+          color: #f06c2f;
+          border-color: #f06c2f;
+          background: #ffffff;
+        }
+
+        .viewAllButton svg {
+          width: 15px;
+          height: 15px;
+          transition: transform 0.25s ease;
+        }
+
+        /* Horizontal Scroll Mode */
+        .packagesScrollContainer {
+          display: flex;
+          gap: 24px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-behavior: smooth;
+          padding: 8px 4px 24px 4px;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        .packagesScrollContainer::-webkit-scrollbar {
+          display: none;
+        }
+
+        .packagesScrollContainer .packageCard {
+          flex: 0 0 380px;
+          width: 380px;
+          scroll-snap-align: start;
+        }
+
+        /* Grid View Mode */
+        .packagesGridContainer {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 26px;
+          padding: 8px 0 10px 0;
+          animation: enter .35s ease both;
+        }
+
         .packageCard {
+          position: relative;
           display: flex;
           flex-direction: column;
-          overflow: hidden;
           border: 1px solid #e5eef0;
-          border-radius: 16px;
-          background: white;
-          box-shadow: 0 6px 18px #16485b08;
-          transition: border-color .2s, box-shadow .2s;
+          border-radius: 20px;
+          background: #ffffff;
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(10, 48, 56, 0.07), 0 2px 8px rgba(0, 0, 0, 0.02);
+          text-decoration: none;
+          color: inherit;
+          transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
         }
-        .packageCard:hover { border-color: #aeced0; box-shadow: 0 6px 16px #16485b14; }
-        .packageImage { position: relative; aspect-ratio: 1.85; overflow: hidden; }
-        .packageImage::after { content: ""; position: absolute; inset: 50% 0 0; background: linear-gradient(transparent, #123f3838); pointer-events: none; }
-        .packageImage img { object-fit: cover; }
-        .packageDuration { position: absolute; z-index: 1; bottom: 20px; left: 16px; padding: 5px 13px; border-radius: 20px; background: #f5fbed; color: #376352; font-family: Georgia, serif; font-size: 12px; font-style: italic; box-shadow: 0 2px 5px #123f3812; }
-        .packageContent { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; margin-top: -12px; border-radius: 15px 15px 0 0; background: white; padding: 16px 17px 15px; }
-        .packageContent h3 { min-height: 1.3em; margin: 0 0 6px; color: #18465a; font-family: Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.3; }
-        .packageTags { margin: 0 0 17px; color: #78858a; font-size: 12px; line-height: 1.5; }
-        .packageType { display: inline-flex; align-items: center; gap: 5px; color: #647873; font-size: 11px; }
-        .packageType svg { width: 17px; height: 17px; color: #eca529; }
-        .packageFooter { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; }
-        .packagePrice { margin-left: auto; color: #0d6c69; font-size: 12px; font-weight: 700; line-height: 1.3; }
-        .packagePrice small { display: block; color: #809390; font-size: 9px; font-weight: 400; }
-        .packageArrow { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border: 1px solid #deeaed; border-radius: 50%; color: #1f5a62; }
-        .packageArrow svg { width: 17px; height: 17px; }
-        .packageCard:hover .packageArrow { color: white; background: #0d6c69; border-color: #0d6c69; }
 
-        @media (max-width: 1200px) { .packageGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
-        @media (max-width: 850px) { .packageGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; } }
-        @media (max-width: 560px) { .packageGrid { grid-template-columns: 1fr; } }
-        @media (max-width: 1000px) {
-          .packagesHeading { align-items: flex-start; flex-direction: column; gap: 9px; }
-          .packagesHeader { align-items: flex-start; }
-          .viewAllPackages { padding-top: 7px; }
+        .packageCard:hover {
+          transform: translateY(-5px);
+          border-color: #c4dce0;
+          box-shadow: 0 18px 42px rgba(10, 48, 56, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
         }
-        @media (max-width: 700px) {
-          .packagesSection { padding: 28px 0; }
-          .packagesInner { width: 90%; }
-          .packagesHeader { flex-wrap: wrap; gap: 13px; }
-          .packagesHeading h2 { font-size: 26px; }
-          .packagesSubtitle { font-size: 10px; gap: 9px; }
-          .viewAllPackages { padding-top: 0; }
+
+        .packageImageWrapper {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 8.2;
+          overflow: hidden;
+          background: #e2ecec;
+        }
+
+        .packageImg {
+          object-fit: cover;
+          object-position: center 60%;
+          transition: transform .45s ease;
+        }
+
+        .packageCard:hover .packageImg {
+          transform: scale(1.04);
+        }
+
+        .packageDurationPill {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          z-index: 2;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #ffffff;
+          border-radius: 999px;
+          padding: 5px 13px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #073e36;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .pillCalendarIcon {
+          width: 15px;
+          height: 15px;
+          color: #073e36;
+        }
+
+        .packageBody {
+          padding: 20px 22px 18px 22px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        .packageTitle {
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 21px;
+          font-weight: 700;
+          color: #073e36;
+          margin: 0 0 8px 0;
+          line-height: 1.25;
+        }
+
+        .packageLocation {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          margin: 0 0 11px 0;
+          color: #556c75;
+          font-size: 13px;
+          font-weight: 500;
+          line-height: 1.35;
+        }
+
+        .locationPinIcon {
+          width: 16px;
+          height: 16px;
+          flex-shrink: 0;
+        }
+
+        .packageDescription {
+          font-size: 12.5px;
+          line-height: 1.55;
+          color: #556c75;
+          margin: 0 0 20px 0;
+        }
+
+        .packageFooterBar {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding-top: 4px;
+        }
+
+        .packageRating {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          white-space: nowrap;
+        }
+
+        .ratingStar {
+          width: 16px;
+          height: 16px;
+          flex-shrink: 0;
+        }
+
+        .ratingScore {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #073e36;
+        }
+
+        .reviewsCount {
+          color: #7b8e96;
+          font-size: 12px;
+        }
+
+        .footerDivider {
+          width: 1px;
+          height: 28px;
+          background: #e2ebed;
+          flex-shrink: 0;
+        }
+
+        .packagePriceBox {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.15;
+          white-space: nowrap;
+        }
+
+        .priceLabel {
+          font-size: 10px;
+          color: #556c75;
+          font-weight: 600;
+        }
+
+        .priceValue {
+          font-size: 18px;
+          font-weight: 800;
+          color: #f0642b;
+          margin-top: 2px;
+          letter-spacing: -0.3px;
+        }
+
+        .packageExploreBtn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #073e36;
+          white-space: nowrap;
+          transition: color .2s ease;
+        }
+
+        .packageCard:hover .packageExploreBtn {
+          color: #f06c2f;
+        }
+
+        .exploreArrowIcon {
+          width: 15px;
+          height: 15px;
+          transition: transform .2s ease;
+        }
+
+        .packageCard:hover .exploreArrowIcon {
+          transform: translateX(3px);
+        }
+
+        @keyframes enter {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1100px) {
+          .packagesGridContainer {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+          }
+        }
+
+        @media (max-width: 800px) {
+          .packagesHeader {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+          }
+          .packagesActions {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+
+        @media (max-width: 720px) {
+          .packagesScrollContainer .packageCard {
+            flex: 0 0 86vw;
+            width: 86vw;
+            max-width: 380px;
+          }
+          .packagesGridContainer {
+            grid-template-columns: 1fr;
+            max-width: 440px;
+            margin: 0 auto;
+          }
+          .packagesSection {
+            padding: 40px 0;
+          }
+          .packagesHeading h2 {
+            font-size: 26px;
+          }
         }
       `}</style>
       <section
@@ -148,43 +520,167 @@ export function PackagesSection() {
                 Handpicked experiences for every traveler
               </span>
             </div>
-            <a
-              className="viewAllPackages"
-              href="https://traveltube.lk/tour-packages.php?id=2"
-            >
-              View All Packages <Icon name="arrow" />
-            </a>
+
+            <div className="packagesActions">
+              {!showAll && (
+                <div className="scrollControls">
+                  <button
+                    type="button"
+                    className="scrollArrowBtn"
+                    onClick={() => scroll("left")}
+                    aria-label="Scroll tours left"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="scrollArrowBtn"
+                    onClick={() => scroll("right")}
+                    aria-label="Scroll tours right"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="viewAllButton"
+                onClick={() => setShowAll(!showAll)}
+              >
+                <span>{showAll ? "Show Carousel" : "View All Packages"}</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {showAll ? (
+                    <path d="M18 15l-6-6-6 6" />
+                  ) : (
+                    <path d="M6 9l6 6 6-6" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className="packageGrid">
+
+          <div
+            ref={scrollContainerRef}
+            className={
+              showAll ? "packagesGridContainer" : "packagesScrollContainer"
+            }
+          >
             {tourPackages.map((tour) => (
               <a
                 key={tour.id}
                 className="packageCard"
                 href={`https://traveltube.lk/view-tour.php?id=${tour.id}`}
               >
-                <div className="packageImage">
+                <div className="packageImageWrapper">
                   <Image
-                    src={`/images/package-${tour.id}.jpg`}
+                    src={tour.image}
                     alt={tour.alt}
                     fill
-                    sizes="(max-width: 560px) 90vw, (max-width: 850px) 44vw, (max-width: 1200px) 29vw, 23vw"
+                    sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 380px"
+                    className="packageImg"
                   />
-                  <span className="packageDuration">{tour.days}</span>
+                  <div className="packageDurationPill">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="pillCalendarIcon"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="4" width="18" height="18" rx="3" />
+                      <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                    <span>{tour.days}</span>
+                  </div>
                 </div>
-                <div className="packageContent">
-                  <h3>{tour.name}</h3>
-                  <p className="packageTags">{tour.tags}</p>
-                  <div className="packageFooter">
-                    <span className="packageType">
-                      <Icon name={tour.type === "Day tour" ? "palm" : "pin"} />
-                      {tour.type}
-                    </span>
-                    <span className="packagePrice">
-                      <small>Pricing</small>On request
-                    </span>
-                    <span className="packageArrow">
-                      <Icon name="arrow" />
-                    </span>
+
+                <div className="packageBody">
+                  <h3 className="packageTitle">{tour.name}</h3>
+
+                  <div className="packageLocation">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="locationPinIcon"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
+                        fill="#f0642b"
+                      />
+                      <circle cx="12" cy="9" r="2.6" fill="#ffffff" />
+                    </svg>
+                    <span>{tour.locations}</span>
+                  </div>
+
+                  <p className="packageDescription">{tour.description}</p>
+
+                  <div className="packageFooterBar">
+                    <div className="packageRating">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="#e8a838"
+                        className="ratingStar"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                      <span className="ratingScore">{tour.rating.toFixed(1)}</span>
+                      <span className="reviewsCount">({tour.reviews})</span>
+                    </div>
+
+                    <span className="footerDivider" />
+
+                    <div className="packagePriceBox">
+                      <span className="priceLabel">From</span>
+                      <span className="priceValue">{tour.price}</span>
+                    </div>
+
+                    <span className="footerDivider" />
+
+                    <div className="packageExploreBtn">
+                      <span>Explore Tour</span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="exploreArrowIcon"
+                        aria-hidden="true"
+                      >
+                        <path d="M4 12h13M12 6l6 6-6 6" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </a>

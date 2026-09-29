@@ -29,23 +29,149 @@ export function HeroSection({ onOpenSearch }: HeroSectionProps) {
   return (
     <>
       <style>{`
-        .hero { position: relative; min-height: 620px; height: min(780px, 89svh); isolation: isolate; color: #fffdf5; overflow: hidden; }
-        .heroImage, .heroShade { position: absolute; inset: 0; z-index: -2; }
-        .heroImage img { object-fit: cover; object-position: center 76%; }
-        .heroShade { z-index: -1; background: linear-gradient(180deg, rgba(255,249,229,.86) 0%, rgba(255,249,229,.25) 16%, transparent 32%), linear-gradient(90deg, rgba(7,29,22,.79), rgba(7,29,22,.42) 39%, rgba(7,29,22,.02) 76%), linear-gradient(0deg, rgba(6,29,23,.62), transparent 35%); }
-        .heroContent { width: min(1230px, 78%); margin: 85px auto 0; animation: enter .65s ease both; }
-        .eyebrow { font-size: 11px; letter-spacing: 3px; font-weight: 600; margin: 0 0 18px; }
-        .heroContent h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(58px, 5.9vw, 91px); font-weight: 500; line-height: .99; letter-spacing: -2px; margin: 0; }
-        .heroContent h1 em { font-family: "Segoe Script", "Brush Script MT", cursive; font-size: 1.01em; font-weight: 400; color: #ffb11b; letter-spacing: -5px; }
-        .heroDescription { max-width: 430px; font-size: 17px; line-height: 1.65; margin: 24px 0 31px; text-wrap: pretty; }
-        .benefits { display: flex; gap: 27px; align-items: center; }
-        .benefit { display: flex; align-items: center; gap: 11px; }
-        .benefit svg { width: 29px; height: 29px; flex-shrink: 0; }
-        .benefit span { font-size: 10px; line-height: 1.65; }
-        .heroBottom { position: absolute; bottom: 29px; left: 7%; right: 7%; display: grid; grid-template-columns: 1fr 1fr; align-items: end; }
-        .location { grid-column: 2; justify-self: end; display: flex; gap: 10px; align-items: center; font-size: 12px; margin: 0; }
-        .location svg { width: 21px; height: 21px; }
-        .location small { display: block; font-size: 10px; margin-top: 4px; opacity: .8; }
+        .hero {
+          position: relative;
+          min-height: 720px;
+          height: min(860px, 94svh);
+          isolation: isolate;
+          color: #fffdf5;
+          overflow: hidden;
+        }
+
+        .heroImage, .heroShade {
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+        }
+
+        .heroImage img {
+          object-fit: cover;
+          object-position: center 76%;
+        }
+
+        .heroShade {
+          z-index: -1;
+          background:
+            linear-gradient(180deg, rgba(7, 62, 54, 0.92) 0%, rgba(7, 62, 54, 0.45) 18%, transparent 36%),
+            linear-gradient(90deg, rgba(7,29,22,.82), rgba(7,29,22,.45) 42%, rgba(7,29,22,.03) 78%),
+            linear-gradient(0deg, rgba(6,29,23,.68), transparent 42%);
+        }
+
+        .heroBottomWave {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 160px;
+          z-index: 1;
+          pointer-events: none;
+        }
+
+        .heroContent {
+          position: relative;
+          z-index: 2;
+          width: min(1360px, 92%);
+          margin: 75px auto 0;
+          animation: enter .65s ease both;
+        }
+
+        .eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 11px;
+          letter-spacing: 3px;
+          font-weight: 600;
+          margin: 0 0 18px;
+          color: #f6f3eb;
+        }
+
+        .eyebrow::before {
+          content: "";
+          display: inline-block;
+          width: 32px;
+          height: 2px;
+          background: #e8a838;
+        }
+
+        .heroContent h1 {
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(58px, 6.2vw, 92px);
+          font-weight: 500;
+          line-height: .99;
+          letter-spacing: -2px;
+          margin: 0;
+        }
+
+        .heroContent h1 em {
+          font-family: "Segoe Script", "Brush Script MT", cursive;
+          font-size: 1.02em;
+          font-weight: 400;
+          color: #ffb11b;
+          letter-spacing: -5px;
+        }
+
+        .heroDescription {
+          max-width: 440px;
+          font-size: 17px;
+          line-height: 1.65;
+          margin: 24px 0 32px;
+          text-wrap: pretty;
+        }
+
+        .benefits {
+          display: flex;
+          gap: 28px;
+          align-items: center;
+        }
+
+        .benefit {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+        }
+
+        .benefit svg {
+          width: 28px;
+          height: 28px;
+          flex-shrink: 0;
+        }
+
+        .benefit span {
+          font-size: 10.5px;
+          line-height: 1.6;
+          font-weight: 500;
+        }
+
+        .heroBottom {
+          position: absolute;
+          bottom: 165px;
+          right: max(4%, calc((100% - 1360px) / 2));
+          z-index: 2;
+          display: flex;
+          align-items: center;
+        }
+
+        .location {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          font-size: 12px;
+          margin: 0;
+          color: #fffdf5;
+        }
+
+        .location svg {
+          width: 22px;
+          height: 22px;
+        }
+
+        .location small {
+          display: block;
+          font-size: 10px;
+          margin-top: 3px;
+          opacity: .85;
+        }
 
         @keyframes enter {
           from { opacity: 0; transform: translateY(12px); }
@@ -53,35 +179,29 @@ export function HeroSection({ onOpenSearch }: HeroSectionProps) {
         }
 
         @media (max-width: 1250px) {
-          .heroContent { margin-top: 100px; }
+          .heroContent { margin-top: 85px; }
+          .heroBottom { bottom: 155px; }
         }
+
         @media (max-width: 1020px) {
-          .hero { height: 720px; }
-          .heroContent { margin-top: 105px; }
-          .heroContent h1 { font-size: 76px; }
+          .hero { height: auto; min-height: 700px; padding-bottom: 120px; }
+          .heroContent { margin-top: 95px; }
+          .heroContent h1 { font-size: 74px; }
           .benefits { gap: 20px; }
           .benefit { gap: 8px; }
+          .heroBottom { display: none; }
         }
+
         @media (max-width: 700px) {
-          .hero { min-height: 700px; height: 91svh; max-height: 900px; }
+          .hero { min-height: 640px; }
           .heroImage img { object-position: 61% bottom; }
-          .heroShade { background: linear-gradient(180deg, #fff6dfa6, transparent 24%), linear-gradient(90deg, #071d16b5, #071d1640), linear-gradient(0deg, #071d16c9, transparent 55%); }
-          .heroContent { width: 84%; margin-top: 125px; }
-          .eyebrow { font-size: 8px; letter-spacing: 2.3px; margin-bottom: 19px; }
-          .heroContent h1 { font-size: clamp(48px, 9.7vw, 67px); letter-spacing: -1px; line-height: 1.05; }
+          .heroContent { width: 90%; margin-top: 110px; }
+          .eyebrow { font-size: 8.5px; letter-spacing: 2px; margin-bottom: 16px; }
+          .heroContent h1 { font-size: clamp(46px, 9.6vw, 65px); letter-spacing: -1px; line-height: 1.05; }
           .heroContent h1 em { letter-spacing: -3px; }
-          .heroDescription { font-size: 14px; max-width: 320px; margin: 24px 0 30px; }
-          .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; max-width: 325px; }
-          .benefit svg { width: 26px; height: 26px; }
-          .benefit span { font-size: 10px; }
-          .heroBottom { left: 8%; right: 8%; bottom: 28px; grid-template-columns: 1fr 1fr; }
-          .location { font-size: 10px; gap: 6px; }
-          .location small { font-size: 8px; }
-          .location svg { width: 16px; }
-        }
-        @media (max-width: 370px) {
-          .heroContent { margin-top: 110px; }
-          .heroContent h1 { font-size: 44px; }
+          .heroDescription { font-size: 14px; max-width: 320px; margin: 20px 0 28px; }
+          .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 14px; max-width: 320px; }
+          .benefit svg { width: 24px; height: 24px; }
         }
       `}</style>
       <section
@@ -99,6 +219,18 @@ export function HeroSection({ onOpenSearch }: HeroSectionProps) {
           />
         </div>
         <div className="heroShade" />
+
+        <svg
+          className="heroBottomWave"
+          viewBox="0 0 1440 160"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0,60 C380,140 1060,140 1440,50 L1440,160 L0,160 Z"
+            fill="#faf9f5"
+          />
+        </svg>
 
         <Navbar onOpenSearch={onOpenSearch} />
 

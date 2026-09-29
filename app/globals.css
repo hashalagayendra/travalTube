@@ -1,11 +1,57 @@
+:root {
+  /* Brand & Hero Color System */
+  --color-primary: #073e36;
+  --color-primary-dark: #003f3b;
+  --color-primary-hover: #086157;
+  --color-primary-light: #e6f3e5;
+  --color-primary-deep: #071d16;
+
+  /* Accent Tones */
+  --color-accent-gold: #e8a838;
+  --color-accent-amber: #ffb11b;
+  --color-accent-orange: #f06c2f;
+  --color-accent-coral: #f0642b;
+
+  /* Neutrals & Surfaces */
+  --color-bg-page: #faf9f5;
+  --color-surface-white: #ffffff;
+  --color-text-main: #073e36;
+  --color-text-muted: #556c75;
+  --color-text-secondary: #6e807a;
+  --color-border-subtle: #e2ece9;
+
+  /* Typography */
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-script: "Segoe Script", "Brush Script MT", cursive;
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 24px; }
-body { margin: 0; background: #faf9f5; color: #123f38; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0;
+  background: var(--color-bg-page);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
 button, input, select { font: inherit; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; }
 button, a { touch-action: manipulation; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #f3a820; outline-offset: 5px; }
-::selection { background: #f3a820; color: #073e36; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+::selection {
+  background: var(--color-accent-gold);
+  color: var(--color-primary);
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

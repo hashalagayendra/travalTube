@@ -22,25 +22,155 @@ export function ContactSection({
   return (
     <>
       <style>{`
-        .contact { width: min(1230px, 84%); margin: 0 auto; padding: 80px 0; display: grid; grid-template-columns: 1.1fr 1fr; gap: 90px; align-items: center; }
-        .sectionEyebrow { font-size: 9px; letter-spacing: 2.2px; font-weight: 700; color: #678177; margin: 0 0 17px; }
-        .contact h2 { font-family: Georgia, serif; font-weight: 400; font-size: clamp(33px, 3.3vw, 48px); line-height: 1.15; letter-spacing: -1px; margin: 0; }
-        .contact h2 em { color: #a27834; font-weight: 400; }
-        .contact > div > p:last-child { font-size: 13px; color: #6a746f; line-height: 1.8; }
-        .tripForm { display: flex; flex-direction: column; gap: 13px; }
-        .tripForm label { font-size: 12px; font-weight: 600; }
-        .tripForm select { border: 1px solid #d5ddd3; background: white; padding: 15px; border-radius: 4px; color: #123f38; width: 100%; }
-        .tripForm > button { border: 0; background: #073e36; color: white; padding: 15px 21px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-        .tripForm > button:hover { background: #0b574b; }
-        .tripForm svg { width: 19px; height: 19px; }
-        .tripResult { font-size: 12px; line-height: 1.8; margin: 0; padding: 15px; background: #e7eee5; border-radius: 4px; }
+        .contact {
+          width: min(1360px, 92%);
+          margin: 0 auto;
+          padding: 85px 0 95px;
+          display: grid;
+          grid-template-columns: 1.1fr 1fr;
+          gap: 90px;
+          align-items: center;
+        }
+
+        .sectionEyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 11px;
+          letter-spacing: 3px;
+          font-weight: 600;
+          color: #556c75;
+          margin: 0 0 16px;
+        }
+
+        .sectionEyebrow::before {
+          content: "";
+          display: inline-block;
+          width: 32px;
+          height: 2px;
+          background: #e8a838;
+        }
+
+        .contact h2 {
+          font-family: Georgia, "Times New Roman", serif;
+          font-weight: 500;
+          font-size: clamp(34px, 3.5vw, 50px);
+          line-height: 1.15;
+          letter-spacing: -1px;
+          color: #073e36;
+          margin: 0 0 16px;
+        }
+
+        .contact h2 em {
+          font-family: "Segoe Script", "Brush Script MT", cursive;
+          color: #ffb11b;
+          font-weight: 400;
+          font-style: normal;
+          letter-spacing: -2px;
+        }
+
+        .contact > div > p:last-child {
+          font-size: 15px;
+          color: #556c75;
+          line-height: 1.7;
+          margin: 0;
+        }
+
+        .tripForm {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          background: #ffffff;
+          padding: 32px;
+          border-radius: 20px;
+          border: 1px solid #e2ece9;
+          box-shadow: 0 12px 36px rgba(7, 62, 54, 0.06);
+        }
+
+        .tripForm label {
+          font-size: 13px;
+          font-weight: 700;
+          color: #073e36;
+        }
+
+        .tripForm select {
+          border: 1px solid #cad8d3;
+          background: #ffffff;
+          padding: 14px 16px;
+          border-radius: 10px;
+          color: #073e36;
+          font-size: 14px;
+          font-weight: 500;
+          width: 100%;
+          outline: none;
+          transition: border-color .2s, box-shadow .2s;
+        }
+
+        .tripForm select:focus {
+          border-color: #073e36;
+          box-shadow: 0 0 0 3px rgba(7, 62, 54, 0.12);
+        }
+
+        .tripForm > button {
+          border: 0;
+          background: #003f3b;
+          color: #ffffff;
+          padding: 14px 26px;
+          min-height: 46px;
+          border-radius: 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 13px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          box-shadow: 0 8px 24px rgba(7, 62, 54, 0.15);
+          transition: background .2s ease, transform .2s ease;
+        }
+
+        .tripForm > button:hover {
+          background: #086157;
+          transform: translateY(-2px);
+        }
+
+        .tripForm svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        .tripResult {
+          font-size: 13px;
+          line-height: 1.7;
+          margin: 0;
+          padding: 16px 18px;
+          background: #edf6f2;
+          border: 1px solid #cfe2d9;
+          border-radius: 10px;
+          color: #073e36;
+        }
+
+        .tripResult strong {
+          color: #f0642b;
+        }
 
         @media (max-width: 1020px) {
-          .contact { gap: 40px; }
+          .contact {
+            gap: 40px;
+            padding: 65px 0 75px;
+          }
         }
-        @media (max-width: 700px) {
-          .contact h2 { font-size: 36px; }
-          .contact { padding: 55px 0; grid-template-columns: 1fr; gap: 28px; }
+
+        @media (max-width: 760px) {
+          .contact {
+            grid-template-columns: 1fr;
+            gap: 32px;
+          }
+          .contact h2 {
+            font-size: 34px;
+          }
+          .tripForm {
+            padding: 24px 20px;
+          }
         }
       `}</style>
       <section id="contact" className="contact">

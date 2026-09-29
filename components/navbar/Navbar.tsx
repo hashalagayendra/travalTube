@@ -25,16 +25,18 @@ export function Navbar({ onOpenSearch }: NavbarProps) {
   return (
     <>
       <style>{`
-        .header { display: flex; align-items: center; gap: 26px; width: min(1400px, 86%); margin: 0 auto; padding: 24px 0; color: #073e36; }
-        .navigation { display: flex; justify-content: space-between; align-items: center; flex: 1; gap: 4px; background: rgba(255,255,255,.84); border-radius: 40px; padding: 9px 12px; box-shadow: 0 5px 24px #123f3805; }
-        .navigation a { white-space: nowrap; font-size: 11px; font-weight: 600; padding: 11px 7px; border-radius: 25px; transition: background .2s, color .2s; }
+        .header { display: flex; align-items: center; gap: 26px; width: min(1400px, 86%); margin: 0 auto; padding: 24px 0; color: #ffffff; }
+        .header .brandName { color: #ffffff; }
+        .header .brandTagline { color: #ffb11b; }
+        .navigation { display: flex; justify-content: space-between; align-items: center; flex: 1; gap: 4px; background: rgba(255,255,255,.9); border-radius: 40px; padding: 9px 12px; box-shadow: 0 5px 24px rgba(0, 0, 0, 0.08); backdrop-filter: blur(8px); }
+        .navigation a { color: #073e36; white-space: nowrap; font-size: 11px; font-weight: 600; padding: 11px 7px; border-radius: 25px; transition: background .2s, color .2s; }
         .navigation a:hover { color: #f06c2f; background: #fff; }
         .navigation .activeLink { color: #f06c2f; background: #fff; padding-inline: 17px; position: relative; }
         .activeLink::after { content: ""; position: absolute; width: 25px; height: 1px; background: #f06c2f; bottom: 7px; left: 50%; transform: translateX(-50%); }
         .headerActions { display: flex; gap: 15px; align-items: center; }
-        .searchButton, .menuButton { width: 40px; height: 40px; border: 0; border-radius: 50%; background: #f4fbffdf; color: #073e36; display: grid; place-items: center; }
+        .searchButton, .menuButton { width: 40px; height: 40px; border: 0; border-radius: 50%; background: #ffffff; color: #073e36; display: grid; place-items: center; }
         .searchButton svg, .menuButton svg { width: 19px; height: 19px; }
-        .planButton { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 42px; padding: 0 23px; background: #003f3b; border-radius: 28px; color: white; font-size: 11px; white-space: nowrap; transition: background .2s, transform .2s; }
+        .planButton { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 42px; padding: 0 23px; background: #003f3b; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 28px; color: white; font-size: 11px; white-space: nowrap; transition: background .2s, transform .2s; }
         .planButton:hover { background: #086157; transform: translateY(-2px); }
         .planButton svg { width: 17px; height: 17px; }
         .menuButton { display: none; }
@@ -54,7 +56,7 @@ export function Navbar({ onOpenSearch }: NavbarProps) {
           .header { position: relative; justify-content: space-between; }
           .navigation { display: none; }
           .navigationOpen { display: grid; grid-template-columns: 1fr 1fr; position: absolute; top: 88px; left: 0; right: 0; z-index: 5; border-radius: 15px; background: #fffffff5; padding: 15px; box-shadow: 0 8px 30px #073e3630; }
-          .navigationOpen a { font-size: 13px; padding: 15px; }
+          .navigationOpen a { font-size: 13px; padding: 15px; color: #073e36; }
           .menuButton { display: grid; }
         }
         @media (max-width: 700px) {

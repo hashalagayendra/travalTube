@@ -21,20 +21,130 @@ export function SearchDialog({ dialogRef, onSelectJourney }: SearchDialogProps) 
   return (
     <>
       <style>{`
-        .searchDialog { width: min(540px, calc(100% - 36px)); padding: 28px; color: #123f38; border: 0; border-radius: 14px; box-shadow: 0 20px 80px #0004; }
-        .searchDialog::backdrop { background: #052c28a8; backdrop-filter: blur(5px); }
-        .dialogHeader { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .dialogHeader h2 { font-family: Georgia, serif; font-weight: 400; font-size: 25px; }
-        .dialogHeader button { background: transparent; border: 0; color: #123f38; padding: 5px; }
-        .dialogHeader svg { width: 21px; height: 21px; }
-        .searchDialog label { display: block; font-size: 11px; margin-bottom: 10px; }
-        .searchDialog input { width: 100%; padding: 14px; border: 1px solid #cdd8d2; border-radius: 6px; color: #123f38; }
-        .searchResults { margin-top: 15px; }
-        .searchResults a { padding: 16px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #123f3814; font-size: 14px; }
-        .searchResults a:hover { color: #a27834; }
-        .searchResults small { display: block; color: #6a746f; font-size: 10px; margin-top: 6px; }
-        .searchResults svg { width: 20px; height: 20px; }
-        .searchResults > p { font-size: 12px; line-height: 1.7; }
+        .searchDialog {
+          width: min(540px, calc(100% - 36px));
+          padding: 32px;
+          color: #073e36;
+          border: 0;
+          border-radius: 20px;
+          box-shadow: 0 24px 80px rgba(7, 29, 22, 0.35);
+          background: #ffffff;
+        }
+
+        .searchDialog::backdrop {
+          background: rgba(7, 29, 22, 0.78);
+          backdrop-filter: blur(6px);
+        }
+
+        .dialogHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 15px;
+          margin-bottom: 18px;
+        }
+
+        .dialogHeader h2 {
+          margin: 0;
+          font-family: Georgia, "Times New Roman", serif;
+          font-weight: 700;
+          font-size: 26px;
+          color: #073e36;
+        }
+
+        .dialogHeader button {
+          background: transparent;
+          border: 0;
+          color: #073e36;
+          padding: 6px;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          transition: background .2s, color .2s;
+        }
+
+        .dialogHeader button:hover {
+          background: #edf5f3;
+          color: #f06c2f;
+        }
+
+        .dialogHeader svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .searchDialog label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          color: #556c75;
+          margin-bottom: 8px;
+        }
+
+        .searchDialog input {
+          width: 100%;
+          padding: 14px 16px;
+          border: 1px solid #cad8d3;
+          border-radius: 10px;
+          color: #073e36;
+          font-size: 14.5px;
+          outline: none;
+          transition: border-color .2s, box-shadow .2s;
+        }
+
+        .searchDialog input:focus {
+          border-color: #073e36;
+          box-shadow: 0 0 0 3px rgba(7, 62, 54, 0.12);
+        }
+
+        .searchResults {
+          margin-top: 18px;
+          max-height: 320px;
+          overflow-y: auto;
+        }
+
+        .searchResults a {
+          padding: 14px 4px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #e5edeb;
+          font-size: 14.5px;
+          font-weight: 600;
+          color: #073e36;
+          transition: color .2s;
+        }
+
+        .searchResults a:hover {
+          color: #f06c2f;
+        }
+
+        .searchResults small {
+          display: block;
+          color: #556c75;
+          font-size: 11px;
+          font-weight: 400;
+          margin-top: 4px;
+        }
+
+        .searchResults svg {
+          width: 18px;
+          height: 18px;
+          color: #073e36;
+          transition: transform .2s, color .2s;
+        }
+
+        .searchResults a:hover svg {
+          color: #f06c2f;
+          transform: translateX(3px);
+        }
+
+        .searchResults > p {
+          font-size: 13px;
+          color: #556c75;
+          line-height: 1.6;
+          margin: 14px 0 0;
+        }
       `}</style>
       <dialog
         ref={dialogRef}

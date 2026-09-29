@@ -4,19 +4,74 @@ export function Footer() {
   return (
     <>
       <style>{`
-        .footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding: 28px 8%; border-top: 1px solid #123f3814; }
-        .footer .brandMark { width: 45px; height: 40px; }
-        .footer .brandName { font-size: 20px; }
-        .footer .brandName em { font-size: 24px; }
-        .footer .brandTagline { font-size: 5px; letter-spacing: 1.5px; }
-        .footer > p { color: #6a746f; font-size: 11px; }
-        .footer > small { color: #6a746f; font-size: 9px; }
-        .footer > small a { text-decoration: underline; text-underline-offset: 3px; }
+        .footer {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 32px 8%;
+          background: #f7faf8;
+          border-top: 1px solid rgba(7, 62, 54, 0.1);
+        }
+
+        .footer .brandMark {
+          width: 48px;
+          height: 42px;
+        }
+
+        .footer .brandName {
+          font-size: 21px;
+          color: #073e36;
+        }
+
+        .footer .brandName em {
+          font-family: "Segoe Script", "Brush Script MT", cursive;
+          color: #f0642b;
+          font-size: 24px;
+        }
+
+        .footer .brandTagline {
+          font-size: 5.5px;
+          letter-spacing: 1.5px;
+          color: #073e36;
+        }
+
+        .footer > p {
+          color: #556c75;
+          font-size: 12px;
+          font-weight: 500;
+          margin: 0;
+        }
+
+        .footer > small {
+          color: #556c75;
+          font-size: 10px;
+          margin: 0;
+        }
+
+        .footer > small a {
+          color: #073e36;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+          transition: color .2s;
+        }
+
+        .footer > small a:hover {
+          color: #f06c2f;
+        }
 
         @media (max-width: 700px) {
-          .footer { padding-block: 25px; }
-          .footer > p { display: none; }
-          .footer > small { width: 100%; font-size: 8px; }
+          .footer {
+            padding-block: 28px;
+          }
+          .footer > p {
+            display: none;
+          }
+          .footer > small {
+            width: 100%;
+            font-size: 9px;
+          }
         }
       `}</style>
       <footer className="footer">

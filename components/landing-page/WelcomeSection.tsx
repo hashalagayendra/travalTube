@@ -9,117 +9,263 @@ export function WelcomeSection() {
           position: relative;
           isolation: isolate;
           overflow: hidden;
-          margin-top: 34px;
-          padding: 68px 0 78px;
+          margin-top: 30px;
+          padding: 70px 0 80px;
           background: #fdfdfc;
         }
+
         .welcomeInner {
           display: grid;
           grid-template-columns: 1fr 1fr;
           align-items: center;
           gap: 65px;
-          width: min(1400px, 84%);
+          width: min(1360px, 92%);
           margin: 0 auto;
         }
+
         .welcomeEyebrow {
-          position: relative;
-          margin: 0 0 10px;
-          padding-top: 19px;
-          color: #626462;
-          font-size: 18px;
-          font-weight: 500;
-          letter-spacing: 6px;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 11px;
+          letter-spacing: 3px;
+          font-weight: 600;
+          color: #556c75;
+          margin: 0 0 16px;
         }
-        .welcomeEyebrow::before { content: ""; position: absolute; top: 0; left: 0; width: 55px; height: 2px; background: #ef912c; }
+
+        .welcomeEyebrow::before {
+          content: "";
+          display: inline-block;
+          width: 32px;
+          height: 2px;
+          background: #e8a838;
+        }
+
         .welcomeCopy h2 {
-          margin: 0 0 19px;
-          color: #106273;
+          margin: 0 0 18px;
+          color: #073e36;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(25px, 2.32vw, 39px);
+          font-size: clamp(28px, 2.7vw, 42px);
           font-weight: 700;
           letter-spacing: -.6px;
-          line-height: 1.25;
+          line-height: 1.22;
         }
-        .welcomeCopy h2 span { color: #ed8a28; white-space: nowrap; }
-        .welcomeCopy > p:not(.welcomeEyebrow) { margin: 0 0 15px; color: #747573; font-size: 14px; line-height: 1.75; }
+
+        .welcomeCopy h2 span {
+          color: #ed8a28;
+          white-space: nowrap;
+        }
+
+        .welcomeCopy > p:not(.welcomeEyebrow) {
+          margin: 0 0 16px;
+          color: #556c75;
+          font-size: 14.5px;
+          line-height: 1.75;
+        }
+
         .welcomeReadMore {
           display: inline-flex;
           align-items: center;
           justify-content: space-between;
-          gap: 27px;
-          margin-top: 7px;
-          padding: 16px 21px;
-          min-width: 182px;
-          border-radius: 11px;
-          background: #0f6776;
-          color: white;
+          gap: 20px;
+          margin-top: 10px;
+          padding: 13px 26px;
+          min-height: 44px;
+          border-radius: 28px;
+          background: #003f3b;
+          color: #ffffff;
           font-size: 12px;
-          font-weight: 600;
-          box-shadow: 0 10px 24px #0f677613;
-          transition: background .2s;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          transition: background .2s ease, transform .2s ease;
         }
-        .welcomeReadMore:hover { background: #094f5d; }
-        .welcomeReadMore svg { width: 20px; height: 20px; }
-        .welcomeSocial { margin-top: 27px; }
-        .socialHeading { display: flex; align-items: center; gap: 17px; margin: 0 0 15px; color: #767774; font-size: 12px; letter-spacing: 3px; }
-        .socialHeading span { height: 1px; background: #e7e9e8; flex: 1; }
-        .socialLinks { display: grid; grid-template-columns: 1fr 1fr; gap: 23px; }
+
+        .welcomeReadMore:hover {
+          background: #086157;
+          transform: translateY(-2px);
+        }
+
+        .welcomeReadMore svg {
+          width: 17px;
+          height: 17px;
+        }
+
+        .welcomeSocial {
+          margin-top: 32px;
+        }
+
+        .socialHeading {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin: 0 0 16px;
+          color: #556c75;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 2.5px;
+        }
+
+        .socialHeading span {
+          height: 1px;
+          background: #e2ece9;
+          flex: 1;
+        }
+
+        .socialLinks {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+
         .socialLink {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 12px 18px;
+          padding: 14px 18px;
           min-height: 64px;
-          border-radius: 13px;
-          color: #303735;
-          font-size: 16px;
+          border-radius: 14px;
+          color: #073e36;
+          font-size: 15px;
           font-weight: 600;
-          transition: box-shadow .2s;
+          border: 1px solid #e5edeb;
+          transition: border-color .2s ease;
         }
-        .socialLink:hover { box-shadow: 0 5px 18px #123f3814; }
-        .twitterLink { background: #eaf3fc; }
-        .facebookLink { background: #ebeff9; }
-        .socialIcon { display: grid; place-items: center; flex-shrink: 0; width: 39px; height: 39px; border-radius: 50%; color: white; }
-        .twitterLink .socialIcon { background: #45a7f9; }
-        .facebookLink .socialIcon { background: #4464a1; }
-        .socialIcon svg { width: 25px; height: 25px; }
-        .socialLink > svg { width: 21px; height: 21px; margin-left: auto; flex-shrink: 0; color: #6d7476; }
-        .welcomeCollage { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1.08fr 1fr; gap: 12px; aspect-ratio: 1.39; }
-        .welcomeWildlife, .welcomePhoto { position: relative; overflow: hidden; border-radius: 15px; }
-        .welcomeWildlife { grid-column: 1 / -1; }
-        .welcomeCollage img { object-fit: cover; object-position: center; }
-        .welcomePalm { position: absolute; left: -75px; top: 55px; z-index: -1; width: 220px; height: 370px; color: #e7ece7; opacity: .55; transform: rotate(-13deg); }
-        .welcomeLeaf { position: absolute; right: -50px; top: 30px; z-index: -1; width: 190px; height: 350px; color: #f4e6d0; opacity: .4; transform: rotate(13deg); }
-        .welcomeWave { position: absolute; bottom: 0; left: 0; z-index: -1; width: 100%; height: 105px; }
+
+        .socialLink:hover {
+          border-color: #c5ded7;
+        }
+
+        .twitterLink {
+          background: #f2f7fc;
+        }
+
+        .facebookLink {
+          background: #f1f4fa;
+        }
+
+        .socialIcon {
+          display: grid;
+          place-items: center;
+          flex-shrink: 0;
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          color: #ffffff;
+        }
+
+        .twitterLink .socialIcon {
+          background: #3998e6;
+        }
+
+        .facebookLink .socialIcon {
+          background: #3b5998;
+        }
+
+        .socialIcon svg {
+          width: 22px;
+          height: 22px;
+        }
+
+        .socialLink > svg {
+          width: 18px;
+          height: 18px;
+          margin-left: auto;
+          flex-shrink: 0;
+          color: #073e36;
+        }
+
+        .welcomeCollage {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1.08fr 1fr;
+          gap: 14px;
+          aspect-ratio: 1.38;
+        }
+
+        .welcomeWildlife, .welcomePhoto {
+          position: relative;
+          overflow: hidden;
+          border-radius: 16px;
+        }
+
+        .welcomeWildlife {
+          grid-column: 1 / -1;
+        }
+
+        .welcomeCollage img {
+          object-fit: cover;
+          object-position: center;
+        }
+
+        .welcomePalm {
+          position: absolute;
+          left: -75px;
+          top: 55px;
+          z-index: -1;
+          width: 220px;
+          height: 370px;
+          color: #d1dbd4;
+          opacity: .45;
+          transform: rotate(-13deg);
+        }
+
+        .welcomeLeaf {
+          position: absolute;
+          right: -50px;
+          top: 30px;
+          z-index: -1;
+          width: 190px;
+          height: 350px;
+          color: #f1dfc5;
+          opacity: .4;
+          transform: rotate(13deg);
+        }
+
+        .welcomeWave {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          z-index: -1;
+          width: 100%;
+          height: 105px;
+        }
 
         @media (max-width: 1200px) {
-          .welcomeInner { gap: 36px; width: 88%; }
-          .welcomeCopy h2 { font-size: 27px; }
-          .welcomeCopy > p:not(.welcomeEyebrow) { font-size: 13px; }
-          .socialLinks { gap: 12px; }
-          .socialLink { padding: 12px; gap: 10px; font-size: 14px; }
-          .welcomeCollage { aspect-ratio: 1.15; }
+          .welcomeInner {
+            gap: 36px;
+            width: 90%;
+          }
+          .welcomeCopy h2 {
+            font-size: 28px;
+          }
+          .socialLinks {
+            gap: 12px;
+          }
         }
+
         @media (max-width: 900px) {
-          .welcomeSection { padding: 50px 0 65px; }
-          .welcomeInner { grid-template-columns: 1fr; max-width: 640px; gap: 35px; }
-          .welcomeCopy h2 { font-size: clamp(26px, 4.6vw, 36px); }
-          .welcomeCopy > p:not(.welcomeEyebrow) { font-size: 14px; }
-          .welcomeCollage { aspect-ratio: 1.4; }
-          .socialLink { padding: 14px 18px; font-size: 16px; }
-          .welcomeLeaf { top: auto; bottom: 75px; }
+          .welcomeSection {
+            padding: 50px 0 65px;
+          }
+          .welcomeInner {
+            grid-template-columns: 1fr;
+            max-width: 620px;
+            gap: 35px;
+          }
+          .welcomeCollage {
+            aspect-ratio: 1.35;
+          }
+          .welcomeLeaf {
+            top: auto;
+            bottom: 75px;
+          }
         }
-        @media (max-width: 430px) {
-          .welcomeEyebrow { font-size: 14px; letter-spacing: 4px; }
-          .welcomeCopy h2 { font-size: 27px; }
-          .welcomeCopy > p:not(.welcomeEyebrow) { font-size: 13px; }
-          .socialLinks { gap: 10px; }
-          .socialLink { gap: 9px; padding: 12px 10px; font-size: 13px; }
-          .socialIcon { width: 32px; height: 32px; }
-          .socialIcon svg { width: 21px; height: 21px; }
-          .socialLink > svg { width: 16px; height: 16px; }
-          .welcomeCollage { gap: 9px; aspect-ratio: 1.25; }
-          .welcomeWildlife, .welcomePhoto { border-radius: 11px; }
+
+        @media (max-width: 480px) {
+          .welcomeSocial .socialLinks {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
       <section
@@ -155,6 +301,7 @@ export function WelcomeSection() {
             strokeWidth="2"
           />
         </svg>
+
         <div className="welcomeInner">
           <div className="welcomeCopy">
             <p className="welcomeEyebrow">WELCOME TO</p>
@@ -223,6 +370,7 @@ export function WelcomeSection() {
               </div>
             </div>
           </div>
+
           <div className="welcomeCollage">
             <div className="welcomeWildlife">
               <Image
@@ -250,6 +398,7 @@ export function WelcomeSection() {
             </div>
           </div>
         </div>
+
         <svg
           className="welcomeWave"
           viewBox="0 0 1440 120"

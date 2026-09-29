@@ -4,19 +4,19 @@ import { Icon, IconName } from "@/components/ui/Icon";
 interface TourOptionItem {
   title: string;
   description: string;
-  details: string;
+  actionText: string;
   image: string;
   icon: IconName;
   href: string;
-  accent: string;
+  accent: "green" | "orange";
 }
 
 const tourOptions: TourOptionItem[] = [
   {
     title: "One Day Tours",
-    description: "Explore Sri Lanka’s highlights in a single day",
-    details:
+    description:
       "Feel with the nature in Sri Lanka. Can you arrange a trip on a day? We give you amazing and adventure feeling. We have selected best places to you which can enjoy your day. Within one day cover the most attractive areas in Sri Lanka.",
+    actionText: "Explore Tours",
     image: "/images/day-tours.jpg",
     icon: "palm",
     href: "https://traveltube.lk/tour-packages.php?id=1",
@@ -24,20 +24,20 @@ const tourOptions: TourOptionItem[] = [
   },
   {
     title: "Round Tours",
-    description: "Multi-day journeys across stunning destinations",
-    details:
+    description:
       "In every country there some hidden places and stories. Explore the cultures, the legends and history of this areas. Find your way. Get a wonderful experience, add little to your memories. And Sri Lanka is the best destination to fulfill your travel diary. Travel and enjoy your life.",
+    actionText: "Explore Journeys",
     image: "/images/sigiriya.jpg",
     icon: "pin",
     href: "https://traveltube.lk/tour-packages.php?id=2",
     accent: "orange",
   },
   {
-    title: "Plan Your Trip",
-    description: "Let us create your perfect Sri Lanka itinerary",
-    details:
+    title: "Plan your Trip",
+    description:
       "Planning a trip is the hardest part of traveling. No worries. Plan your trip more efficiently and effectively. We will help you to arrange your trip, schedule your valuable time and choose the best routes for your journey without any mistake. Enjoy your trip with a cost effective plan.",
-    image: "/images/plan-trip.jpg",
+    actionText: "Start Planning",
+    image: "/images/package-13.jpg",
     icon: "calendar",
     href: "https://traveltube.lk/plan-tour.php",
     accent: "green",
@@ -48,142 +48,255 @@ export function TourOptionsSection() {
   return (
     <>
       <style>{`
-        .tourOptions {
+        .tourOptionsSection {
+          position: relative;
+          z-index: 5;
+          width: 100%;
+          margin-top: -140px;
+          padding-bottom: 30px;
+        }
+
+        .decorativePalm {
+          position: absolute;
+          left: -20px;
+          bottom: -20px;
+          width: 180px;
+          height: 300px;
+          color: #d1dbd4;
+          opacity: 0.55;
+          pointer-events: none;
+          z-index: 1;
+          transform: rotate(-12deg);
+        }
+
+        .tourCardsGrid {
           position: relative;
           z-index: 2;
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 12px;
-          width: min(1400px, 94%);
-          margin: -24px auto 0;
+          gap: 28px;
+          width: min(1360px, 92%);
+          margin: 0 auto;
         }
-        .tourOption {
-          display: grid;
-          grid-template-columns: 28% 42px minmax(0, 1fr) 26px;
-          align-items: center;
-          align-content: start;
-          gap: 13px;
-          min-height: 106px;
-          padding: 8px 12px 8px 8px;
-          border: 1px solid #e9edef;
-          border-radius: 13px;
-          background: #fff;
-          box-shadow: 0 8px 28px #123f380d;
-          transition: box-shadow .2s, border-color .2s;
-        }
-        .tourOption:hover {
-          border-color: #c7d8cf;
-          box-shadow: 0 10px 30px #123f381c;
-        }
-        .tourOptionImage {
-          position: relative;
-          align-self: stretch;
-          min-height: 88px;
-          overflow: hidden;
-          border-radius: 7px;
-        }
-        .tourOptionImage img { object-fit: cover; object-position: center 65%; }
-        .tourOptionIcon {
-          display: grid;
-          place-items: center;
-          width: 42px;
-          height: 42px;
-          border-radius: 50%;
-        }
-        .tourOptionIcon svg { width: 23px; height: 23px; }
-        .greenIcon { background: #edf4df; color: #2b791b; }
-        .orangeIcon { background: #fff0df; color: #fc751c; }
-        .tourOptionCopy h2 {
-          margin: 0 0 5px;
-          color: #143e52;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 19px;
-          font-weight: 700;
-          line-height: 1.2;
-        }
-        .tourOptionCopy p { margin: 0; color: #6b7888; font-size: 11px; line-height: 1.5; }
-        .tourOptionDescription {
-          grid-column: 1 / -1;
-          align-self: start;
-          margin: 0;
-          padding: 15px 9px 12px;
-          border-top: 1px solid #edf0f1;
-          color: #6b7888;
-          font-size: 13px;
-          line-height: 1.75;
-        }
-        .tourOptionArrow {
-          display: grid;
-          place-items: center;
-          width: 26px;
-          height: 26px;
-          border: 1px solid #dbe2e5;
-          border-radius: 50%;
-          color: #173f4d;
-        }
-        .tourOptionArrow svg { width: 14px; height: 14px; }
 
-        @media (max-width: 1150px) {
-          .tourOption { grid-template-columns: 27% 34px minmax(0, 1fr) 22px; gap: 9px; padding-right: 9px; min-height: 94px; }
-          .tourOptionImage { min-height: 76px; }
-          .tourOptionIcon { width: 34px; height: 34px; }
-          .tourOptionIcon svg { width: 20px; height: 20px; }
-          .tourOptionCopy h2 { font-size: 16px; }
-          .tourOptionCopy p { font-size: 10px; }
-          .tourOptionArrow { width: 22px; height: 22px; }
+        .tourCard {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          background: #ffffff;
+          border-radius: 20px;
+          padding: 14px 14px 22px 14px;
+          border: 1px solid rgba(226, 234, 230, 0.9);
+          text-decoration: none;
         }
+
+        .cardMedia {
+          position: relative;
+          width: 100%;
+        }
+
+        .cardImageWrapper {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 8.2;
+          border-radius: 14px;
+          overflow: hidden;
+        }
+
+        .cardImage {
+          object-fit: cover;
+          object-position: center;
+        }
+
+        .cardBadge {
+          position: absolute;
+          bottom: -20px;
+          left: 18px;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          border: 2px solid #ffffff;
+          z-index: 3;
+        }
+
+        .cardBadge svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .badgeGreen {
+          background: #e6f3e5;
+          color: #073e36;
+        }
+
+        .badgeOrange {
+          background: #fef0df;
+          color: #f0642b;
+        }
+
+        .cardContent {
+          padding: 26px 6px 0 6px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        .cardTitle {
+          margin: 0 0 8px;
+          color: #073e36;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 24px;
+          font-weight: 700;
+          line-height: 1.25;
+        }
+
+        .cardDescription {
+          margin: 0 0 16px;
+          color: #556c75;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .cardFooter {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 12px;
+          border-top: 1px solid #edf3f1;
+        }
+
+        .cardActionText {
+          font-size: 14.5px;
+          font-weight: 700;
+          color: #073e36;
+          letter-spacing: -0.2px;
+        }
+
+        .cardArrow {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+        }
+
+        .cardArrow svg {
+          width: 17px;
+          height: 17px;
+        }
+
+        .arrowGreen {
+          background: #e6f3e5;
+          color: #073e36;
+        }
+
+        .arrowOrange {
+          background: #fef0df;
+          color: #f0642b;
+        }
+
+        @media (max-width: 1180px) {
+          .tourCardsGrid {
+            gap: 20px;
+            width: 94%;
+          }
+          .cardTitle {
+            font-size: 21px;
+          }
+          .cardDescription {
+            font-size: 13px;
+          }
+        }
+
         @media (max-width: 900px) {
-          .tourOptions { grid-template-columns: 1fr; width: min(620px, 90%); gap: 10px; }
-          .tourOption { grid-template-columns: 110px 38px minmax(0, 1fr) 26px; min-height: 100px; gap: 13px; }
-          .tourOptionCopy h2 { font-size: 19px; }
-          .tourOptionCopy p { font-size: 12px; }
-          .tourOptionIcon { width: 38px; height: 38px; }
-          .tourOptionArrow { width: 26px; height: 26px; }
+          .tourOptionsSection {
+            margin-top: -100px;
+          }
+          .tourCardsGrid {
+            grid-template-columns: 1fr;
+            max-width: 520px;
+            gap: 24px;
+          }
         }
-        @media (max-width: 430px) {
-          .tourOption { grid-template-columns: 76px 32px minmax(0, 1fr) 22px; gap: 9px; min-height: 90px; }
-          .tourOptionImage { min-height: 72px; }
-          .tourOptionIcon { width: 32px; height: 32px; }
-          .tourOptionCopy h2 { font-size: 16px; }
-          .tourOptionCopy p { font-size: 10px; }
-          .tourOptionArrow { width: 22px; height: 22px; }
+
+        @media (max-width: 560px) {
+          .tourOptionsSection {
+            margin-top: -60px;
+          }
+          .tourCard {
+            padding: 12px 12px 20px 12px;
+          }
+          .cardTitle {
+            font-size: 20px;
+          }
         }
       `}</style>
       <section
-        className="tourOptions"
+        className="tourOptionsSection"
         aria-label="Explore our tour options"
       >
-        {tourOptions.map((option) => (
-          <a
-            key={option.title}
-            href={option.href}
-            className="tourOption"
-          >
-            <div className="tourOptionImage">
-              <Image
-                src={option.image}
-                alt=""
-                fill
-                sizes="(max-width: 900px) 120px, (max-width: 1150px) 90px, 130px"
-              />
-            </div>
-            <span
-              className={`tourOptionIcon ${
-                option.accent === "orange" ? "orangeIcon" : "greenIcon"
-              }`}
+        <svg
+          className="decorativePalm"
+          viewBox="0 0 200 330"
+          aria-hidden="true"
+        >
+          <path
+            d="M85 330C76 242 72 140 97 69"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            d="M96 73C48 21 14 32 0 62c40-12 61-1 96 11ZM96 73C34 57 5 80 0 113c37-26 61-30 96-40ZM96 73C32 88 16 121 23 158c15-43 38-65 73-85ZM96 73c7-53 37-65 70-54-37 11-53 26-70 54ZM96 73c49-44 86-26 104 7-43-13-69-17-104-7ZM96 73c59-9 88 23 94 58-34-36-55-49-94-58ZM96 73c42 20 53 54 46 92-14-41-25-66-46-92Z"
+            fill="currentColor"
+          />
+        </svg>
+
+        <div className="tourCardsGrid">
+          {tourOptions.map((option) => (
+            <a
+              key={option.title}
+              href={option.href}
+              className="tourCard"
             >
-              <Icon name={option.icon} />
-            </span>
-            <div className="tourOptionCopy">
-              <h2>{option.title}</h2>
-              <p>{option.description}</p>
-            </div>
-            <span className="tourOptionArrow">
-              <Icon name="arrow" />
-            </span>
-            <p className="tourOptionDescription">{option.details}</p>
-          </a>
-        ))}
+              <div className="cardMedia">
+                <div className="cardImageWrapper">
+                  <Image
+                    src={option.image}
+                    alt={option.title}
+                    fill
+                    sizes="(max-width: 900px) 90vw, (max-width: 1200px) 32vw, 420px"
+                    className="cardImage"
+                  />
+                </div>
+                <span
+                  className={`cardBadge ${
+                    option.accent === "orange" ? "badgeOrange" : "badgeGreen"
+                  }`}
+                >
+                  <Icon name={option.icon} />
+                </span>
+              </div>
+              <div className="cardContent">
+                <h2 className="cardTitle">{option.title}</h2>
+                <p className="cardDescription">{option.description}</p>
+                <div className="cardFooter">
+                  <span className="cardActionText">{option.actionText}</span>
+                  <span
+                    className={`cardArrow ${
+                      option.accent === "orange" ? "arrowOrange" : "arrowGreen"
+                    }`}
+                  >
+                    <Icon name="arrow" />
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
       </section>
     </>
   );
