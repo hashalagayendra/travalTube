@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import styles from "./page.module.css";
 import {
   HeroSection,
   TourOptionsSection,
@@ -27,7 +26,11 @@ export default function Home() {
 
   return (
     <>
-      <a href="#main-content" className={styles.skipLink}>
+      <style>{`
+        .skipLink { position: fixed; top: -80px; left: 20px; z-index: 20; padding: 12px 18px; background: white; border-radius: 6px; }
+        .skipLink:focus { top: 12px; }
+      `}</style>
+      <a href="#main-content" className="skipLink">
         Skip to content
       </a>
       <main id="main-content">
