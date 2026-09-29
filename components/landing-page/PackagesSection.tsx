@@ -128,7 +128,7 @@ export function PackagesSection() {
     <>
       <style>{`
         .packagesSection {
-          padding: 60px 0 75px;
+          padding: 60px 0 30px;
           background: #ffffff;
           overflow: hidden;
         }
@@ -201,7 +201,6 @@ export function PackagesSection() {
           display: grid;
           place-items: center;
           cursor: pointer;
-          box-shadow: 0 2px 6px rgba(7, 62, 54, 0.06);
           transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
         }
 
@@ -230,7 +229,6 @@ export function PackagesSection() {
           padding: 8px 16px;
           border-radius: 24px;
           white-space: nowrap;
-          box-shadow: 0 2px 6px rgba(7, 62, 54, 0.05);
           transition: color 0.2s, background 0.2s, border-color 0.2s;
         }
 
@@ -285,16 +283,14 @@ export function PackagesSection() {
           border-radius: 20px;
           background: #ffffff;
           overflow: hidden;
-          box-shadow: 0 10px 30px rgba(10, 48, 56, 0.07), 0 2px 8px rgba(0, 0, 0, 0.02);
           text-decoration: none;
           color: inherit;
-          transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+          transition: transform .25s ease, border-color .25s ease;
         }
 
         .packageCard:hover {
           transform: translateY(-5px);
-          border-color: #c4dce0;
-          box-shadow: 0 18px 42px rgba(10, 48, 56, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+          border-color: #bad5ce;
         }
 
         .packageImageWrapper {
@@ -329,7 +325,7 @@ export function PackagesSection() {
           font-size: 12px;
           font-weight: 700;
           color: #073e36;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+          border: 1px solid rgba(7, 62, 54, 0.1);
         }
 
         .pillCalendarIcon {
@@ -513,7 +509,7 @@ export function PackagesSection() {
         aria-labelledby="packages-title"
       >
         <div className="packagesInner">
-          <div id="destinations" className="packagesHeader">
+          <div className="packagesHeader">
             <div className="packagesHeading">
               <h2 id="packages-title">Our Tour Packages</h2>
               <span className="packagesSubtitle">

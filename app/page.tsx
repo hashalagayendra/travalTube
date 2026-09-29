@@ -6,6 +6,7 @@ import {
   TourOptionsSection,
   WelcomeSection,
   PackagesSection,
+  DestinationsSection,
   SearchDialog,
 } from "@/components/landing-page";
 import { Footer } from "@/components/footer";
@@ -27,6 +28,7 @@ export default function Home() {
         <TourOptionsSection />
         <WelcomeSection />
         <PackagesSection />
+        <DestinationsSection />
       </main>
       <Footer />
       <SearchDialog

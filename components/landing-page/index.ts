@@ -2,6 +2,7 @@ export { HeroSection } from "./HeroSection";
 export { TourOptionsSection } from "./TourOptionsSection";
 export { WelcomeSection } from "./WelcomeSection";
 export { PackagesSection } from "./PackagesSection";
+export { DestinationsSection } from "./DestinationsSection";
 export { ExperiencesSection } from "./ExperiencesSection";
 export { ContactSection } from "./ContactSection";
 export { SearchDialog } from "./SearchDialog";
