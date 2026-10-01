@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 
 interface NavbarProps {
   onOpenSearch?: () => void;
+  showSearch?: boolean;
   activePage?: string;
 }
 
@@ -22,7 +23,7 @@ const navigation = [
   { label: "Contact Us", href: "/contact", id: "contact" },
 ];
 
-export function Navbar({ onOpenSearch, activePage = "home" }: NavbarProps) {
+export function Navbar({ onOpenSearch, showSearch, activePage = "home" }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileToursOpen, setMobileToursOpen] = useState(false);
 
@@ -656,17 +657,19 @@ export function Navbar({ onOpenSearch, activePage = "home" }: NavbarProps) {
         </nav>
 
         <div className="headerActions">
-          <button
-            type="button"
-            className="searchButton"
-            aria-label="Search destinations"
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenSearch?.();
-            }}
-          >
-            <Icon name="search" />
-          </button>
+          {showSearch !== false && Boolean(onOpenSearch) && (
+            <button
+              type="button"
+              className="searchButton"
+              aria-label="Search destinations"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenSearch?.();
+              }}
+            >
+              <Icon name="search" />
+            </button>
+          )}
           <Link className="planButton" href="/#contact" scroll={false}>
             Plan Your Trip <Icon name="arrow" />
           </Link>

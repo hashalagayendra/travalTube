@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Brand } from "@/components/ui/Brand";
+import { Sidebar, AdminTab } from "./components/Sidebar";
+import { HomepageView } from "./components/HomepageView";
+import { AboutView } from "./components/AboutView";
+import { PackagesView } from "./components/PackagesView";
+import { DestinationsView } from "./components/DestinationsView";
+import { GalleryView } from "./components/GalleryView";
+import { ServicesView } from "./components/ServicesView";
+import { ContactView } from "./components/ContactView";
+import { InquiriesView } from "./components/InquiriesView";
+import { SettingsView } from "./components/SettingsView";
 
 interface AdminUser {
   id: number;
@@ -13,12 +21,14 @@ interface AdminUser {
   createdAt: string;
 }
 
-export default function AdminDashboardPage() {
+export default function AdminPage() {
   const router = useRouter();
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<AdminTab>("homepage");
 
+  // Step 1: Pre-render Authentication Check
   useEffect(() => {
     async function checkAuth() {
       try {
@@ -77,248 +87,114 @@ export default function AdminDashboardPage() {
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         <p style={{ fontSize: "14px", fontWeight: 500, margin: 0 }}>
-          Verifying admin authentication...
+          Verifying admin session...
         </p>
       </div>
     );
   }
 
-  // Authenticated Admin Page
+  const getTabTitle = (tab: AdminTab) => {
+    switch (tab) {
+      case "homepage": return "Homepage & Hero Editor (app/page.tsx)";
+      case "about": return "About Us Editor (/about Page & Homepage Welcome)";
+      case "packages": return "Tour Packages Manager (PackagesSection.tsx)";
+      case "destinations": return "Destination Cards Manager (Homepage & /destination)";
+      case "gallery": return "Photo Gallery Showcase (app/gallery/page.tsx)";
+      case "services": return "Our Services Manager (app/services/page.tsx)";
+      case "contact": return "Contact Us Page Editor (app/contact/page.tsx)";
+      case "inquiries": return "Customer Inquiries & Contact Leads (app/contact/page.tsx)";
+      case "settings": return "Footer & Global Settings (components/footer/Footer.tsx)";
+    }
+  };
+
   return (
     <>
       <style>{`
-        .adminPageWrapper {
+        .adminLayoutWrapper {
+          display: flex;
           min-height: 100vh;
           background: #f8fafc;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           color: #0f172a;
         }
 
-        .adminNavbar {
+        .mainContentArea {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+
+        .adminTopNav {
           background: #ffffff;
           border-bottom: 1px solid #e2e8f0;
-          padding: 14px 28px;
+          padding: 16px 32px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          position: sticky;
+          top: 0;
+          z-index: 20;
         }
 
-        .navLeft {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .adminBadge {
-          padding: 4px 10px;
-          border-radius: 6px;
-          background: #f0fdf4;
-          border: 1px solid #bbf7d0;
-          color: #166534;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .navRight {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .userPill {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          font-size: 12px;
-        }
-
-        .userName {
-          font-weight: 600;
-          color: #0f172a;
-        }
-
-        .userEmail {
+        .breadcrumb {
+          font-size: 13px;
           color: #64748b;
-          font-size: 11px;
-        }
-
-        .logoutBtn {
-          background: #ffffff;
-          border: 1px solid #cbd5e1;
-          color: #b91c1c;
-          padding: 8px 14px;
-          border-radius: 8px;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          display: inline-flex;
+          display: flex;
           align-items: center;
           gap: 6px;
         }
 
-        .logoutBtn:hover:not(:disabled) {
-          background: #fef2f2;
-          border-color: #fca5a5;
-        }
-
-        .logoutBtn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .mainContainer {
-          max-width: 1000px;
-          margin: 36px auto;
-          padding: 0 20px;
-        }
-
-        .heroCard {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 32px 36px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-          margin-bottom: 24px;
-        }
-
-        .heroCard h1 {
-          font-size: 24px;
-          font-weight: 700;
-          color: #073e36;
-          margin: 0 0 8px 0;
-        }
-
-        .heroCard p {
-          color: #475569;
-          font-size: 14px;
-          line-height: 1.6;
-          margin: 0;
-        }
-
-        .gridSection {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 18px;
-          margin-bottom: 24px;
-        }
-
-        .infoCard {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 22px;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
-
-        .infoCard h3 {
-          font-size: 13px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: #64748b;
-          margin: 0 0 10px 0;
-        }
-
-        .infoCard p {
-          font-size: 15px;
-          font-weight: 600;
-          color: #0f172a;
-          margin: 0;
-        }
-
-        .infoCard span {
-          display: block;
-          font-size: 12px;
-          color: #94a3b8;
-          margin-top: 4px;
-        }
-
-        .noticeBox {
-          background: #ecfdf5;
-          border: 1px solid #a7f3d0;
-          border-radius: 12px;
-          padding: 18px 24px;
-          color: #065f46;
-          font-size: 13.5px;
-          line-height: 1.6;
-        }
-
-        .noticeBox strong {
-          color: #047857;
+        .pageContentContainer {
+          padding: 32px;
+          max-width: 1400px;
+          width: 100%;
+          margin: 0 auto;
         }
       `}</style>
 
-      <div className="adminPageWrapper">
-        {/* Top Navbar */}
-        <header className="adminNavbar">
-          <div className="navLeft">
-            <Brand />
-            <span className="adminBadge">Admin Panel</span>
-          </div>
+      <div className="adminLayoutWrapper">
+        {/* Left Sidebar Navigation */}
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          adminName={admin?.name}
+          adminEmail={admin?.email}
+          onLogout={handleLogout}
+          isLoggingOut={isLoggingOut}
+        />
 
-          <div className="navRight">
-            <div className="userPill">
-              <span className="userName">{admin?.name}</span>
-              <span className="userEmail">{admin?.email}</span>
+        {/* Right Main Content Area */}
+        <div className="mainContentArea">
+          {/* Top Bar */}
+          <header className="adminTopNav">
+            <div>
+              <div className="breadcrumb">
+                <span>Admin</span>
+                <span style={{ color: "#94a3b8" }}>›</span>
+                <span style={{ color: "#073e36", fontWeight: 600, textTransform: "capitalize" }}>
+                  {activeTab}
+                </span>
+              </div>
+              <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", margin: "2px 0 0 0" }}>
+                {getTabTitle(activeTab)}
+              </h2>
             </div>
+          </header>
 
-            <button
-              onClick={handleLogout}
-              className="logoutBtn"
-              disabled={isLoggingOut}
-              title="Sign out of admin session"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-              <span>{isLoggingOut ? "Signing out..." : "Log Out"}</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="mainContainer">
-          <div className="heroCard">
-            <h1>Admin Dashboard</h1>
-            <p>
-              Welcome back, <strong>{admin?.name}</strong>. Authentication was successfully
-              verified through the <code>/api/admin/me</code> endpoint. You are now inside
-              the protected admin area.
-            </p>
-          </div>
-
-          {/* Simple Info Cards */}
-          <div className="gridSection">
-            <div className="infoCard">
-              <h3>Database Status</h3>
-              <p>Connected to MySQL</p>
-              <span>Table: admins (synced via Prisma)</span>
-            </div>
-
-            <div className="infoCard">
-              <h3>Admin Username</h3>
-              <p>@{admin?.username}</p>
-              <span>ID: #{admin?.id}</span>
-            </div>
-
-            <div className="infoCard">
-              <h3>Session Type</h3>
-              <p>HttpOnly Cookie Session</p>
-              <span>Cryptographic HMAC-SHA256 signature</span>
-            </div>
-          </div>
-
-          {/* Simple Text Notice */}
-          <div className="noticeBox">
-            <strong>Next Steps:</strong> We can now create the Tour Packages manager,
-            Destinations editor, and Customer Inquiries inbox directly within this dashboard.
-          </div>
-        </main>
+          {/* Render Active View Component directly adjusting frontend */}
+          <main className="pageContentContainer">
+            {activeTab === "homepage" && <HomepageView />}
+            {activeTab === "about" && <AboutView />}
+            {activeTab === "packages" && <PackagesView />}
+            {activeTab === "destinations" && <DestinationsView />}
+            {activeTab === "gallery" && <GalleryView />}
+            {activeTab === "services" && <ServicesView />}
+            {activeTab === "contact" && <ContactView />}
+            {activeTab === "inquiries" && <InquiriesView />}
+            {activeTab === "settings" && <SettingsView />}
+          </main>
+        </div>
       </div>
     </>
   );

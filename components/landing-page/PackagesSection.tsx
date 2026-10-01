@@ -11,7 +11,6 @@ interface TourPackage {
   description: string;
   rating: number;
   reviews: number;
-  price: string;
   image: string;
   alt: string;
 }
@@ -26,7 +25,6 @@ const tourPackages: TourPackage[] = [
       "Explore ancient wonders, royal heritage and Sri Lanka’s rich cultural heart.",
     rating: 4.8,
     reviews: 120,
-    price: "US$ 420",
     image: "/images/sigiriya.jpg",
     alt: "Sigiriya rock fortress rising above lush green forest at sunset",
   },
@@ -39,7 +37,6 @@ const tourPackages: TourPackage[] = [
       "Discover sacred temples, royal palaces and UNESCO world heritage treasures.",
     rating: 4.9,
     reviews: 98,
-    price: "US$ 580",
     image: "/images/package-16.jpg",
     alt: "The illuminated Temple of the Tooth in Kandy",
   },
@@ -52,7 +49,6 @@ const tourPackages: TourPackage[] = [
       "A joyful family journey combining wildlife safaris, scenic trains and sunny beaches.",
     rating: 4.9,
     reviews: 145,
-    price: "US$ 980",
     image: "/images/package-18.jpg",
     alt: "Buddhist statues and painted ceilings in a Sri Lankan cave temple",
   },
@@ -65,7 +61,6 @@ const tourPackages: TourPackage[] = [
       "Romantic getaways with tea-plantation retreats, coastal sunsets and private dining.",
     rating: 5.0,
     reviews: 84,
-    price: "US$ 890",
     image: "/images/package-19.jpg",
     alt: "Ancient stone architecture and a Buddha statue in Polonnaruwa",
   },
@@ -78,7 +73,6 @@ const tourPackages: TourPackage[] = [
       "Golden coastlines, turquoise waves, whale watching and tropical ocean breezes.",
     rating: 4.7,
     reviews: 110,
-    price: "US$ 750",
     image: "/images/package-20.jpg",
     alt: "Travelers relaxing under a blue umbrella on a Sri Lankan beach",
   },
@@ -91,7 +85,6 @@ const tourPackages: TourPackage[] = [
       "Thrilling leopard tracking, wild elephants and vibrant birdlife on a guided safari.",
     rating: 4.8,
     reviews: 215,
-    price: "US$ 140",
     image: "/images/package-3.jpg",
     alt: "Elephants crossing a road beside a safari jeep",
   },
@@ -104,7 +97,6 @@ const tourPackages: TourPackage[] = [
       "Iconic blue train journeys, mist-covered mountain peaks and roaring waterfalls.",
     rating: 4.9,
     reviews: 180,
-    price: "US$ 130",
     image: "/images/package-13.jpg",
     alt: "A blue train crossing the Nine Arch Bridge in Ella",
   },
@@ -407,34 +399,6 @@ export function PackagesSection() {
           font-size: 12px;
         }
 
-        .footerDivider {
-          width: 1px;
-          height: 28px;
-          background: #e2ebed;
-          flex-shrink: 0;
-        }
-
-        .packagePriceBox {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.15;
-          white-space: nowrap;
-        }
-
-        .priceLabel {
-          font-size: 10px;
-          color: #556c75;
-          font-weight: 600;
-        }
-
-        .priceValue {
-          font-size: 18px;
-          font-weight: 800;
-          color: #f0642b;
-          margin-top: 2px;
-          letter-spacing: -0.3px;
-        }
-
         .packageExploreBtn {
           display: flex;
           align-items: center;
@@ -652,15 +616,6 @@ export function PackagesSection() {
                       <span className="ratingScore">{tour.rating.toFixed(1)}</span>
                       <span className="reviewsCount">({tour.reviews})</span>
                     </div>
-
-                    <span className="footerDivider" />
-
-                    <div className="packagePriceBox">
-                      <span className="priceLabel">From</span>
-                      <span className="priceValue">{tour.price}</span>
-                    </div>
-
-                    <span className="footerDivider" />
 
                     <div className="packageExploreBtn">
                       <span>Explore Tour</span>

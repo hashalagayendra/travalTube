@@ -5,7 +5,8 @@ import { Navbar } from "@/components/navbar/Navbar";
 import { Icon, IconName } from "@/components/ui/Icon";
 
 interface HeroSectionProps {
-  onOpenSearch: () => void;
+  onOpenSearch?: () => void;
+  showSearch?: boolean;
 }
 
 const benefits: { icon: IconName; title: string; subtitle: string }[] = [
@@ -25,7 +26,7 @@ const hero = {
   caption: "A timeless wonder",
 };
 
-export function HeroSection({ onOpenSearch }: HeroSectionProps) {
+export function HeroSection({ onOpenSearch, showSearch = false }: HeroSectionProps = {}) {
   return (
     <>
       <style>{`
@@ -232,7 +233,7 @@ export function HeroSection({ onOpenSearch }: HeroSectionProps) {
           />
         </svg>
 
-        <Navbar onOpenSearch={onOpenSearch} />
+        <Navbar onOpenSearch={onOpenSearch} showSearch={showSearch} />
 
         <div className="heroContent">
           <p className="eyebrow">YOUR TRUSTED TRAVEL PARTNER</p>

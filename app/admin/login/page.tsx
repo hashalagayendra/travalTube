@@ -342,7 +342,7 @@ export default function AdminLoginPage() {
           <div className="whiteCard">
             <div className="cardHeader">
               <h1 className="cardTitle">Admin Sign In</h1>
-              <p className="cardSubtitle">Enter your credentials to access the dashboard</p>
+              <p className="cardSubtitle">Enter your credentials to access the admin panel</p>
             </div>
 
             {errorMessage && (
