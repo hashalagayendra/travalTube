@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Brand } from "@/components/ui/Brand";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     usernameOrEmail: "",
     password: "",
@@ -23,7 +25,7 @@ export default function AdminLoginPage() {
     if (errorMessage) setErrorMessage("");
   };
 
-  const handleDemoSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.usernameOrEmail.trim() || !formData.password) {
       setErrorMessage("Please enter both username/email and password.");
@@ -31,11 +33,28 @@ export default function AdminLoginPage() {
     }
 
     setIsLoading(true);
-    // UI demo simulation
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setErrorMessage(data.message || "Invalid credentials.");
+        setIsLoading(false);
+        return;
+      }
+
+      router.push("/admin");
+    } catch {
+      setErrorMessage("Network error occurred. Please try again.");
       setIsLoading(false);
-      setErrorMessage("");
-    }, 1000);
+    }
   };
 
   return (
@@ -337,7 +356,7 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            <form onSubmit={handleDemoSubmit} id="admin-login-form">
+            <form onSubmit={handleLogin} id="admin-login-form">
               {/* Username or Email */}
               <div className="formGroup">
                 <label className="formLabel" htmlFor="usernameOrEmail">
