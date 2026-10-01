@@ -19,3 +19,17 @@ model Admin {
 
   @@map("admins")
 }
+
+// Homepage Hero Banner
+model HomepageHero {
+  id         Int      @id @default(1)
+  heroFirst  String   @default("Discover the")
+  heroSecond String   @default("Real")
+  heroScript String   @default("Sri Lanka")
+  heroDesc   String   @db.Text
+  bgImage    String?  @db.LongText // Stores direct image (Base64) or URL
+  updatedAt  DateTime @updatedAt
+
+  @@map("homepage_hero")
+}
+

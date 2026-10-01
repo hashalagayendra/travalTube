@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 export function HomepageView() {
@@ -10,6 +10,127 @@ export function HomepageView() {
   const [heroDesc, setHeroDesc] = useState(
     "Unforgettable journeys, authentic experiences and memories that last a lifetime."
   );
+  const [bgImage, setBgImage] = useState("/images/sigiriya.jpg");
+  const [isSavingHero, setIsSavingHero] = useState(false);
+  const [isLoadingHero, setIsLoadingHero] = useState(true);
+  const [heroSaveStatus, setHeroSaveStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load current hero section from MySQL via API
+  useEffect(() => {
+    async function loadHeroData() {
+      try {
+        setIsLoadingHero(true);
+        const res = await fetch("/api/homepage/hero");
+        const json = await res.json();
+        if (json.success && json.data) {
+          if (json.data.heroFirst) setHeroFirst(json.data.heroFirst);
+          if (json.data.heroSecond) setHeroSecond(json.data.heroSecond);
+          if (json.data.heroScript) setHeroScript(json.data.heroScript);
+          if (json.data.heroDesc) setHeroDesc(json.data.heroDesc);
+          if (json.data.bgImage) setBgImage(json.data.bgImage);
+        }
+      } catch (err) {
+        console.error("Failed to load hero banner data:", err);
+      } finally {
+        setIsLoadingHero(false);
+      }
+    }
+    loadHeroData();
+  }, []);
+
+  // Save changes to MySQL via PUT /api/homepage/hero (Targeting row id = 1 only)
+  const handleSaveHero = async () => {
+    try {
+      setIsSavingHero(true);
+      setHeroSaveStatus(null);
+      const res = await fetch("/api/homepage/hero", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          heroFirst,
+          heroSecond,
+          heroScript,
+          heroDesc,
+          bgImage,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setHeroSaveStatus({
+          type: "success",
+          message: "✓ Hero section updated successfully in database!",
+        });
+        setTimeout(() => setHeroSaveStatus(null), 4000);
+      } else {
+        setHeroSaveStatus({
+          type: "error",
+          message: data.message || "Failed to update hero section.",
+        });
+      }
+    } catch (err) {
+      console.error("Hero save error:", err);
+      setHeroSaveStatus({
+        type: "error",
+        message: "Network or server error while saving.",
+      });
+    } finally {
+      setIsSavingHero(false);
+    }
+  };
+
+  // Convert uploaded image directly to optimized Base64 data string
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        // High-definition web resize (max 1920x1080)
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1080;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          // Compress to clean 85% JPEG to keep size lightweight (< 500KB)
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          setBgImage(compressedDataUrl);
+        } else {
+          if (typeof event.target?.result === "string") {
+            setBgImage(event.target.result);
+          }
+        }
+      };
+      if (typeof event.target?.result === "string") {
+        img.src = event.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   interface TourCategory {
     id: number;
@@ -154,19 +275,24 @@ export function HomepageView() {
             ↗ Preview Live Homepage
           </Link>
           <button
-            onClick={() => alert("Homepage configuration updated successfully!")}
+            onClick={handleSaveHero}
+            disabled={isSavingHero}
             style={{
-              background: "#073e36",
+              background: isSavingHero ? "#0a564b" : "#073e36",
               color: "#ffffff",
               border: "none",
               padding: "9px 20px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 600,
-              cursor: "pointer"
+              cursor: isSavingHero ? "not-allowed" : "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              boxShadow: "0 2px 4px rgba(7, 62, 54, 0.2)"
             }}
           >
-            Save Homepage Changes
+            {isSavingHero ? "Saving..." : "Save Homepage Changes"}
           </button>
         </div>
       </div>
@@ -179,18 +305,58 @@ export function HomepageView() {
         padding: "28px",
         boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
-          <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", margin: 0 }}>
-            1. Hero Section Banner (HeroSection.tsx)
-          </h2>
-          <span style={{ fontSize: "12px", color: "#64748b" }}>Live preview below</span>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px", flexWrap: "wrap", gap: "10px" }}>
+          <div>
+            <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", margin: "0 0 2px 0" }}>
+              1. Hero Section Banner (HeroSection.tsx)
+            </h2>
+            <span style={{ fontSize: "12px", color: "#64748b" }}>
+              Updates the singleton database record (row id: 1) in <code style={{ background: "#f1f5f9", padding: "2px 5px", borderRadius: "4px" }}>homepage_hero</code>
+            </span>
+          </div>
+
+          <button
+            onClick={handleSaveHero}
+            disabled={isSavingHero}
+            style={{
+              background: "#073e36",
+              color: "#ffffff",
+              border: "none",
+              padding: "8px 18px",
+              borderRadius: "8px",
+              fontSize: "12.5px",
+              fontWeight: 600,
+              cursor: isSavingHero ? "not-allowed" : "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            {isSavingHero ? "Saving changes..." : "💾 Save Hero Section"}
+          </button>
         </div>
+
+        {/* Status Notification Banner */}
+        {heroSaveStatus && (
+          <div style={{
+            padding: "12px 16px",
+            borderRadius: "8px",
+            marginBottom: "18px",
+            fontSize: "13px",
+            fontWeight: 600,
+            background: heroSaveStatus.type === "success" ? "#ecfdf5" : "#fef2f2",
+            border: heroSaveStatus.type === "success" ? "1px solid #a7f3d0" : "1px solid #fecaca",
+            color: heroSaveStatus.type === "success" ? "#065f46" : "#991b1b",
+          }}>
+            {heroSaveStatus.message}
+          </div>
+        )}
 
         {/* Live Preview Box */}
         <div style={{
-          height: "200px",
+          height: "220px",
           borderRadius: "12px",
-          backgroundImage: "linear-gradient(rgba(7, 62, 54, 0.75), rgba(7, 29, 22, 0.85)), url(/images/sigiriya.jpg)",
+          backgroundImage: `linear-gradient(rgba(7, 62, 54, 0.75), rgba(7, 29, 22, 0.85)), url(${bgImage || "/images/sigiriya.jpg"})`,
           backgroundSize: "cover",
           backgroundPosition: "center 60%",
           padding: "28px",
@@ -199,19 +365,25 @@ export function HomepageView() {
           flexDirection: "column",
           justifyContent: "center",
           marginBottom: "24px",
-          position: "relative"
+          position: "relative",
+          boxShadow: "inset 0 0 40px rgba(0,0,0,0.2)"
         }}>
+          {isLoadingHero && (
+            <div style={{ position: "absolute", top: "12px", right: "12px", background: "rgba(0,0,0,0.6)", padding: "4px 10px", borderRadius: "20px", fontSize: "11px" }}>
+              Loading from database...
+            </div>
+          )}
           <h3 style={{ fontSize: "28px", fontWeight: 800, margin: "0 0 6px 0", letterSpacing: "-0.5px" }}>
             {heroFirst} <span style={{ color: "#ffffff" }}>{heroSecond}</span>{" "}
             <em style={{ color: "#f0642b", fontFamily: "cursive", fontStyle: "normal" }}>{heroScript}</em>
           </h3>
-          <p style={{ fontSize: "14px", color: "#bad3cc", margin: 0, maxWidth: "500px" }}>
+          <p style={{ fontSize: "14px", color: "#bad3cc", margin: 0, maxWidth: "560px", lineHeight: "1.5" }}>
             {heroDesc}
           </p>
         </div>
 
         {/* Edit Inputs Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "20px" }}>
           <div>
             <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#334155", marginBottom: "6px" }}>
               Headline Part 1
@@ -220,6 +392,7 @@ export function HomepageView() {
               type="text"
               value={heroFirst}
               onChange={(e) => setHeroFirst(e.target.value)}
+              placeholder="Discover the"
               style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
             />
           </div>
@@ -232,6 +405,7 @@ export function HomepageView() {
               type="text"
               value={heroSecond}
               onChange={(e) => setHeroSecond(e.target.value)}
+              placeholder="Real"
               style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
             />
           </div>
@@ -244,6 +418,7 @@ export function HomepageView() {
               type="text"
               value={heroScript}
               onChange={(e) => setHeroScript(e.target.value)}
+              placeholder="Sri Lanka"
               style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
             />
           </div>
@@ -256,8 +431,103 @@ export function HomepageView() {
               rows={2}
               value={heroDesc}
               onChange={(e) => setHeroDesc(e.target.value)}
+              placeholder="Unforgettable journeys, authentic experiences and memories that last a lifetime."
               style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
             />
+          </div>
+
+          {/* Background Image Controls (Direct Image Base64 or URL) */}
+          <div style={{ gridColumn: "span 3", background: "#f8fafc", padding: "16px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+            <label style={{ display: "block", fontSize: "12.5px", fontWeight: 700, color: "#073e36", marginBottom: "6px" }}>
+              Hero Background Image (Supports Direct File Upload & Base64 or URLs)
+            </label>
+            <p style={{ fontSize: "11.5px", color: "#64748b", margin: "0 0 12px 0" }}>
+              Upload an image file directly from your computer (saved as Base64 in MySQL) or paste an image URL.
+            </p>
+
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", marginBottom: "12px" }}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleImageFileUpload}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  background: "#073e36",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "8px 14px",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  cursor: "pointer"
+                }}
+              >
+                📁 Choose Image from Computer
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBgImage("/images/sigiriya.jpg")}
+                style={{
+                  background: "#ffffff",
+                  color: "#334155",
+                  border: "1px solid #cbd5e1",
+                  padding: "7px 12px",
+                  borderRadius: "6px",
+                  fontSize: "11.5px",
+                  cursor: "pointer"
+                }}
+              >
+                Reset Default (/images/sigiriya.jpg)
+              </button>
+
+              {bgImage.startsWith("data:image") && (
+                <span style={{ fontSize: "11px", color: "#16a34a", fontWeight: 600 }}>
+                  ✓ Direct image loaded ({Math.round(bgImage.length / 1024)} KB Base64)
+                </span>
+              )}
+            </div>
+
+            <input
+              type="text"
+              value={bgImage.startsWith("data:image") ? "[Direct Base64 Image Loaded]" : bgImage}
+              onChange={(e) => setBgImage(e.target.value)}
+              placeholder="e.g. /images/sigiriya.jpg or https://..."
+              style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px" }}
+            />
+
+            {/* Quick Presets */}
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 600 }}>Quick Presets:</span>
+              {[
+                { label: "Sigiriya", path: "/images/sigiriya.jpg" },
+                { label: "Galle Fort", path: "/images/dest-galle-fort.jpg" },
+                { label: "Ella Bridge", path: "/images/dest-ella.jpg" },
+                { label: "Mirissa Beach", path: "/images/dest-mirissa.jpg" },
+              ].map((p) => (
+                <button
+                  key={p.path}
+                  type="button"
+                  onClick={() => setBgImage(p.path)}
+                  style={{
+                    background: bgImage === p.path ? "#073e36" : "#ffffff",
+                    color: bgImage === p.path ? "#ffffff" : "#334155",
+                    border: "1px solid #cbd5e1",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "11px",
+                    cursor: "pointer"
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

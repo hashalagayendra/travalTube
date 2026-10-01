@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Icon, IconName } from "@/components/ui/Icon";
@@ -16,17 +17,39 @@ const benefits: { icon: IconName; title: string; subtitle: string }[] = [
   { icon: "heart", title: "Personalized", subtitle: "Itineraries" },
 ];
 
-const hero = {
-  first: "Discover the",
-  second: "Real",
-  script: "Sri Lanka",
-  description:
-    "Unforgettable journeys, authentic experiences and memories that last a lifetime.",
-  label: "Sigiriya",
-  caption: "A timeless wonder",
-};
-
 export function HeroSection({ onOpenSearch, showSearch = false }: HeroSectionProps = {}) {
+  const [heroData, setHeroData] = useState({
+    first: "Discover the",
+    second: "Real",
+    script: "Sri Lanka",
+    description:
+      "Unforgettable journeys, authentic experiences and memories that last a lifetime.",
+    bgImage: "/images/sigiriya.jpg",
+    label: "Sigiriya",
+    caption: "A timeless wonder",
+  });
+
+  useEffect(() => {
+    async function loadDynamicHero() {
+      try {
+        const res = await fetch("/api/homepage/hero");
+        const json = await res.json();
+        if (json.success && json.data) {
+          setHeroData((prev) => ({
+            ...prev,
+            first: json.data.heroFirst || prev.first,
+            second: json.data.heroSecond || prev.second,
+            script: json.data.heroScript || prev.script,
+            description: json.data.heroDesc || prev.description,
+            bgImage: json.data.bgImage || prev.bgImage,
+          }));
+        }
+      } catch {
+        // Fall back gracefully to initial state
+      }
+    }
+    loadDynamicHero();
+  }, []);
   return (
     <>
       <style>{`
@@ -212,10 +235,11 @@ export function HeroSection({ onOpenSearch, showSearch = false }: HeroSectionPro
       >
         <div id="gallery" className="heroImage">
           <Image
-            src="/images/sigiriya.jpg"
-            alt="Sigiriya rock fortress rising above the green forests of Sri Lanka"
+            src={heroData.bgImage}
+            alt="Hero background banner"
             fill
             sizes="100vw"
+            unoptimized={heroData.bgImage.startsWith("data:")}
             preload
           />
         </div>
@@ -238,11 +262,11 @@ export function HeroSection({ onOpenSearch, showSearch = false }: HeroSectionPro
         <div className="heroContent">
           <p className="eyebrow">YOUR TRUSTED TRAVEL PARTNER</p>
           <h1>
-            {hero.first}
+            {heroData.first}
             <br />
-            {hero.second} <em>{hero.script}</em>
+            {heroData.second} <em>{heroData.script}</em>
           </h1>
-          <p className="heroDescription">{hero.description}</p>
+          <p className="heroDescription">{heroData.description}</p>
           <div className="benefits" id="services">
             {benefits.map((benefit) => (
               <div key={benefit.title} className="benefit">
@@ -261,8 +285,8 @@ export function HeroSection({ onOpenSearch, showSearch = false }: HeroSectionPro
           <p className="location">
             <Icon name="pin" />
             <span>
-              {hero.label}
-              <small>{hero.caption}</small>
+              {heroData.label}
+              <small>{heroData.caption}</small>
             </span>
           </p>
         </div>
