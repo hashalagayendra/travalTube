@@ -414,16 +414,19 @@ export function Footer() {
                   <Link href="/about">About us</Link>
                 </li>
                 <li>
-                  <Link href="/#services">Services</Link>
+                  <Link href="/services">Services</Link>
                 </li>
                 <li>
-                  <Link href="/#destinations">Destination</Link>
+                  <Link href="/destination">Destination</Link>
                 </li>
                 <li>
                   <Link href="/#packages">Thing to do</Link>
                 </li>
                 <li>
-                  <Link href="/#gallery">Gallery</Link>
+                  <Link href="/gallery">Gallery</Link>
+                </li>
+                <li>
+                  <Link href="/contact">Contact us</Link>
                 </li>
               </ul>
             </div>

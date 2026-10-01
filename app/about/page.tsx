@@ -288,72 +288,148 @@ export default function AboutPage() {
           transform: scale(1.04);
         }
 
-        /* Three Feature Cards Row */
-        .aboutFeatureCardsRow {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 22px;
-          margin-top: 52px;
+        /* Why Choose Us Section */
+        .whyChooseUsSection {
+          margin-top: 64px;
+          padding-top: 48px;
+          border-top: 1px solid #eef4f2;
         }
 
-        .featureCard {
-          display: flex;
+        .whyChooseUsHeader {
+          text-align: center;
+          max-width: 680px;
+          margin: 0 auto 38px;
+        }
+
+        .whyChooseUsEyebrow {
+          display: inline-flex;
           align-items: center;
-          gap: 18px;
-          padding: 22px 24px;
+          gap: 12px;
+          color: #ed8a28;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          margin-bottom: 10px;
+        }
+
+        .whyChooseUsEyebrow .eyebrowLine {
+          display: inline-block;
+          width: 32px;
+          height: 2px;
+          background: #ed8a28;
+          border-radius: 1px;
+        }
+
+        .whyChooseUsTitle {
+          margin: 0 0 12px;
+          color: #073e36;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(28px, 3.2vw, 40px);
+          font-weight: 700;
+          letter-spacing: -0.5px;
+          line-height: 1.2;
+        }
+
+        .whyChooseUsSubtitle {
+          margin: 0;
+          color: #556c75;
+          font-size: 15px;
+          line-height: 1.65;
+        }
+
+        .whyChooseCardsGrid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 22px;
+        }
+
+        .whyChooseCard {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 28px 24px;
           background: #ffffff;
           border: 1px solid #e7efec;
-          border-radius: 18px;
-          transition: border-color 0.25s ease, transform 0.25s ease;
+          border-radius: 20px;
+          box-shadow: 0 4px 18px rgba(7, 62, 54, 0.03);
+          transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+          overflow: hidden;
         }
 
-        .featureCard:hover {
-          border-color: #b5d7cf;
-          transform: translateY(-3px);
+        .whyChooseCard::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #073e36, #ed8a28);
+          opacity: 0;
+          transition: opacity 0.25s ease;
         }
 
-        .featureIconBadge {
+        .whyChooseCard:hover {
+          border-color: #bad5ce;
+          transform: translateY(-4px);
+          box-shadow: 0 12px 28px rgba(7, 62, 54, 0.08);
+        }
+
+        .whyChooseCard:hover::after {
+          opacity: 1;
+        }
+
+        .whyChooseIconBadge {
           display: grid;
           place-items: center;
           width: 54px;
           height: 54px;
-          border-radius: 50%;
+          border-radius: 16px;
+          margin-bottom: 18px;
           flex-shrink: 0;
+          transition: transform 0.25s ease;
         }
 
-        .badgeExperiences {
+        .whyChooseCard:hover .whyChooseIconBadge {
+          transform: scale(1.06);
+        }
+
+        .badgeService {
           background: #e3f2ef;
           color: #073e36;
         }
 
-        .badgeExpertise {
+        .badgePackages {
           background: #fef0e7;
           color: #ed8a28;
         }
 
-        .badgePersonalized {
+        .badgePlanning {
           background: #e1f2f6;
           color: #085c6c;
         }
 
-        .featureCardContent {
-          flex: 1;
+        .badgeSupport {
+          background: #fbf3e0;
+          color: #c97510;
         }
 
-        .featureCardTitle {
-          margin: 0 0 6px;
+        .whyChooseCardTitle {
+          margin: 0 0 10px;
           color: #073e36;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: 16.5px;
+          font-size: 18px;
           font-weight: 700;
           letter-spacing: -0.2px;
+          line-height: 1.3;
         }
 
-        .featureCardDesc {
+        .whyChooseCardDesc {
           margin: 0;
           color: #556c75;
-          font-size: 13px;
-          line-height: 1.55;
+          font-size: 13.5px;
+          line-height: 1.6;
         }
 
         /* Decorative Botanical Accents */
@@ -575,12 +651,9 @@ export default function AboutPage() {
           .aboutTwoColGrid {
             gap: 40px;
           }
-          .aboutFeatureCardsRow {
-            gap: 16px;
-          }
-          .featureCard {
-            padding: 18px 20px;
-            gap: 14px;
+          .whyChooseCardsGrid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
           }
           .decorPalmLeft, .decorLeafRight, .decorDotGrid {
             display: none;
@@ -600,14 +673,22 @@ export default function AboutPage() {
             max-width: 640px;
             margin: 0 auto;
           }
-          .aboutFeatureCardsRow {
-            grid-template-columns: 1fr;
-            max-width: 640px;
-            margin: 36px auto 0;
-            gap: 14px;
+          .whyChooseUsSection {
+            margin-top: 48px;
+            padding-top: 36px;
           }
           .storyGrid {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .whyChooseCardsGrid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+          .whyChooseCard {
+            padding: 22px 18px;
           }
         }
 
@@ -802,87 +883,114 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Bottom Row: 3 Feature Cards */}
-            <div className="aboutFeatureCardsRow">
-              {/* Feature Card 1 */}
-              <div className="featureCard">
-                <div className="featureIconBadge badgeExperiences" aria-hidden="true">
-                  <svg
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="8.5" r="5.5" />
-                    <polygon
-                      points="12 6.2 13.05 8.2 14.8 8.4 13.5 9.7 13.8 11.5 12 10.4 10.2 11.5 10.5 9.7 9.2 8.4 10.95 8.2 12 6.2"
-                      fill="currentColor"
-                      stroke="none"
-                    />
-                    <path d="m8.2 13.8-2.2 7.2 6-3 6 3-2.2-7.2" />
-                  </svg>
+            {/* Why Choose Us Section */}
+            <section className="whyChooseUsSection" aria-label="Why Choose Us">
+              <div className="whyChooseUsHeader">
+                <div className="whyChooseUsEyebrow">
+                  <span className="eyebrowLine" aria-hidden="true" />
+                  <span>WHY CHOOSE US</span>
+                  <span className="eyebrowLine" aria-hidden="true" />
                 </div>
-                <div className="featureCardContent">
-                  <h3 className="featureCardTitle">Trusted Experiences</h3>
-                  <p className="featureCardDesc">
-                    Years of experience delivering reliable and memorable travel
-                    experiences across Sri Lanka.
-                  </p>
-                </div>
+                <h2 className="whyChooseUsTitle">Why Choose Us</h2>
+                <p className="whyChooseUsSubtitle">
+                  Experience the best of Sri Lanka with our dedicated team and premium travel services.
+                </p>
               </div>
 
-              {/* Feature Card 2 */}
-              <div className="featureCard">
-                <div className="featureIconBadge badgeExpertise" aria-hidden="true">
-                  <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 10c0 5.8-8 12-8 12s-8-6.2-8-12a8 8 0 0 1 16 0Z" />
-                    <circle cx="12" cy="10" r="3.2" fill="currentColor" stroke="none" />
-                  </svg>
-                </div>
-                <div className="featureCardContent">
-                  <h3 className="featureCardTitle">Local Expertise</h3>
-                  <p className="featureCardDesc">
-                    In-depth knowledge of Sri Lanka’s hidden gems, culture, and
-                    unique travel experiences.
+              <div className="whyChooseCardsGrid">
+                {/* Card 1: Professional Service */}
+                <div className="whyChooseCard">
+                  <div className="whyChooseIconBadge badgeService" aria-hidden="true">
+                    <svg
+                      width="26"
+                      height="26"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="8" r="6" />
+                      <path d="m15.477 12.89 1.523 9.11-5-3-5 3 1.523-9.11" />
+                    </svg>
+                  </div>
+                  <h3 className="whyChooseCardTitle">Professional Service</h3>
+                  <p className="whyChooseCardDesc">
+                    Professional and friendly service to ensure your comfort throughout the journey.
                   </p>
                 </div>
-              </div>
 
-              {/* Feature Card 3 */}
-              <div className="featureCard">
-                <div className="featureIconBadge badgePersonalized" aria-hidden="true">
-                  <svg
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                  </svg>
+                {/* Card 2: Competitive Packages */}
+                <div className="whyChooseCard">
+                  <div className="whyChooseIconBadge badgePackages" aria-hidden="true">
+                    <svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                      <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
+                    </svg>
+                  </div>
+                  <h3 className="whyChooseCardTitle">Competitive Packages</h3>
+                  <p className="whyChooseCardDesc">
+                    Competitive travel packages tailored to your budget without compromising quality.
+                  </p>
                 </div>
-                <div className="featureCardContent">
-                  <h3 className="featureCardTitle">Personalized Service</h3>
-                  <p className="featureCardDesc">
-                    A professional and friendly team dedicated to creating
-                    journeys that match your interests.
+
+                {/* Card 3: Personalized Planning */}
+                <div className="whyChooseCard">
+                  <div className="whyChooseIconBadge badgePlanning" aria-hidden="true">
+                    <svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" />
+                    </svg>
+                  </div>
+                  <h3 className="whyChooseCardTitle">Personalized Planning</h3>
+                  <p className="whyChooseCardDesc">
+                    Every trip is unique. We provide personalized planning to turn dreams into reality.
+                  </p>
+                </div>
+
+                {/* Card 4: Reliable Support */}
+                <div className="whyChooseCard">
+                  <div className="whyChooseIconBadge badgeSupport" aria-hidden="true">
+                    <svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    </svg>
+                  </div>
+                  <h3 className="whyChooseCardTitle">Reliable Support</h3>
+                  <p className="whyChooseCardDesc">
+                    Reliable support available from start to finish for a truly stress-free experience.
                   </p>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         </main>
 
