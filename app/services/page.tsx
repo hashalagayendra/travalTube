@@ -1,235 +1,96 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Footer } from "@/components/footer";
 import { SearchDialog } from "@/components/landing-page/SearchDialog";
+import { LucideIcon } from "@/components/ui/LucideIcon";
 
-interface ServiceItem {
-  id: string;
+export interface ServiceItem {
+  id: number;
   title: string;
   description: string;
-  icon: (props: { className?: string }) => React.ReactNode;
+  icon: string;
 }
 
-const servicesData: ServiceItem[] = [
+const DEFAULT_SERVICES: ServiceItem[] = [
   {
-    id: "air-ticketing",
+    id: 1,
     title: "AIR TICKETING",
     description: "Domestic and international flight reservations at competitive prices.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.1-2 .7l-.7 1 5.8 3.6-3.4 3.4-2.6-.6c-.5-.1-1.1.1-1.4.5l-.5.6 3.1 1.9 1.9 3.1.6-.5c.4-.3.6-.9.5-1.4l-.6-2.6 3.4-3.4 3.6 5.8 1-.7c.6-.4.9-1.2.7-2Z" />
-      </svg>
-    ),
+    icon: "Plane",
   },
   {
-    id: "plan-your-trip",
+    id: 2,
     title: "PLAN YOUR TRIP",
     description: "Personalized travel planning according to your budget and preferences.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <path d="m3 6 6-3 6 3 6-3v14l-6 3-6-3-6 3V6z" />
-        <path d="M9 3v14" />
-        <path d="M15 6v14" />
-        <path d="M12 2a2.5 2.5 0 0 0-2.5 2.5c0 1.8 2.5 4.5 2.5 4.5s2.5-2.7 2.5-4.5A2.5 2.5 0 0 0 12 2z" />
-        <circle cx="12" cy="4.5" r="0.75" fill="currentColor" stroke="none" />
-      </svg>
-    ),
+    icon: "Map",
   },
   {
-    id: "one-day-tours",
+    id: 3,
     title: "ONE DAY TOURS",
     description: "Carefully designed day trips to popular attractions across Sri Lanka.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <line x1="16" y1="2" x2="16" y2="5" />
-        <line x1="8" y1="2" x2="8" y2="5" />
-        <line x1="3" y1="9" x2="21" y2="9" />
-        <text
-          x="12"
-          y="17.5"
-          fill="currentColor"
-          stroke="none"
-          fontSize="7.5"
-          fontWeight="700"
-          fontFamily="system-ui, -apple-system, sans-serif"
-          textAnchor="middle"
-        >
-          15
-        </text>
-      </svg>
-    ),
+    icon: "Calendar",
   },
   {
-    id: "visa-assistance",
+    id: 4,
     title: "VISA ASSISTANCE",
     description: "Guidance and support for visa applications and documentation.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-        <rect x="8" y="2" width="8" height="4" rx="1" />
-        <path d="M9 12h6" />
-        <path d="M9 16h6" />
-        <path d="M9 8h2" />
-      </svg>
-    ),
+    icon: "FileText",
   },
   {
-    id: "round-tours",
+    id: 5,
     title: "ROUND TOURS",
     description: "Complete tour packages for individuals, families, and groups.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="9.5" r="6.5" />
-        <ellipse cx="12" cy="9.5" rx="3" ry="6.5" />
-        <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
-        <path d="M12 16v4.5" />
-        <path d="M8.5 20.5h7" />
-        <path d="M18.5 9.5c0 3.6-2.9 6.5-6.5 6.5" />
-      </svg>
-    ),
+    icon: "Globe",
   },
   {
-    id: "activities-destinations",
+    id: 6,
     title: "ACTIVITIES & DESTINATIONS",
     description: "Exciting activities and carefully selected destinations for unforgettable experiences.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="8.5" cy="8.5" r="1.5" />
-        <polyline points="21 15 16 10 5 21" />
-      </svg>
-    ),
+    icon: "Mountain",
   },
   {
-    id: "inbound-outbound-tours",
+    id: 7,
     title: "INBOUND & OUTBOUND TOURS",
     description: "Travel services for visitors coming into the country and travelers going abroad.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <path d="m17 4 4 4-4 4" />
-        <path d="M3 8h18" />
-        <path d="m7 20-4-4 4-4" />
-        <path d="M21 16H3" />
-      </svg>
-    ),
+    icon: "ArrowLeftRight",
   },
   {
-    id: "travellers-cheques",
+    id: 8,
     title: "TRAVELLER'S CHEQUES",
     description: "Safe and convenient travel money services for your security.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <rect x="2" y="6" width="20" height="12" rx="2" />
-        <circle cx="12" cy="12" r="3" />
-        <path d="M6 12h.01M18 12h.01" />
-        <path d="M4 6V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" />
-      </svg>
-    ),
+    icon: "CreditCard",
   },
   {
-    id: "airport-transfers",
+    id: 9,
     title: "AIRPORT TRANSFERS",
     description: "Comfortable and reliable airport pick-up and drop-off services.",
-    icon: ({ className }) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden="true"
-      >
-        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 12 10s-6.7.6-8.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
-        <circle cx="7" cy="17" r="2" />
-        <path d="M9 17h6" />
-        <circle cx="17" cy="17" r="2" />
-        <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
-      </svg>
-    ),
+    icon: "Car",
   },
 ];
 
 export default function ServicesPage() {
   const searchDialog = useRef<HTMLDialogElement>(null);
+  const [services, setServices] = useState<ServiceItem[]>(DEFAULT_SERVICES);
+
+  useEffect(() => {
+    async function loadServices() {
+      try {
+        const res = await fetch("/api/services");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setServices(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to load services from API:", err);
+      }
+    }
+    loadServices();
+  }, []);
+
 
   const handleOpenSearch = () => {
     if (typeof window !== "undefined") {
@@ -826,10 +687,10 @@ export default function ServicesPage() {
 
             {/* 3x3 Service Cards Grid */}
             <div className="servicesCardsGrid">
-              {servicesData.map((service) => (
+              {services.map((service) => (
                 <div key={service.id} className="serviceCard">
                   <div className="serviceCardIconWrapper">
-                    <service.icon className="serviceCardIcon" />
+                    <LucideIcon name={service.icon} className="serviceCardIcon" size={38} strokeWidth={1.8} />
                   </div>
                   <h3 className="serviceCardTitle">{service.title}</h3>
                   <p className="serviceCardDesc">{service.description}</p>

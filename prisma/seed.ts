@@ -232,6 +232,104 @@ async function main() {
     console.error(`⚠️ Could not seed why_choose_pillars:`, err);
   }
 
+  // 6. Initialize / Seed Core Service Cards (9 Total)
+  console.log(`✈️ Initializing Core Service Cards (service_cards)...`);
+  const defaultServices = [
+    {
+      id: 1,
+      title: "AIR TICKETING",
+      description: "Domestic and international flight reservations at competitive prices.",
+      icon: "Plane",
+    },
+    {
+      id: 2,
+      title: "PLAN YOUR TRIP",
+      description: "Personalized travel planning according to your budget and preferences.",
+      icon: "Map",
+    },
+    {
+      id: 3,
+      title: "ONE DAY TOURS",
+      description: "Carefully designed day trips to popular attractions across Sri Lanka.",
+      icon: "Calendar",
+    },
+    {
+      id: 4,
+      title: "VISA ASSISTANCE",
+      description: "Guidance and support for visa applications and documentation.",
+      icon: "FileText",
+    },
+    {
+      id: 5,
+      title: "ROUND TOURS",
+      description: "Complete tour packages for individuals, families, and groups.",
+      icon: "Globe",
+    },
+    {
+      id: 6,
+      title: "ACTIVITIES & DESTINATIONS",
+      description: "Exciting activities and carefully selected destinations for unforgettable experiences.",
+      icon: "Mountain",
+    },
+    {
+      id: 7,
+      title: "INBOUND & OUTBOUND TOURS",
+      description: "Travel services for visitors coming into the country and travelers going abroad.",
+      icon: "ArrowLeftRight",
+    },
+    {
+      id: 8,
+      title: "TRAVELLER'S CHEQUES",
+      description: "Safe and convenient travel money services for your security.",
+      icon: "CreditCard",
+    },
+    {
+      id: 9,
+      title: "AIRPORT TRANSFERS",
+      description: "Comfortable and reliable airport pick-up and drop-off services.",
+      icon: "Car",
+    },
+  ];
+
+  try {
+    for (const service of defaultServices) {
+      if (db.serviceCard) {
+        await db.serviceCard.upsert({
+          where: { id: service.id },
+          update: {
+            title: service.title,
+            description: service.description,
+            icon: service.icon,
+          },
+          create: {
+            id: service.id,
+            title: service.title,
+            description: service.description,
+            icon: service.icon,
+          },
+        });
+      } else {
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO service_cards (id, title, description, icon, createdAt, updatedAt)
+           VALUES (?, ?, ?, ?, NOW(3), NOW(3))
+           ON DUPLICATE KEY UPDATE
+             title = VALUES(title),
+             description = VALUES(description),
+             icon = VALUES(icon),
+             updatedAt = NOW(3);`,
+          service.id,
+          service.title,
+          service.description,
+          service.icon
+        );
+      }
+      console.log(`   ✅ Service [ID ${service.id}] "${service.title}" (${service.icon}) seeded.`);
+    }
+    console.log(`✅ All 9 Core Service Cards initialized successfully.`);
+  } catch (err) {
+    console.error(`⚠️ Could not seed service_cards:`, err);
+  }
+
   console.log(`\n🎉 Database seeding finished successfully!`);
 }
 
