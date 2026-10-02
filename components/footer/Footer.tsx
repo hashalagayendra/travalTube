@@ -1,7 +1,34 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Brand } from "@/components/ui/Brand";
+import { DEFAULT_FOOTER_SETTINGS, FooterSettingsData } from "@/app/api/footer/route";
 
 export function Footer() {
+  const [data, setData] = useState<FooterSettingsData>(DEFAULT_FOOTER_SETTINGS);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadFooter() {
+      try {
+        const res = await fetch("/api/footer");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && isMounted) {
+            setData(json.data);
+          }
+        }
+      } catch (err) {
+        console.error("Footer fetch error:", err);
+      }
+    }
+    loadFooter();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <>
       <style>{`
@@ -256,8 +283,7 @@ export function Footer() {
             <div className="footerCol">
               <Brand />
               <p className="footerBrandDesc">
-                Your trusted travel partner for authentic journeys, round tours,
-                and personalized experiences across Sri Lanka.
+                {data.brandDescription}
               </p>
 
               <ul className="contactList">
@@ -272,10 +298,8 @@ export function Footer() {
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" />
                     <circle cx="12" cy="9" r="2.5" />
                   </svg>
-                  <span>
-                    Travel Tube Lanka (Pvt) Ltd,
-                    <br />
-                    452/01/A/01, Kandy Road, Kadawatha, Sri Lanka
+                  <span style={{ whiteSpace: "pre-line" }}>
+                    {data.address}
                   </span>
                 </li>
 
@@ -290,8 +314,13 @@ export function Footer() {
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                   <span>
-                    <a href="tel:+94762399399">+94 76 2399399</a> /{" "}
-                    <a href="tel:+94114399699">+94 11 4399699</a>
+                    <a href={`tel:${data.phonePrimary}`}>{data.phonePrimary}</a>
+                    {data.phoneSecondary && (
+                      <>
+                        {" / "}
+                        <a href={`tel:${data.phoneSecondary}`}>{data.phoneSecondary}</a>
+                      </>
+                    )}
                   </span>
                 </li>
 
@@ -306,7 +335,7 @@ export function Footer() {
                     <rect width="20" height="16" x="2" y="4" rx="2" />
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                   </svg>
-                  <a href="mailto:info@traveltube.lk">info@traveltube.lk</a>
+                  <a href={`mailto:${data.email}`}>{data.email}</a>
                 </li>
 
                 <li className="contactItem">
@@ -321,11 +350,11 @@ export function Footer() {
                     <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20" />
                   </svg>
                   <a
-                    href="https://traveltube.lk/about-us.php#"
+                    href={data.websiteUrl}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    www.traveltube.lk
+                    {data.websiteLabel}
                   </a>
                 </li>
               </ul>
@@ -338,15 +367,15 @@ export function Footer() {
                 <li className="wantCardItem">
                   <a
                     className="wantCardTitle"
-                    href="https://traveltube.lk/tour-packages.php?id=1"
+                    href={data.want1Url}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    One day tour
+                    {data.want1Title}
                   </a>
                   <a
                     className="wantCardBtn"
-                    href="https://traveltube.lk/tour-packages.php?id=1"
+                    href={data.want1Url}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -360,15 +389,15 @@ export function Footer() {
                 <li className="wantCardItem">
                   <a
                     className="wantCardTitle"
-                    href="https://traveltube.lk/tour-packages.php?id=2"
+                    href={data.want2Url}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Round Tour
+                    {data.want2Title}
                   </a>
                   <a
                     className="wantCardBtn"
-                    href="https://traveltube.lk/tour-packages.php?id=2"
+                    href={data.want2Url}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -382,15 +411,15 @@ export function Footer() {
                 <li className="wantCardItem">
                   <a
                     className="wantCardTitle"
-                    href="https://traveltube.lk/plan-tour.php"
+                    href={data.want3Url}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Plan your Tour
+                    {data.want3Title}
                   </a>
                   <a
                     className="wantCardBtn"
-                    href="https://traveltube.lk/plan-tour.php"
+                    href={data.want3Url}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -487,27 +516,22 @@ export function Footer() {
           {/* Bottom Bar */}
           <div className="footerBottomBar">
             <p style={{ margin: 0 }}>
-              © {new Date().getFullYear()} Travel Tube Lanka (Pvt) Ltd. All Rights
-              Reserved.
+              © {new Date().getFullYear()} {data.copyrightText}
             </p>
             <small>
-              Photo:{" "}
-              <a
-                href="https://commons.wikimedia.org/wiki/File:Sigiriya_lion_rock_Luftbild_(29781058870).jpg"
-                target="_blank"
-                rel="noreferrer"
-              >
-                dronepicr
-              </a>{" "}
-              ·{" "}
-              <a
-                href="https://creativecommons.org/licenses/by/2.0/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                CC BY 2.0
-              </a>{" "}
-              · cropped for display
+              {data.photoCreditText && data.photoCreditUrl ? (
+                <>
+                  <a
+                    href={data.photoCreditUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {data.photoCreditText}
+                  </a>
+                </>
+              ) : (
+                data.photoCreditText
+              )}
             </small>
           </div>
         </div>

@@ -186,3 +186,69 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+// Global Website & Agency Settings (SettingsView.tsx)
+model SiteSettings {
+  id                    Int      @id @default(1)
+  // General & WhatsApp
+  companyBrand          String   @default("TravelTube Lanka")
+  sltdaReg              String   @default("SLTDA/SQA/TA/2026/0491")
+  hotline               String   @default("+94 77 123 4567")
+  whatsapp              String   @default("+94 77 987 6543")
+  email                 String   @default("info@traveltubelanka.com")
+  officeHours           String   @default("Mon – Sat: 8:00 AM – 7:00 PM (Sri Lanka Time GMT+5:30)")
+  address               String   @db.Text
+
+  // Currency & Policies
+  currency              String   @default("USD")
+  depositPercent        Int      @default(20)
+  cancellationPolicy    String   @db.Text
+
+  // Social & Reviews
+  tripAdvisorUrl        String   @default("https://www.tripadvisor.com/Attraction_Review-TravelTube_Lanka")
+  googleReviewsUrl      String   @default("https://g.page/r/traveltube-lanka-reviews")
+  instagramUrl          String   @default("https://instagram.com/traveltubelanka")
+  facebookUrl           String   @default("https://facebook.com/traveltubelankatours")
+  youtubeUrl            String?  @default("https://youtube.com/@traveltubelanka")
+  tiktokUrl             String?  @default("https://tiktok.com/@traveltubelanka")
+
+  // SEO & Announcement
+  announcementEnabled   Boolean  @default(true)
+  announcementText      String   @default("🔥 Early Bird Offer: Save 10% on Private Chauffeur Winter 2026/27 Tours. Enquire Today!")
+  metaTitle             String   @default("TravelTube Lanka | Discover the Real Sri Lanka - Tailor Made Tours & Safaris")
+  metaDescription       String   @db.Text
+
+  updatedAt             DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// Global Footer Settings & Quick Links (Footer.tsx & SettingsView.tsx)
+model FooterSettings {
+  id                  Int      @id @default(1)
+  brandDescription    String   @db.Text
+  address             String   @db.Text
+  phones              String   @default("+94 76 2399399 / +94 11 4399699")
+  phonePrimary        String   @default("+94762399399")
+  phoneSecondary      String   @default("+94114399699")
+  email               String   @default("info@traveltube.lk")
+  websiteLabel        String   @default("www.traveltube.lk")
+  websiteUrl          String   @default("https://traveltube.lk/about-us.php#")
+  
+  // What You Want cards
+  want1Title          String   @default("One day tour")
+  want1Url            String   @default("https://traveltube.lk/tour-packages.php?id=1")
+  want2Title          String   @default("Round Tour")
+  want2Url            String   @default("https://traveltube.lk/tour-packages.php?id=2")
+  want3Title          String   @default("Plan your Tour")
+  want3Url            String   @default("https://traveltube.lk/plan-tour.php")
+
+  // Bottom Bar & Copyright
+  copyrightText       String   @default("Travel Tube Lanka (Pvt) Ltd. All Rights Reserved.")
+  photoCreditText     String   @default("Photo: dronepicr · CC BY 2.0 · cropped for display")
+  photoCreditUrl      String   @default("https://commons.wikimedia.org/wiki/File:Sigiriya_lion_rock_Luftbild_(29781058870).jpg")
+
+  updatedAt           DateTime @updatedAt
+
+  @@map("footer_settings")
+}
