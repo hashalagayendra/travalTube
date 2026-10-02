@@ -18,29 +18,100 @@ export function HomepageView() {
     message: string;
   } | null>(null);
 
+  interface TourCategory {
+    id: number;
+    title: string;
+    badge: string;
+    description: string;
+    actionText: string;
+    image: string;
+    isActive: boolean;
+  }
+
+  const [categories, setCategories] = useState<TourCategory[]>([
+    {
+      id: 1,
+      title: "One Day Tours",
+      badge: "Day Trips",
+      description:
+        "Feel with the nature in Sri Lanka. Can you arrange a trip on a day? We give you amazing and adventure feeling. Cover the most attractive areas within one day.",
+      actionText: "Explore Tours",
+      image: "/images/day-tours.jpg",
+      isActive: true,
+    },
+    {
+      id: 2,
+      title: "Round Tours",
+      badge: "Multi-Day",
+      description:
+        "In every country there are hidden places and stories. Explore ancient cultures, legends and history. Sri Lanka is the best destination to fulfill your travel diary.",
+      actionText: "Explore Journeys",
+      image: "/images/sigiriya.jpg",
+      isActive: true,
+    },
+    {
+      id: 3,
+      title: "Plan your Trip",
+      badge: "Tailor-Made",
+      description:
+        "Planning a trip is the hardest part of traveling. We will help you to arrange your trip, schedule your valuable time and choose the best routes with a cost-effective plan.",
+      actionText: "Start Planning",
+      image: "/images/package-13.jpg",
+      isActive: true,
+    },
+  ]);
+
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isSavingCategories, setIsSavingCategories] = useState(false);
+  const [categoriesSaveStatus, setCategoriesSaveStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load current hero section from MySQL via API
+  // Load current hero banner & categories from MySQL via API
   useEffect(() => {
-    async function loadHeroData() {
+    async function loadInitialData() {
       try {
         setIsLoadingHero(true);
-        const res = await fetch("/api/homepage/hero");
-        const json = await res.json();
-        if (json.success && json.data) {
-          if (json.data.heroFirst) setHeroFirst(json.data.heroFirst);
-          if (json.data.heroSecond) setHeroSecond(json.data.heroSecond);
-          if (json.data.heroScript) setHeroScript(json.data.heroScript);
-          if (json.data.heroDesc) setHeroDesc(json.data.heroDesc);
-          if (json.data.bgImage) setBgImage(json.data.bgImage);
+        setIsLoadingCategories(true);
+        const [heroRes, catRes] = await Promise.all([
+          fetch("/api/homepage/hero"),
+          fetch("/api/homepage/categories"),
+        ]);
+
+        const heroJson = await heroRes.json();
+        if (heroJson.success && heroJson.data) {
+          if (heroJson.data.heroFirst) setHeroFirst(heroJson.data.heroFirst);
+          if (heroJson.data.heroSecond) setHeroSecond(heroJson.data.heroSecond);
+          if (heroJson.data.heroScript) setHeroScript(heroJson.data.heroScript);
+          if (heroJson.data.heroDesc) setHeroDesc(heroJson.data.heroDesc);
+          if (heroJson.data.bgImage) setBgImage(heroJson.data.bgImage);
+        }
+
+        const catJson = await catRes.json();
+        if (catJson.success && Array.isArray(catJson.data) && catJson.data.length > 0) {
+          setCategories(
+            catJson.data.map((c: TourCategory) => ({
+              id: c.id,
+              title: c.title || "",
+              badge: c.badge || "",
+              description: c.description || "",
+              actionText: c.actionText || "",
+              image: c.image || "",
+              isActive: true,
+            }))
+          );
         }
       } catch (err) {
-        console.error("Failed to load hero banner data:", err);
+        console.error("Failed to load homepage data:", err);
       } finally {
         setIsLoadingHero(false);
+        setIsLoadingCategories(false);
       }
     }
-    loadHeroData();
+    loadInitialData();
   }, []);
 
   // Save changes to MySQL via PUT /api/homepage/hero (Targeting row id = 1 only)
@@ -132,59 +203,89 @@ export function HomepageView() {
     reader.readAsDataURL(file);
   };
 
-  interface TourCategory {
-    id: number;
-    title: string;
-    badge: string;
-    description: string;
-    actionText: string;
-    image: string;
-    href: string;
-    accent: "green" | "orange";
-    isActive: boolean;
-  }
-
-  const [categories, setCategories] = useState<TourCategory[]>([
-    {
-      id: 1,
-      title: "One Day Tours",
-      badge: "Day Trips",
-      description:
-        "Feel with the nature in Sri Lanka. Can you arrange a trip on a day? We give you amazing and adventure feeling. Cover the most attractive areas within one day.",
-      actionText: "Explore Tours",
-      image: "/images/day-tours.jpg",
-      href: "/#packages",
-      accent: "green",
-      isActive: true,
-    },
-    {
-      id: 2,
-      title: "Round Tours",
-      badge: "Multi-Day",
-      description:
-        "In every country there are hidden places and stories. Explore ancient cultures, legends and history. Sri Lanka is the best destination to fulfill your travel diary.",
-      actionText: "Explore Journeys",
-      image: "/images/sigiriya.jpg",
-      href: "/#packages",
-      accent: "orange",
-      isActive: true,
-    },
-    {
-      id: 3,
-      title: "Plan your Trip",
-      badge: "Tailor-Made",
-      description:
-        "Planning a trip is the hardest part of traveling. We will help you to arrange your trip, schedule your valuable time and choose the best routes with a cost-effective plan.",
-      actionText: "Start Planning",
-      image: "/images/package-13.jpg",
-      href: "/contact",
-      accent: "green",
-      isActive: true,
-    },
-  ]);
-
   const handleUpdateCategory = (id: number, field: keyof TourCategory, value: string | boolean) => {
     setCategories(categories.map((c) => (c.id === id ? { ...c, [field]: value } : c)));
+  };
+
+  // Save all categories to MySQL via PUT /api/homepage/categories
+  const handleSaveCategories = async () => {
+    try {
+      setIsSavingCategories(true);
+      setCategoriesSaveStatus(null);
+      const res = await fetch("/api/homepage/categories", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCategoriesSaveStatus({
+          type: "success",
+          message: "✓ All 3 Categories saved successfully to database!",
+        });
+        setTimeout(() => setCategoriesSaveStatus(null), 4000);
+      } else {
+        setCategoriesSaveStatus({
+          type: "error",
+          message: data.message || "Failed to update categories.",
+        });
+      }
+    } catch (err) {
+      console.error("Categories save error:", err);
+      setCategoriesSaveStatus({
+        type: "error",
+        message: "Network or server error while saving categories.",
+      });
+    } finally {
+      setIsSavingCategories(false);
+    }
+  };
+
+  // Client-side image upload and compression for category cards
+  const handleCategoryImageUpload = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          handleUpdateCategory(id, "image", compressedDataUrl);
+        } else {
+          if (typeof event.target?.result === "string") {
+            handleUpdateCategory(id, "image", event.target.result);
+          }
+        }
+      };
+      if (typeof event.target?.result === "string") {
+        img.src = event.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleMoveCategory = (index: number, direction: "up" | "down") => {
@@ -196,30 +297,6 @@ export function HomepageView() {
     updated[targetIndex] = temp;
     setCategories(updated);
   };
-
-  const [searchJourneys] = useState([
-    {
-      name: "The Cultural Triangle",
-      tags: "Sigiriya · Dambulla · Kandy",
-      description: "Follow ancient footsteps, climb the Lion Rock and discover the island's living heritage.",
-      days: "7 days",
-      style: "Culture & heritage",
-    },
-    {
-      name: "Into the Hill Country",
-      tags: "Ella · Nuwara Eliya · Kandy",
-      description: "Slow train rides, misty mountain mornings and a cup of tea straight from the hills.",
-      days: "5 days",
-      style: "Nature & adventure",
-    },
-    {
-      name: "A Little Coastal Bliss",
-      tags: "Galle · Mirissa · Bentota",
-      description: "Find your rhythm between golden beaches, ocean sunsets and charming coastal towns.",
-      days: "6 days",
-      style: "Beaches & relaxation",
-    },
-  ]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -275,24 +352,26 @@ export function HomepageView() {
             ↗ Preview Live Homepage
           </Link>
           <button
-            onClick={handleSaveHero}
-            disabled={isSavingHero}
+            onClick={async () => {
+              await Promise.all([handleSaveHero(), handleSaveCategories()]);
+            }}
+            disabled={isSavingHero || isSavingCategories}
             style={{
-              background: isSavingHero ? "#0a564b" : "#073e36",
+              background: isSavingHero || isSavingCategories ? "#0a564b" : "#073e36",
               color: "#ffffff",
               border: "none",
               padding: "9px 20px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 600,
-              cursor: isSavingHero ? "not-allowed" : "pointer",
+              cursor: isSavingHero || isSavingCategories ? "not-allowed" : "pointer",
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
               boxShadow: "0 2px 4px rgba(7, 62, 54, 0.2)"
             }}
           >
-            {isSavingHero ? "Saving..." : "Save Homepage Changes"}
+            {isSavingHero || isSavingCategories ? "Saving all..." : "Save Homepage Changes"}
           </button>
         </div>
       </div>
@@ -500,34 +579,6 @@ export function HomepageView() {
               placeholder="e.g. /images/sigiriya.jpg or https://..."
               style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px" }}
             />
-
-            {/* Quick Presets */}
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px", alignItems: "center", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 600 }}>Quick Presets:</span>
-              {[
-                { label: "Sigiriya", path: "/images/sigiriya.jpg" },
-                { label: "Galle Fort", path: "/images/dest-galle-fort.jpg" },
-                { label: "Ella Bridge", path: "/images/dest-ella.jpg" },
-                { label: "Mirissa Beach", path: "/images/dest-mirissa.jpg" },
-              ].map((p) => (
-                <button
-                  key={p.path}
-                  type="button"
-                  onClick={() => setBgImage(p.path)}
-                  style={{
-                    background: bgImage === p.path ? "#073e36" : "#ffffff",
-                    color: bgImage === p.path ? "#ffffff" : "#334155",
-                    border: "1px solid #cbd5e1",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "11px",
-                    cursor: "pointer"
-                  }}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -545,7 +596,7 @@ export function HomepageView() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "24px",
+          marginBottom: "20px",
           paddingBottom: "18px",
           borderBottom: "1px solid #f1f5f9",
           flexWrap: "wrap",
@@ -596,7 +647,7 @@ export function HomepageView() {
                     padding: "3px 9px",
                     borderRadius: "20px"
                   }}>
-                    3 Fixed Homepage Categories
+                    {isLoadingCategories ? "Loading categories..." : "3 Active Database Categories"}
                   </span>
                 </div>
                 <p style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0" }}>
@@ -605,12 +656,49 @@ export function HomepageView() {
               </div>
             </div>
           </div>
+
+          <button
+            onClick={handleSaveCategories}
+            disabled={isSavingCategories}
+            style={{
+              background: "#073e36",
+              color: "#ffffff",
+              border: "none",
+              padding: "8px 18px",
+              borderRadius: "8px",
+              fontSize: "12.5px",
+              fontWeight: 600,
+              cursor: isSavingCategories ? "not-allowed" : "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              boxShadow: "0 2px 4px rgba(7, 62, 54, 0.15)"
+            }}
+          >
+            {isSavingCategories ? "Saving changes..." : "💾 Save Tour Categories"}
+          </button>
         </div>
+
+        {/* Status Notification Banner */}
+        {categoriesSaveStatus && (
+          <div style={{
+            padding: "12px 16px",
+            borderRadius: "8px",
+            marginBottom: "18px",
+            fontSize: "13px",
+            fontWeight: 600,
+            background: categoriesSaveStatus.type === "success" ? "#ecfdf5" : "#fef2f2",
+            border: categoriesSaveStatus.type === "success" ? "1px solid #a7f3d0" : "1px solid #fecaca",
+            color: categoriesSaveStatus.type === "success" ? "#065f46" : "#991b1b",
+          }}>
+            {categoriesSaveStatus.message}
+          </div>
+        )}
 
         {/* Elevated Categories Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "24px" }}>
           {categories.map((cat, idx) => {
-            const isGreen = cat.accent === "green";
+            const isGreen = idx === 1 ? false : true;
             const badgeBg = isGreen ? "#e6f3e5" : "#fff0e8";
             const badgeColor = isGreen ? "#073e36" : "#f0642b";
 
@@ -866,9 +954,6 @@ export function HomepageView() {
                           <span>{cat.actionText || "Explore"}</span>
                           <span>→</span>
                         </span>
-                        <span style={{ fontSize: "10.5px", color: "#94a3b8", fontFamily: "monospace" }}>
-                          {cat.href}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -901,7 +986,7 @@ export function HomepageView() {
                       />
                     </div>
 
-                    <div>
+                    <div style={{ gridColumn: "1 / -1" }}>
                       <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#475569", marginBottom: "4px" }}>
                         Button Action Text
                       </label>
@@ -913,73 +998,43 @@ export function HomepageView() {
                       />
                     </div>
 
-                    <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#475569", marginBottom: "4px" }}>
-                        Accent Theme
-                      </label>
-                      <select
-                        value={cat.accent}
-                        onChange={(e) => handleUpdateCategory(cat.id, "accent", e.target.value as "green" | "orange")}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px", background: "#ffffff", fontWeight: 600 }}
-                      >
-                        <option value="green">🟢 Emerald Green</option>
-                        <option value="orange">🟠 Warm Orange</option>
-                      </select>
-                    </div>
-
                     <div style={{ gridColumn: "1 / -1" }}>
                       <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#475569", marginBottom: "4px" }}>
                         Image Path
                       </label>
-                      <input
-                        type="text"
-                        value={cat.image}
-                        onChange={(e) => handleUpdateCategory(cat.id, "image", e.target.value)}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px" }}
-                      />
-
-                      {/* Preset Image Chips for 1-click photo switching */}
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "6px" }}>
-                        <span style={{ fontSize: "10.5px", color: "#64748b", alignSelf: "center" }}>Quick photos:</span>
-                        {[
-                          { label: "Day Tours", path: "/images/day-tours.jpg" },
-                          { label: "Sigiriya", path: "/images/sigiriya.jpg" },
-                          { label: "Ella Hills", path: "/images/package-13.jpg" },
-                          { label: "Wildlife", path: "/images/package-18.jpg" },
-                          { label: "Beach", path: "/images/package-16.jpg" },
-                        ].map((p) => (
-                          <button
-                            key={p.path}
-                            type="button"
-                            onClick={() => handleUpdateCategory(cat.id, "image", p.path)}
-                            style={{
-                              background: cat.image === p.path ? "#073e36" : "#f1f5f9",
-                              color: cat.image === p.path ? "#ffffff" : "#475569",
-                              border: `1px solid ${cat.image === p.path ? "#073e36" : "#cbd5e1"}`,
-                              fontSize: "10.5px",
-                              fontWeight: 600,
-                              padding: "2px 7px",
-                              borderRadius: "4px",
-                              cursor: "pointer"
-                            }}
-                          >
-                            {p.label}
-                          </button>
-                        ))}
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <input
+                          type="text"
+                          value={cat.image}
+                          onChange={(e) => handleUpdateCategory(cat.id, "image", e.target.value)}
+                          style={{ flex: 1, padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px" }}
+                          placeholder="Image URL or upload"
+                        />
+                        <label
+                          style={{
+                            background: "#f8fafc",
+                            border: "1px solid #cbd5e1",
+                            color: "#334155",
+                            padding: "8px 12px",
+                            borderRadius: "6px",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            whiteSpace: "nowrap",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px"
+                          }}
+                        >
+                          📁 Upload
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleCategoryImageUpload(cat.id, e)}
+                            style={{ display: "none" }}
+                          />
+                        </label>
                       </div>
-                    </div>
-
-                    <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#475569", marginBottom: "4px" }}>
-                        Target Link (URL)
-                      </label>
-                      <input
-                        type="text"
-                        value={cat.href}
-                        onChange={(e) => handleUpdateCategory(cat.id, "href", e.target.value)}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "12.5px" }}
-                        placeholder="e.g. /#packages or /contact"
-                      />
                     </div>
 
                     <div style={{ gridColumn: "1 / -1" }}>
@@ -1000,56 +1055,6 @@ export function HomepageView() {
           })}
 
           {/* End of 3 Categories */}
-        </div>
-      </div>
-
-      {/* 3. Search Modal Journeys */}
-      <div style={{
-        background: "#ffffff",
-        border: "1px solid #e2e8f0",
-        borderRadius: "16px",
-        padding: "28px",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
-      }}>
-        <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", margin: "0 0 4px 0" }}>
-          3. Search Dialog Suggested Journeys (SearchDialog.tsx / data.ts)
-        </h2>
-        <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 18px 0" }}>
-          These are the 3 quick-curated journeys that appear when users click &ldquo;Search your dream journey&rdquo; on the homepage.
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {searchJourneys.map((j, idx) => (
-            <div key={idx} style={{
-              background: "#f8fafc",
-              border: "1px solid #edf2f7",
-              borderRadius: "10px",
-              padding: "16px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
-              <div>
-                <strong style={{ fontSize: "15px", color: "#073e36", display: "block" }}>{j.name}</strong>
-                <span style={{ fontSize: "12.5px", color: "#0f172a", display: "block", marginTop: "2px" }}>
-                  📍 {j.tags} • ⏱️ {j.days}
-                </span>
-                <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 0" }}>
-                  &ldquo;{j.description}&rdquo;
-                </p>
-              </div>
-              <span style={{
-                background: "#ecfdf5",
-                color: "#065f46",
-                padding: "4px 10px",
-                borderRadius: "6px",
-                fontSize: "11px",
-                fontWeight: 700
-              }}>
-                {j.style}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

@@ -1,8 +1,13 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Icon, IconName } from "@/components/ui/Icon";
 
 interface TourOptionItem {
+  id?: number;
   title: string;
+  badge?: string;
   description: string;
   actionText: string;
   image: string;
@@ -11,9 +16,11 @@ interface TourOptionItem {
   accent: "green" | "orange";
 }
 
-const tourOptions: TourOptionItem[] = [
+const defaultTourOptions: TourOptionItem[] = [
   {
+    id: 1,
     title: "One Day Tours",
+    badge: "Day Trips",
     description:
       "Feel with the nature in Sri Lanka. Can you arrange a trip on a day? We give you amazing and adventure feeling. We have selected best places to you which can enjoy your day. Within one day cover the most attractive areas in Sri Lanka.",
     actionText: "Explore Tours",
@@ -23,7 +30,9 @@ const tourOptions: TourOptionItem[] = [
     accent: "green",
   },
   {
+    id: 2,
     title: "Round Tours",
+    badge: "Multi-Day",
     description:
       "In every country there some hidden places and stories. Explore the cultures, the legends and history of this areas. Find your way. Get a wonderful experience, add little to your memories. And Sri Lanka is the best destination to fulfill your travel diary. Travel and enjoy your life.",
     actionText: "Explore Journeys",
@@ -33,7 +42,9 @@ const tourOptions: TourOptionItem[] = [
     accent: "orange",
   },
   {
+    id: 3,
     title: "Plan your Trip",
+    badge: "Tailor-Made",
     description:
       "Planning a trip is the hardest part of traveling. No worries. Plan your trip more efficiently and effectively. We will help you to arrange your trip, schedule your valuable time and choose the best routes for your journey without any mistake. Enjoy your trip with a cost effective plan.",
     actionText: "Start Planning",
@@ -44,7 +55,64 @@ const tourOptions: TourOptionItem[] = [
   },
 ];
 
+function getCategoryIcon(title: string, index: number): IconName {
+  const t = title.toLowerCase();
+  if (t.includes("day")) return "palm";
+  if (t.includes("round")) return "pin";
+  if (t.includes("plan")) return "calendar";
+  return index === 1 ? "pin" : index === 2 ? "calendar" : "palm";
+}
+
+function getCategoryHref(id?: number, index?: number): string {
+  if (id === 1 || index === 0) return "https://traveltube.lk/tour-packages.php?id=1";
+  if (id === 2 || index === 1) return "https://traveltube.lk/tour-packages.php?id=2";
+  return "https://traveltube.lk/plan-tour.php";
+}
+
 export function TourOptionsSection() {
+  const [options, setOptions] = useState<TourOptionItem[]>(defaultTourOptions);
+
+  useEffect(() => {
+    async function loadDynamicCategories() {
+      try {
+        const res = await fetch("/api/homepage/categories");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setOptions(
+            json.data.map(
+              (
+                cat: {
+                  id: number;
+                  title?: string;
+                  badge?: string;
+                  description?: string;
+                  actionText?: string;
+                  image?: string;
+                },
+                idx: number
+              ) => {
+                const fallback = defaultTourOptions[idx] || defaultTourOptions[0];
+                return {
+                  id: cat.id,
+                  title: cat.title || fallback.title,
+                  badge: cat.badge || fallback.badge,
+                  description: cat.description || fallback.description,
+                  actionText: cat.actionText || fallback.actionText,
+                  image: cat.image || fallback.image,
+                  icon: getCategoryIcon(cat.title || fallback.title, idx),
+                  href: getCategoryHref(cat.id, idx),
+                  accent: idx === 1 ? ("orange" as const) : ("green" as const),
+                };
+              }
+            )
+          );
+        }
+      } catch {
+        // Fall back gracefully to initial defaultTourOptions
+      }
+    }
+    loadDynamicCategories();
+  }, []);
   return (
     <>
       <style>{`
@@ -133,6 +201,23 @@ export function TourOptionsSection() {
           place-items: center;
           border: 2px solid #ffffff;
           z-index: 3;
+        }
+
+        .cardPillBadge {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: rgba(7, 62, 54, 0.75);
+          backdrop-filter: blur(6px);
+          color: #ffffff;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 3px 9px;
+          border-radius: 6px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          z-index: 3;
+          border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .cardBadge svg {
@@ -272,46 +357,55 @@ export function TourOptionsSection() {
         </svg>
 
         <div className="tourCardsGrid">
-          {tourOptions.map((option) => (
-            <a
-              key={option.title}
-              href={option.href}
-              className="tourCard"
-            >
-              <div className="cardMedia">
-                <div className="cardImageWrapper">
-                  <Image
-                    src={option.image}
-                    alt={option.title}
-                    fill
-                    sizes="(max-width: 900px) 90vw, (max-width: 1200px) 32vw, 420px"
-                    className="cardImage"
-                  />
-                </div>
-                <span
-                  className={`cardBadge ${
-                    option.accent === "orange" ? "badgeOrange" : "badgeGreen"
-                  }`}
-                >
-                  <Icon name={option.icon} />
-                </span>
-              </div>
-              <div className="cardContent">
-                <h2 className="cardTitle">{option.title}</h2>
-                <p className="cardDescription">{option.description}</p>
-                <div className="cardFooter">
-                  <span className="cardActionText">{option.actionText}</span>
+          {options.map((option, idx) => {
+            const isOrange = option.accent === "orange" || idx === 1;
+            return (
+              <a
+                key={option.id || option.title}
+                href={option.href}
+                className="tourCard"
+              >
+                <div className="cardMedia">
+                  <div className="cardImageWrapper">
+                    <Image
+                      src={option.image}
+                      alt={option.title}
+                      fill
+                      sizes="(max-width: 900px) 90vw, (max-width: 1200px) 32vw, 420px"
+                      className="cardImage"
+                      unoptimized={Boolean(option.image && option.image.startsWith("data:"))}
+                    />
+                  </div>
+                  {option.badge && (
+                    <span className="cardPillBadge">
+                      {option.badge}
+                    </span>
+                  )}
                   <span
-                    className={`cardArrow ${
-                      option.accent === "orange" ? "arrowOrange" : "arrowGreen"
+                    className={`cardBadge ${
+                      isOrange ? "badgeOrange" : "badgeGreen"
                     }`}
                   >
-                    <Icon name="arrow" />
+                    <Icon name={option.icon} />
                   </span>
                 </div>
-              </div>
-            </a>
-          ))}
+                <div className="cardContent">
+                  <h2 className="cardTitle">{option.title}</h2>
+                  <p className="cardDescription">{option.description}</p>
+                  <div className="cardFooter">
+                    <span className="cardActionText">{option.actionText}</span>
+                    <span
+                      className={`cardArrow ${
+                        isOrange ? "arrowOrange" : "arrowGreen"
+                      }`}
+                    >
+                      <Icon name="arrow" />
+                    </span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </section>
     </>
