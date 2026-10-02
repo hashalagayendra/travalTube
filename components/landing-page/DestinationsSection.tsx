@@ -1,17 +1,21 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/Icon";
 
 interface DestinationItem {
-  id: string;
+  id: string | number;
+  slug?: string;
   title: string;
   badge: string;
   location: string;
   image: string;
   description: string;
-  href: string;
+  href?: string;
 }
 
-const destinations: DestinationItem[] = [
+const defaultDestinations: DestinationItem[] = [
   {
     id: "galle-fort",
     title: "GALLE FORT",
@@ -75,6 +79,32 @@ const destinations: DestinationItem[] = [
 ];
 
 export function DestinationsSection() {
+  const [items, setItems] = useState<DestinationItem[]>(defaultDestinations);
+
+  useEffect(() => {
+    async function loadDestinations() {
+      try {
+        const res = await fetch("/api/destinations?homepage=true");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setItems(
+            json.data.map((d: any) => ({
+              id: d.slug || d.id,
+              title: d.title,
+              badge: d.badge,
+              location: d.location,
+              image: d.image,
+              description: d.description,
+              href: `/destination#${d.slug || ""}`,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load destinations:", err);
+      }
+    }
+    loadDestinations();
+  }, []);
   return (
     <>
       <style>{`
@@ -328,13 +358,11 @@ export function DestinationsSection() {
           </div>
 
           <div className="destinationsGrid">
-            {destinations.map((item) => (
+            {items.map((item) => (
               <a
                 key={item.id}
-                href={item.href}
+                href={item.href || "/destination"}
                 className="destinationCard"
-                target="_blank"
-                rel="noreferrer"
                 aria-label={`Explore ${item.title} destination in Sri Lanka`}
               >
                 <div className="destinationMedia">
@@ -342,6 +370,7 @@ export function DestinationsSection() {
                     src={item.image}
                     alt={`${item.title} - Sri Lanka travel destination`}
                     fill
+                    unoptimized={Boolean(item.image?.startsWith("data:") || item.image?.startsWith("http"))}
                     sizes="(max-width: 820px) 100vw, (max-width: 1100px) 180px, 210px"
                     className="destinationImg"
                   />

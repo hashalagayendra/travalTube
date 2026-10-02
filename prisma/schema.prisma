@@ -86,5 +86,41 @@ model ServiceCard {
   @@map("service_cards")
 }
 
+// Tour Packages Section (PackagesSection.tsx & PackagesView.tsx)
+model TourPackage {
+  id          Int      @id @default(autoincrement())
+  name        String
+  days        String   @default("1 Day")
+  locations   String
+  description String   @db.Text
+  rating      Float    @default(4.9)
+  reviews     Int      @default(100)
+  image       String   @db.LongText // Direct Base64 or image URL/path
+  alt         String   @default("Tour package image")
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  @@map("tour_packages")
+}
 
+// Destinations Section (DestinationsSection.tsx, DestinationsView.tsx & app/destination/page.tsx)
+model Destination {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  badge       String   @default("Heritage")
+  location    String
+  description String   @db.Text
+  image       String   @db.LongText // Direct Base64 or image URL/path
+  isHomepage  Boolean  @default(false)
+  isPinned    Boolean  @default(false) // Pin to Top 2 featured cards on /destination
+  category    String   @default("heritage") // "all" | "beach" | "heritage" | "wildlife" | "highlands"
+  highlights  String?  @db.Text
+  duration    String?  @default("Full Day")
+  bestSeason  String?  @default("Year Round")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("destinations")
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar/Navbar";
@@ -17,6 +17,7 @@ interface DestinationItem {
   highlights: string[];
   duration: string;
   bestSeason: string;
+  isPinned?: boolean;
 }
 
 const allDestinations: DestinationItem[] = [
@@ -35,6 +36,7 @@ const allDestinations: DestinationItem[] = [
     ],
     duration: "Full Day / Overnight",
     bestSeason: "November – April",
+    isPinned: true,
   },
   {
     id: "hikkaduwa",
@@ -51,6 +53,7 @@ const allDestinations: DestinationItem[] = [
     ],
     duration: "1 – 3 Days",
     bestSeason: "November – April",
+    isPinned: true,
   },
   {
     id: "jungle-beach",
@@ -678,19 +681,69 @@ const allDestinations: DestinationItem[] = [
   },
 ];
 
-const ITEMS_PER_PAGE = 8;
-
 export default function DestinationPage() {
   const searchDialog = useRef<HTMLDialogElement>(null);
   const gridSectionRef = useRef<HTMLDivElement>(null);
 
+  const [destinationsList, setDestinationsList] = useState<DestinationItem[]>(allDestinations);
   const [selectedCategory, setSelectedCategory] = useState<
     "all" | "beach" | "heritage" | "wildlife" | "highlands"
   >("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [selectedDestination, setSelectedDestination] =
     useState<DestinationItem | null>(null);
+
+  useEffect(() => {
+    async function loadDestinations() {
+      try {
+        const res = await fetch("/api/destinations");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const apiMap = new Map(json.data.map((d: any) => [d.slug, d]));
+          const merged = allDestinations.map((orig) => {
+            const apiItem: any = apiMap.get(orig.id);
+            if (apiItem) {
+              return {
+                ...orig,
+                title: apiItem.title || orig.title,
+                location: apiItem.location || orig.location,
+                description: apiItem.description || orig.description,
+                image: apiItem.image || orig.image,
+                category: (apiItem.category || orig.category) as any,
+                isPinned: Boolean(apiItem.isPinned),
+              };
+            }
+            return orig;
+          });
+
+          for (const d of json.data as any[]) {
+            if (!allDestinations.some((orig) => orig.id === d.slug)) {
+              merged.push({
+                id: d.slug,
+                title: d.title,
+                location: d.location,
+                description: d.description,
+                image: d.image,
+                category: (d.category || "heritage") as any,
+                isPinned: Boolean(d.isPinned),
+                highlights: d.highlights
+                  ? d.highlights.split("\n").filter(Boolean)
+                  : ["Popular sightseeing highlight", "Scenic photography spot", "Guided local tour available"],
+                duration: d.duration || "Full Day",
+                bestSeason: d.bestSeason || "Year Round",
+              });
+            }
+          }
+          setDestinationsList(merged);
+        }
+      } catch (err) {
+        console.error("Failed to load destinations:", err);
+      }
+    }
+    loadDestinations();
+  }, []);
 
   const handleOpenSearch = () => {
     if (typeof window !== "undefined") {
@@ -702,9 +755,20 @@ export default function DestinationPage() {
     }
   };
 
+  // Dynamic category counts calculated directly from destination data
+  const categoryCounts = useMemo(() => {
+    return {
+      all: destinationsList.length,
+      beach: destinationsList.filter((d) => d.category === "beach").length,
+      heritage: destinationsList.filter((d) => d.category === "heritage").length,
+      wildlife: destinationsList.filter((d) => d.category === "wildlife").length,
+      highlands: destinationsList.filter((d) => d.category === "highlands").length,
+    };
+  }, [destinationsList]);
+
   // Filtered destinations based on category and search query
   const filteredDestinations = useMemo(() => {
-    return allDestinations.filter((dest) => {
+    return destinationsList.filter((dest) => {
       const matchesCategory =
         selectedCategory === "all" || dest.category === selectedCategory;
       const matchesSearch =
@@ -714,24 +778,63 @@ export default function DestinationPage() {
         dest.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [destinationsList, selectedCategory, searchQuery]);
 
-  const totalPages = Math.ceil(filteredDestinations.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filteredDestinations.length / itemsPerPage));
 
   const paginatedDestinations = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredDestinations.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredDestinations, currentPage]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredDestinations.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredDestinations, currentPage, itemsPerPage]);
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     if (gridSectionRef.current) {
-      gridSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      const yOffset = -70;
+      const y = gridSectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
-  // Featured top 2
-  const featuredTwo = allDestinations.slice(0, 2);
+  // Top 2 featured spotlight destinations dynamically driven by isPinned attribute
+  const featuredTwo = useMemo(() => {
+    const pinned = destinationsList.filter((d) => d.isPinned);
+    if (pinned.length >= 2) {
+      return pinned.slice(0, 2);
+    }
+    const remaining = destinationsList.filter((d) => !pinned.some((p) => p.id === d.id));
+    return [...pinned, ...remaining].slice(0, 2);
+  }, [destinationsList]);
+
+  // Smart pagination items with ellipsis (e.g. 1, 2, 3, 4, 5, '...', 10)
+  const paginationItems = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | string)[] = [];
+    if (currentPage <= 4) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      pages.push("...");
+      pages.push(currentPage - 1);
+      pages.push(currentPage);
+      pages.push(currentPage + 1);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  }, [totalPages, currentPage]);
+
+  const startCount = filteredDestinations.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endCount = Math.min(currentPage * itemsPerPage, filteredDestinations.length);
 
   return (
     <>
@@ -1157,13 +1260,112 @@ export default function DestinationPage() {
           overflow: hidden;
         }
 
-        /* Numbered Pagination (1, 2, 3, 4...) matching original */
-        .paginationContainer {
+        /* Better Way Pagination */
+        .betterPaginationWrapper {
+          margin-top: 48px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .paginationMetaBar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 20px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          font-size: 13.5px;
+          color: #475569;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .paginationCountText {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .paginationCountText strong {
+          color: #073e36;
+          font-weight: 700;
+        }
+
+        .paginationPageBadge {
+          display: inline-flex;
+          align-items: center;
+          padding: 3px 10px;
+          border-radius: 20px;
+          background: #edf7f5;
+          color: #073e36;
+          font-size: 12px;
+          font-weight: 700;
+          border: 1px solid #c2e2da;
+        }
+
+        .paginationPerPageRow {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .perPageLabel {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #64748b;
+        }
+
+        .perPageBtn {
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          color: #334155;
+          padding: 4px 11px;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .perPageBtn:hover {
+          border-color: #073e36;
+          color: #073e36;
+          background: #f1f5f9;
+        }
+
+        .perPageBtn.activePerPage {
+          background: #073e36;
+          color: #ffffff;
+          border-color: #073e36;
+        }
+
+        .paginationControlsRow {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          margin-top: 48px;
+          flex-wrap: wrap;
+        }
+
+        .pageNumbersGroup {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+
+        .pageEllipsis {
+          display: grid;
+          place-items: center;
+          width: 36px;
+          height: 42px;
+          color: #94a3b8;
+          font-size: 14px;
+          letter-spacing: 2px;
+          user-select: none;
         }
 
         .pageNumberBtn {
@@ -1184,20 +1386,21 @@ export default function DestinationPage() {
         .pageNumberBtn:hover {
           border-color: #ed8a28;
           color: #ed8a28;
+          transform: translateY(-1px);
         }
 
         .pageNumberBtn.activePageBtn {
           background: #ed8a28;
           color: #ffffff;
           border-color: #ed8a28;
-          box-shadow: 0 4px 12px rgba(237, 138, 40, 0.3);
+          box-shadow: 0 4px 12px rgba(237, 138, 40, 0.35);
         }
 
         .pageNavBtn {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 0 16px;
+          padding: 0 14px;
           height: 42px;
           border-radius: 12px;
           border: 1px solid #d9e6e2;
@@ -1212,11 +1415,43 @@ export default function DestinationPage() {
         .pageNavBtn:hover:not(:disabled) {
           border-color: #073e36;
           background: #f4faf8;
+          transform: translateY(-1px);
         }
 
         .pageNavBtn:disabled {
-          opacity: 0.4;
+          opacity: 0.35;
           cursor: not-allowed;
+        }
+
+        .destPinnedBadge {
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          background: rgba(7, 62, 54, 0.92);
+          color: #ffb11b;
+          font-size: 10.5px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          padding: 5px 11px;
+          border-radius: 6px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 177, 27, 0.4);
+          z-index: 3;
+          backdrop-filter: blur(4px);
+        }
+
+        .gridCardPinnedBadge {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: rgba(7, 62, 54, 0.88);
+          color: #ffb11b;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 6px;
+          border: 1px solid rgba(255, 177, 27, 0.3);
+          z-index: 2;
         }
 
         /* Background Botanical Vector Accents */
@@ -1761,9 +1996,15 @@ export default function DestinationPage() {
                       src={dest.image}
                       alt={dest.title}
                       fill
+                      unoptimized={Boolean(dest.image?.startsWith("data:") || dest.image?.startsWith("http"))}
                       sizes="(max-width: 850px) 92vw, 30vw"
                       className="cardCoverPhoto"
                     />
+                    {dest.isPinned && (
+                      <span className="destPinnedBadge">
+                        ★ TOP SPOTLIGHT
+                      </span>
+                    )}
                   </div>
                   <div className="wideCardInfo">
                     <div className="destLocationTag">
@@ -1803,7 +2044,7 @@ export default function DestinationPage() {
                     setCurrentPage(1);
                   }}
                 >
-                  All ({allDestinations.length})
+                  All ({categoryCounts.all})
                 </button>
                 <button
                   type="button"
@@ -1813,7 +2054,7 @@ export default function DestinationPage() {
                     setCurrentPage(1);
                   }}
                 >
-                  Beaches & Coastal (10)
+                  Beaches & Coastal ({categoryCounts.beach})
                 </button>
                 <button
                   type="button"
@@ -1823,7 +2064,7 @@ export default function DestinationPage() {
                     setCurrentPage(1);
                   }}
                 >
-                  Culture & Heritage (14)
+                  Culture & Heritage ({categoryCounts.heritage})
                 </button>
                 <button
                   type="button"
@@ -1833,7 +2074,7 @@ export default function DestinationPage() {
                     setCurrentPage(1);
                   }}
                 >
-                  Wildlife & Safaris (8)
+                  Wildlife & Safaris ({categoryCounts.wildlife})
                 </button>
                 <button
                   type="button"
@@ -1843,7 +2084,7 @@ export default function DestinationPage() {
                     setCurrentPage(1);
                   }}
                 >
-                  Hill Country & Peaks (9)
+                  Hill Country & Peaks ({categoryCounts.highlands})
                 </button>
               </div>
 
@@ -1909,9 +2150,13 @@ export default function DestinationPage() {
                         src={dest.image}
                         alt={dest.title}
                         fill
+                        unoptimized={Boolean(dest.image?.startsWith("data:") || dest.image?.startsWith("http"))}
                         sizes="(max-width: 640px) 92vw, (max-width: 1100px) 46vw, 23vw"
                         className="cardCoverPhoto"
                       />
+                      {dest.isPinned && (
+                        <span className="gridCardPinnedBadge">★ Spotlight</span>
+                      )}
                     </div>
                     <div className="gridCardInfo">
                       <div className="destLocationTag">
@@ -1941,41 +2186,107 @@ export default function DestinationPage() {
               </div>
             )}
 
-            {/* Numbered Pagination (1, 2, 3, 4...) matching original site */}
-            {totalPages > 1 && (
-              <div className="paginationContainer" aria-label="Destination page navigation">
-                <button
-                  type="button"
-                  className="pageNavBtn"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  aria-label="Previous page"
-                >
-                  ← Prev
-                </button>
+            {/* Better Way Pagination Bar */}
+            {filteredDestinations.length > 0 && (
+              <div className="betterPaginationWrapper" aria-label="Destination page navigation">
+                {/* Meta bar: Range results counter & per page picker */}
+                <div className="paginationMetaBar">
+                  <div className="paginationCountText">
+                    Showing <strong>{startCount}–{endCount}</strong> of <strong>{filteredDestinations.length}</strong> destinations
+                    <span className="paginationPageBadge">Page {currentPage} of {totalPages}</span>
+                  </div>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={`page-${page}`}
-                    type="button"
-                    className={`pageNumberBtn ${currentPage === page ? "activePageBtn" : ""}`}
-                    onClick={() => handlePageChange(page)}
-                    aria-label={`Page ${page}`}
-                    aria-current={currentPage === page ? "page" : undefined}
-                  >
-                    {page}
-                  </button>
-                ))}
+                  <div className="paginationPerPageRow">
+                    <span className="perPageLabel">Per page:</span>
+                    {[8, 12, 16, 24].map((size) => (
+                      <button
+                        key={`size-${size}`}
+                        type="button"
+                        className={`perPageBtn ${itemsPerPage === size ? "activePerPage" : ""}`}
+                        onClick={() => {
+                          setItemsPerPage(size);
+                          setCurrentPage(1);
+                        }}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                <button
-                  type="button"
-                  className="pageNavBtn"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  aria-label="Next page"
-                >
-                  Next →
-                </button>
+                {/* Navigation controls row with smart page window */}
+                {totalPages > 1 && (
+                  <div className="paginationControlsRow">
+                    <button
+                      type="button"
+                      className="pageNavBtn"
+                      onClick={() => handlePageChange(1)}
+                      disabled={currentPage === 1}
+                      title="First Page"
+                      aria-label="First page"
+                    >
+                      « First
+                    </button>
+
+                    <button
+                      type="button"
+                      className="pageNavBtn"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      title="Previous Page"
+                      aria-label="Previous page"
+                    >
+                      ‹ Prev
+                    </button>
+
+                    <div className="pageNumbersGroup">
+                      {paginationItems.map((item, index) => {
+                        if (item === "...") {
+                          return (
+                            <span key={`ellipsis-${index}`} className="pageEllipsis">
+                              •••
+                            </span>
+                          );
+                        }
+                        const pageNum = Number(item);
+                        return (
+                          <button
+                            key={`page-${pageNum}`}
+                            type="button"
+                            className={`pageNumberBtn ${currentPage === pageNum ? "activePageBtn" : ""}`}
+                            onClick={() => handlePageChange(pageNum)}
+                            aria-label={`Page ${pageNum}`}
+                            aria-current={currentPage === pageNum ? "page" : undefined}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pageNavBtn"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      title="Next Page"
+                      aria-label="Next page"
+                    >
+                      Next ›
+                    </button>
+
+                    <button
+                      type="button"
+                      className="pageNavBtn"
+                      onClick={() => handlePageChange(totalPages)}
+                      disabled={currentPage === totalPages}
+                      title="Last Page"
+                      aria-label="Last page"
+                    >
+                      Last »
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1996,6 +2307,7 @@ export default function DestinationPage() {
                   src={selectedDestination.image}
                   alt={selectedDestination.title}
                   fill
+                  unoptimized={Boolean(selectedDestination.image?.startsWith("data:") || selectedDestination.image?.startsWith("http"))}
                   className="modalMediaImg"
                 />
                 <button

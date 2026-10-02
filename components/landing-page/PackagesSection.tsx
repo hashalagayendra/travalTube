@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 
 interface TourPackage {
@@ -15,7 +15,7 @@ interface TourPackage {
   alt: string;
 }
 
-const tourPackages: TourPackage[] = [
+const defaultTourPackages: TourPackage[] = [
   {
     id: 14,
     name: "Classic Cultural Tour",
@@ -103,8 +103,24 @@ const tourPackages: TourPackage[] = [
 ];
 
 export function PackagesSection() {
+  const [packages, setPackages] = useState<TourPackage[]>(defaultTourPackages);
   const [showAll, setShowAll] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const res = await fetch("/api/packages");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setPackages(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to load tour packages:", err);
+      }
+    }
+    loadPackages();
+  }, []);
 
   function scroll(direction: "left" | "right") {
     if (scrollContainerRef.current) {
@@ -551,7 +567,7 @@ export function PackagesSection() {
               showAll ? "packagesGridContainer" : "packagesScrollContainer"
             }
           >
-            {tourPackages.map((tour) => (
+            {packages.map((tour) => (
               <a
                 key={tour.id}
                 className="packageCard"
@@ -562,6 +578,7 @@ export function PackagesSection() {
                     src={tour.image}
                     alt={tour.alt}
                     fill
+                    unoptimized={Boolean(tour.image?.startsWith("data:") || tour.image?.startsWith("http"))}
                     sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 380px"
                     className="packageImg"
                   />
