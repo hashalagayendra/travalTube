@@ -1,14 +1,162 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Footer } from "@/components/footer";
 import { SearchDialog } from "@/components/landing-page/SearchDialog";
 
+const pillarIcons = [
+  {
+    badgeClass: "badgeService",
+    icon: (
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="8" r="6" />
+        <path d="m15.477 12.89 1.523 9.11-5-3-5 3 1.523-9.11" />
+      </svg>
+    ),
+  },
+  {
+    badgeClass: "badgePackages",
+    icon: (
+      <svg
+        width="25"
+        height="25"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+        <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    badgeClass: "badgePlanning",
+    icon: (
+      <svg
+        width="25"
+        height="25"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    badgeClass: "badgeSupport",
+    icon: (
+      <svg
+        width="25"
+        height="25"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+      </svg>
+    ),
+  },
+];
+
 export default function AboutPage() {
   const searchDialog = useRef<HTMLDialogElement>(null);
+
+  const [aboutData, setAboutData] = useState({
+    eyebrow: "WELCOME TO",
+    titleMain: "Travel Tube Lanka",
+    titleAccent: "(Pvt) Ltd",
+    paragraph1:
+      "Welcome to TRAVEL TUBE LANKA (PVT) LTD, your trusted partner for all travel and tourism services. We are committed to making your travel experience smooth, comfortable, and memorable.",
+    paragraph2:
+      "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience.",
+    topImage: "/images/about-collage-leopard-hd.jpg",
+    bottomLeftImage: "/images/about-collage-turtle-hd.jpg",
+    bottomRightImage: "/images/about-collage-stupa-hd.jpg",
+  });
+
+  const [whyChoosePillars, setWhyChoosePillars] = useState([
+    {
+      id: 1,
+      title: "Professional Service",
+      description:
+        "Professional and friendly service to ensure your comfort throughout the journey.",
+    },
+    {
+      id: 2,
+      title: "Competitive Packages",
+      description:
+        "Competitive travel packages tailored to your budget without compromising quality.",
+    },
+    {
+      id: 3,
+      title: "Personalized Planning",
+      description:
+        "Tailor-made itineraries designed to suit your personal schedule, budget, and travel style.",
+    },
+    {
+      id: 4,
+      title: "24/7 Dedicated Support",
+      description:
+        "Round-the-clock local support to give you complete peace of mind while exploring Sri Lanka.",
+    },
+  ]);
+
+  useEffect(() => {
+    async function loadAbout() {
+      try {
+        // 1. Fetch Welcome section
+        const res = await fetch("/api/about");
+        const json = await res.json();
+        if (json.success && json.data) {
+          setAboutData((prev) => ({
+            ...prev,
+            eyebrow: json.data.eyebrow || prev.eyebrow,
+            titleMain: json.data.titleMain || prev.titleMain,
+            titleAccent: json.data.titleAccent || prev.titleAccent,
+            paragraph1: json.data.paragraph1 || prev.paragraph1,
+            paragraph2: json.data.paragraph2 || prev.paragraph2,
+            topImage: json.data.topImage || prev.topImage,
+            bottomLeftImage: json.data.bottomLeftImage || prev.bottomLeftImage,
+            bottomRightImage: json.data.bottomRightImage || prev.bottomRightImage,
+          }));
+        }
+
+        // 2. Fetch Why Choose Us highlights
+        const resWhy = await fetch("/api/about/why-choose");
+        const jsonWhy = await resWhy.json();
+        if (jsonWhy.success && Array.isArray(jsonWhy.data) && jsonWhy.data.length > 0) {
+          setWhyChoosePillars(jsonWhy.data);
+        }
+      } catch (err) {
+        console.error("Could not load about data:", err);
+      }
+    }
+    loadAbout();
+  }, []);
 
   const handleOpenSearch = () => {
     if (typeof window !== "undefined") {
@@ -817,27 +965,18 @@ export default function AboutPage() {
               {/* Left Column: Text & CTA */}
               <div className="aboutCopyColumn">
                 <div className="aboutEyebrow">
-                  <span>WELCOME TO</span>
+                  <span>{aboutData.eyebrow}</span>
                   <span className="aboutEyebrowLine" aria-hidden="true" />
                 </div>
 
                 <h2 className="aboutTitle">
-                  Travel Tube Lanka <br />
-                  <span className="titleAccent">(Pvt) Ltd</span>
+                  {aboutData.titleMain} <br />
+                  <span className="titleAccent">{aboutData.titleAccent}</span>
                 </h2>
 
-                <p className="aboutParagraph">
-                  Welcome to <strong>TRAVEL TUBE LANKA (PVT) LTD</strong>, your trusted
-                  partner for all travel and tourism services. We are committed to
-                  making your travel experience smooth, comfortable, and memorable.
-                </p>
+                <p className="aboutParagraph">{aboutData.paragraph1}</p>
 
-                <p className="aboutParagraph">
-                  Our company provides a wide range of travel solutions for both
-                  local and international travelers. With a professional and friendly
-                  team, we help our clients plan their journeys with confidence and
-                  convenience.
-                </p>
+                <p className="aboutParagraph">{aboutData.paragraph2}</p>
 
                 <div className="aboutBtnRow">
                   <Link className="discoverMoreBtn" href="/#packages">
@@ -853,9 +992,10 @@ export default function AboutPage() {
               <div className="aboutCollage">
                 <div className="collageTopWide">
                   <Image
-                    src="/images/about-collage-leopard-hd.jpg"
+                    src={aboutData.topImage}
                     alt="Sri Lankan leopard resting on a tree branch"
                     fill
+                    unoptimized
                     sizes="(max-width: 900px) 92vw, 46vw"
                     className="collagePhoto"
                   />
@@ -863,18 +1003,20 @@ export default function AboutPage() {
                 <div className="collageBottomPair">
                   <div className="collageBottomItem">
                     <Image
-                      src="/images/about-collage-turtle-hd.jpg"
+                      src={aboutData.bottomLeftImage}
                       alt="Traveler watching a sea turtle at Sri Lankan beach"
                       fill
+                      unoptimized
                       sizes="(max-width: 900px) 46vw, 23vw"
                       className="collagePhoto"
                     />
                   </div>
                   <div className="collageBottomItem">
                     <Image
-                      src="/images/about-collage-stupa-hd.jpg"
+                      src={aboutData.bottomRightImage}
                       alt="Ruwanwelisaya ancient Buddhist stupa in Anuradhapura"
                       fill
+                      unoptimized
                       sizes="(max-width: 900px) 46vw, 23vw"
                       className="collagePhoto"
                     />
@@ -898,97 +1040,18 @@ export default function AboutPage() {
               </div>
 
               <div className="whyChooseCardsGrid">
-                {/* Card 1: Professional Service */}
-                <div className="whyChooseCard">
-                  <div className="whyChooseIconBadge badgeService" aria-hidden="true">
-                    <svg
-                      width="26"
-                      height="26"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="8" r="6" />
-                      <path d="m15.477 12.89 1.523 9.11-5-3-5 3 1.523-9.11" />
-                    </svg>
-                  </div>
-                  <h3 className="whyChooseCardTitle">Professional Service</h3>
-                  <p className="whyChooseCardDesc">
-                    Professional and friendly service to ensure your comfort throughout the journey.
-                  </p>
-                </div>
-
-                {/* Card 2: Competitive Packages */}
-                <div className="whyChooseCard">
-                  <div className="whyChooseIconBadge badgePackages" aria-hidden="true">
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                      <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
-                    </svg>
-                  </div>
-                  <h3 className="whyChooseCardTitle">Competitive Packages</h3>
-                  <p className="whyChooseCardDesc">
-                    Competitive travel packages tailored to your budget without compromising quality.
-                  </p>
-                </div>
-
-                {/* Card 3: Personalized Planning */}
-                <div className="whyChooseCard">
-                  <div className="whyChooseIconBadge badgePlanning" aria-hidden="true">
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" />
-                    </svg>
-                  </div>
-                  <h3 className="whyChooseCardTitle">Personalized Planning</h3>
-                  <p className="whyChooseCardDesc">
-                    Every trip is unique. We provide personalized planning to turn dreams into reality.
-                  </p>
-                </div>
-
-                {/* Card 4: Reliable Support */}
-                <div className="whyChooseCard">
-                  <div className="whyChooseIconBadge badgeSupport" aria-hidden="true">
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-                      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-                    </svg>
-                  </div>
-                  <h3 className="whyChooseCardTitle">Reliable Support</h3>
-                  <p className="whyChooseCardDesc">
-                    Reliable support available from start to finish for a truly stress-free experience.
-                  </p>
-                </div>
+                {whyChoosePillars.map((pillar, idx) => {
+                  const meta = pillarIcons[idx % pillarIcons.length];
+                  return (
+                    <div key={pillar.id || idx} className="whyChooseCard">
+                      <div className={`whyChooseIconBadge ${meta.badgeClass}`} aria-hidden="true">
+                        {meta.icon}
+                      </div>
+                      <h3 className="whyChooseCardTitle">{pillar.title}</h3>
+                      <p className="whyChooseCardDesc">{pillar.description}</p>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </div>

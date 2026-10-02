@@ -46,3 +46,32 @@ model TourCategory {
 
   @@map("tour_categories")
 }
+
+// About Us - Welcome & Company Introduction Section (AboutView.tsx & WelcomeSection.tsx)
+model AboutSection {
+  id               Int      @id @default(1)
+  eyebrow          String   @default("WELCOME TO")
+  titleMain        String   @default("Travel Tube Lanka")
+  titleAccent      String   @default("(Pvt) Ltd")
+  paragraph1       String   @db.Text
+  paragraph2       String   @db.Text
+  topImage         String   @db.LongText // Top wide collage photo
+  bottomLeftImage  String   @db.LongText // Bottom left collage photo
+  bottomRightImage String   @db.LongText // Bottom right collage photo
+  updatedAt        DateTime @updatedAt
+
+  @@map("about_section")
+}
+
+// About Us - Why Choose Us Highlights (4 Pillars)
+model WhyChoosePillar {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("why_choose_pillars")
+}
+
+

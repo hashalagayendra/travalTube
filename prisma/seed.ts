@@ -115,6 +115,123 @@ async function main() {
     console.log(`   ✅ Category [ID ${created.id}] "${created.title}" seeded successfully.`);
   }
 
+  // 4. Initialize / Seed About Us Intro Section (Row id = 1)
+  console.log(`🌿 Initializing About Us Welcome Section (about_section row id = 1)...`);
+  const defaultAbout = {
+    id: 1,
+    eyebrow: "WELCOME TO",
+    titleMain: "Travel Tube Lanka",
+    titleAccent: "(Pvt) Ltd",
+    paragraph1:
+      "Welcome to TRAVEL TUBE LANKA (PVT) LTD, your trusted partner for all travel and tourism services. We are committed to making your travel experience smooth, comfortable, and memorable.",
+    paragraph2:
+      "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience.",
+    topImage: "/images/about-collage-leopard-hd.jpg",
+    bottomLeftImage: "/images/about-collage-turtle-hd.jpg",
+    bottomRightImage: "/images/about-collage-stupa-hd.jpg",
+  };
+
+  try {
+    if (db.aboutSection) {
+      await db.aboutSection.upsert({
+        where: { id: 1 },
+        update: defaultAbout,
+        create: defaultAbout,
+      });
+    } else {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO about_section (id, eyebrow, titleMain, titleAccent, paragraph1, paragraph2, topImage, bottomLeftImage, bottomRightImage, updatedAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(3))
+         ON DUPLICATE KEY UPDATE 
+           eyebrow = VALUES(eyebrow),
+           titleMain = VALUES(titleMain),
+           titleAccent = VALUES(titleAccent),
+           paragraph1 = VALUES(paragraph1),
+           paragraph2 = VALUES(paragraph2),
+           topImage = VALUES(topImage),
+           bottomLeftImage = VALUES(bottomLeftImage),
+           bottomRightImage = VALUES(bottomRightImage),
+           updatedAt = NOW(3);`,
+        defaultAbout.id,
+        defaultAbout.eyebrow,
+        defaultAbout.titleMain,
+        defaultAbout.titleAccent,
+        defaultAbout.paragraph1,
+        defaultAbout.paragraph2,
+        defaultAbout.topImage,
+        defaultAbout.bottomLeftImage,
+        defaultAbout.bottomRightImage
+      );
+    }
+    console.log(`✅ Default About Us Welcome Section initialized successfully.`);
+  } catch (err) {
+    console.error(`⚠️ Could not seed about_section:`, err);
+  }
+
+  // 5. Initialize / Seed Why Choose Us Pillars (IDs 1, 2, 3, 4)
+  console.log(`🛡️ Initializing Why Choose Us Highlights (why_choose_pillars)...`);
+  const defaultPillars = [
+    {
+      id: 1,
+      title: "Professional Service",
+      description:
+        "Professional and friendly service to ensure your comfort throughout the journey.",
+    },
+    {
+      id: 2,
+      title: "Competitive Packages",
+      description:
+        "Competitive travel packages tailored to your budget without compromising quality.",
+    },
+    {
+      id: 3,
+      title: "Personalized Planning",
+      description:
+        "Tailor-made itineraries designed to suit your personal schedule, budget, and travel style.",
+    },
+    {
+      id: 4,
+      title: "24/7 Dedicated Support",
+      description:
+        "Round-the-clock local support to give you complete peace of mind while exploring Sri Lanka.",
+    },
+  ];
+
+  try {
+    for (const pillar of defaultPillars) {
+      if (db.whyChoosePillar) {
+        await db.whyChoosePillar.upsert({
+          where: { id: pillar.id },
+          update: {
+            title: pillar.title,
+            description: pillar.description,
+          },
+          create: {
+            id: pillar.id,
+            title: pillar.title,
+            description: pillar.description,
+          },
+        });
+      } else {
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO why_choose_pillars (id, title, description, createdAt, updatedAt)
+           VALUES (?, ?, ?, NOW(3), NOW(3))
+           ON DUPLICATE KEY UPDATE
+             title = VALUES(title),
+             description = VALUES(description),
+             updatedAt = NOW(3);`,
+          pillar.id,
+          pillar.title,
+          pillar.description
+        );
+      }
+      console.log(`   ✅ Pillar [ID ${pillar.id}] "${pillar.title}" seeded successfully.`);
+    }
+    console.log(`✅ All 4 Why Choose Us pillars initialized successfully.`);
+  } catch (err) {
+    console.error(`⚠️ Could not seed why_choose_pillars:`, err);
+  }
+
   console.log(`\n🎉 Database seeding finished successfully!`);
 }
 

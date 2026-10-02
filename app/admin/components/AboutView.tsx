@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface WhyChooseCard {
   id: number;
@@ -21,11 +22,108 @@ export function AboutView() {
     "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience."
   );
 
-
   // Collage Images
   const [topImage, setTopImage] = useState("/images/about-collage-leopard-hd.jpg");
   const [bottomLeftImage, setBottomLeftImage] = useState("/images/about-collage-turtle-hd.jpg");
   const [bottomRightImage, setBottomRightImage] = useState("/images/about-collage-stupa-hd.jpg");
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  // File input refs
+  const topImageInputRef = useRef<HTMLInputElement>(null);
+  const bottomLeftImageInputRef = useRef<HTMLInputElement>(null);
+  const bottomRightImageInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch initial data from /api/about and /api/about/why-choose
+  useEffect(() => {
+    async function fetchAboutData() {
+      try {
+        setIsLoading(true);
+        // 1. Fetch Welcome section
+        const res = await fetch("/api/about");
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          if (d.eyebrow) setEyebrow(d.eyebrow);
+          if (d.titleMain) setTitleMain(d.titleMain);
+          if (d.titleAccent) setTitleAccent(d.titleAccent);
+          if (d.paragraph1) setParagraph1(d.paragraph1);
+          if (d.paragraph2) setParagraph2(d.paragraph2);
+          if (d.topImage) setTopImage(d.topImage);
+          if (d.bottomLeftImage) setBottomLeftImage(d.bottomLeftImage);
+          if (d.bottomRightImage) setBottomRightImage(d.bottomRightImage);
+        }
+
+        // 2. Fetch Why Choose Us pillars
+        const resWhy = await fetch("/api/about/why-choose");
+        const jsonWhy = await resWhy.json();
+        if (jsonWhy.success && Array.isArray(jsonWhy.data) && jsonWhy.data.length > 0) {
+          setWhyChooseCards(jsonWhy.data);
+        }
+      } catch (err) {
+        console.error("Failed to load about data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchAboutData();
+  }, []);
+
+
+  // Helper to compress uploaded images via Canvas to high-definition Base64
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setImage: (val: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.85);
+          setImage(compressed);
+        } else {
+          if (typeof event.target?.result === "string") {
+            setImage(event.target.result);
+          }
+        }
+      };
+      if (typeof event.target?.result === "string") {
+        img.src = event.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Why Choose Us Pillars
   const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>([
@@ -51,32 +149,137 @@ export function AboutView() {
     },
   ]);
 
-  const [savedNotification, setSavedNotification] = useState<string | null>(null);
+  const [isSavingWhyChoose, setIsSavingWhyChoose] = useState(false);
+  const [whyChooseStatus, setWhyChooseStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
-  const handleSave = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setSavedNotification("About section changes saved successfully!");
-    setTimeout(() => {
-      setSavedNotification(null);
-    }, 3500);
+  const handleSaveWhyChoose = async () => {
+    try {
+      setIsSavingWhyChoose(true);
+      setWhyChooseStatus(null);
+      const res = await fetch("/api/about/why-choose", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pillars: whyChooseCards }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setWhyChooseStatus({
+          type: "success",
+          message: "✓ All 4 Why Choose Us pillars saved successfully to database!",
+        });
+        setTimeout(() => setWhyChooseStatus(null), 4000);
+      } else {
+        setWhyChooseStatus({
+          type: "error",
+          message: data.message || "Failed to save pillars.",
+        });
+      }
+    } catch (err) {
+      console.error("Pillars save error:", err);
+      setWhyChooseStatus({
+        type: "error",
+        message: "Network or server error while saving pillars.",
+      });
+    } finally {
+      setIsSavingWhyChoose(false);
+    }
   };
 
-  const handleReset = () => {
+  const handleSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    try {
+      setIsSaving(true);
+      setSaveStatus(null);
+
+      // Save Welcome Section
+      const res = await fetch("/api/about", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eyebrow,
+          titleMain,
+          titleAccent,
+          paragraph1,
+          paragraph2,
+          topImage,
+          bottomLeftImage,
+          bottomRightImage,
+        }),
+      });
+
+      // Save Why Choose Us Section in parallel
+      await fetch("/api/about/why-choose", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pillars: whyChooseCards }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSaveStatus({
+          type: "success",
+          message: "✓ All About Us sections (Welcome & 4 Pillars) saved successfully to database!",
+        });
+        setTimeout(() => setSaveStatus(null), 4000);
+      } else {
+        setSaveStatus({
+          type: "error",
+          message: data.message || "Failed to save About Us changes.",
+        });
+      }
+    } catch (err) {
+      console.error("About Us save error:", err);
+      setSaveStatus({
+        type: "error",
+        message: "Network or server error while saving changes.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+
+  const handleReset = async () => {
     if (confirm("Reset all About Us content back to default values?")) {
-      setEyebrow("WELCOME TO");
-      setTitleMain("Travel Tube Lanka");
-      setTitleAccent("(Pvt) Ltd");
-      setParagraph1(
-        "Welcome to TRAVEL TUBE LANKA (PVT) LTD, your trusted partner for all travel and tourism services. We are committed to making your travel experience smooth, comfortable, and memorable."
-      );
-      setParagraph2(
-        "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience."
-      );
-      setTopImage("/images/about-collage-leopard-hd.jpg");
-      setBottomLeftImage("/images/about-collage-turtle-hd.jpg");
-      setBottomRightImage("/images/about-collage-stupa-hd.jpg");
-      setSavedNotification("Reset to default values.");
-      setTimeout(() => setSavedNotification(null), 3000);
+      const defaultData = {
+        eyebrow: "WELCOME TO",
+        titleMain: "Travel Tube Lanka",
+        titleAccent: "(Pvt) Ltd",
+        paragraph1:
+          "Welcome to TRAVEL TUBE LANKA (PVT) LTD, your trusted partner for all travel and tourism services. We are committed to making your travel experience smooth, comfortable, and memorable.",
+        paragraph2:
+          "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience.",
+        topImage: "/images/about-collage-leopard-hd.jpg",
+        bottomLeftImage: "/images/about-collage-turtle-hd.jpg",
+        bottomRightImage: "/images/about-collage-stupa-hd.jpg",
+      };
+
+      setEyebrow(defaultData.eyebrow);
+      setTitleMain(defaultData.titleMain);
+      setTitleAccent(defaultData.titleAccent);
+      setParagraph1(defaultData.paragraph1);
+      setParagraph2(defaultData.paragraph2);
+      setTopImage(defaultData.topImage);
+      setBottomLeftImage(defaultData.bottomLeftImage);
+      setBottomRightImage(defaultData.bottomRightImage);
+
+      try {
+        await fetch("/api/about", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(defaultData),
+        });
+        setSaveStatus({
+          type: "success",
+          message: "Reset to default values and synchronized with database.",
+        });
+        setTimeout(() => setSaveStatus(null), 3000);
+      } catch (err) {
+        console.error("Reset error:", err);
+      }
     }
   };
 
@@ -174,30 +377,32 @@ export function AboutView() {
 
           <button
             type="button"
+            disabled={isSaving}
             onClick={() => handleSave()}
             style={{
-              background: "#073e36",
+              background: isSaving ? "#94a3b8" : "#073e36",
               color: "#ffffff",
               border: "none",
               padding: "9px 20px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isSaving ? "not-allowed" : "pointer",
+              transition: "background 0.2s",
             }}
           >
-            Save About Changes
+            {isSaving ? "Saving to Database..." : "Save About Changes"}
           </button>
         </div>
       </div>
 
-      {/* Success Notification Alert */}
-      {savedNotification && (
+      {/* Save Notification / Status Alert */}
+      {saveStatus && (
         <div
           style={{
-            background: "#ecfdf5",
-            border: "1px solid #a7f3d0",
-            color: "#065f46",
+            background: saveStatus.type === "success" ? "#ecfdf5" : "#fef2f2",
+            border: `1px solid ${saveStatus.type === "success" ? "#a7f3d0" : "#fecaca"}`,
+            color: saveStatus.type === "success" ? "#065f46" : "#991b1b",
             padding: "12px 18px",
             borderRadius: "10px",
             fontSize: "13.5px",
@@ -207,8 +412,15 @@ export function AboutView() {
             gap: "10px",
           }}
         >
-          <span style={{ fontSize: "16px" }}>✓</span>
-          <span>{savedNotification}</span>
+          <span style={{ fontSize: "16px" }}>{saveStatus.type === "success" ? "✓" : "⚠️"}</span>
+          <span>{saveStatus.message}</span>
+        </div>
+      )}
+
+      {/* Loading indicator */}
+      {isLoading && (
+        <div style={{ textAlign: "center", padding: "16px", color: "#64748b", fontSize: "14px" }}>
+          Loading active About Us content from database...
         </div>
       )}
 
@@ -335,46 +547,144 @@ export function AboutView() {
             />
           </div>
 
-
           {/* Collage Images */}
           <div style={{ background: "#f8fafc", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             <div style={{ fontSize: "13px", fontWeight: 700, color: "#073e36", marginBottom: "14px" }}>
               Showcase Collage Photos (3 Photos)
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {/* Top Wide Photo */}
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                  Top Wide Photo Path
+                  Top Wide Photo (Leopard / Hero Landscape)
                 </label>
-                <input
-                  type="text"
-                  value={topImage}
-                  onChange={(e) => setTopImage(e.target.value)}
-                  style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
-                />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                    Bottom Left Photo Path
-                  </label>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                   <input
                     type="text"
-                    value={bottomLeftImage}
-                    onChange={(e) => setBottomLeftImage(e.target.value)}
-                    style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
+                    value={topImage}
+                    onChange={(e) => setTopImage(e.target.value)}
+                    style={{ flex: 1, padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
+                    placeholder="Image URL or Base64 data..."
                   />
+                  <input
+                    type="file"
+                    ref={topImageInputRef}
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => handleImageUpload(e, setTopImage)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => topImageInputRef.current?.click()}
+                    style={{
+                      background: "#f1f5f9",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "8px",
+                      padding: "9px 14px",
+                      fontSize: "12.5px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    📁 Upload Photo
+                  </button>
+                  {topImage && (
+                    <div style={{ width: "44px", height: "44px", borderRadius: "6px", overflow: "hidden", border: "1px solid #cbd5e1", position: "relative", flexShrink: 0 }}>
+                      <img src={topImage} alt="Top Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                  )}
                 </div>
+              </div>
+
+              {/* Bottom Pair */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                {/* Bottom Left Photo */}
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                    Bottom Right Photo Path
+                    Bottom Left Photo (Turtle / Coast)
                   </label>
-                  <input
-                    type="text"
-                    value={bottomRightImage}
-                    onChange={(e) => setBottomRightImage(e.target.value)}
-                    style={{ width: "100%", padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
-                  />
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      type="text"
+                      value={bottomLeftImage}
+                      onChange={(e) => setBottomLeftImage(e.target.value)}
+                      style={{ flex: 1, padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
+                      placeholder="Image URL or Base64..."
+                    />
+                    <input
+                      type="file"
+                      ref={bottomLeftImageInputRef}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleImageUpload(e, setBottomLeftImage)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => bottomLeftImageInputRef.current?.click()}
+                      style={{
+                        background: "#f1f5f9",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "8px",
+                        padding: "9px 12px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      📁 Upload
+                    </button>
+                    {bottomLeftImage && (
+                      <div style={{ width: "40px", height: "40px", borderRadius: "6px", overflow: "hidden", border: "1px solid #cbd5e1", position: "relative", flexShrink: 0 }}>
+                        <img src={bottomLeftImage} alt="Bottom Left Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bottom Right Photo */}
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+                    Bottom Right Photo (Ancient Stupa / Heritage)
+                  </label>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      type="text"
+                      value={bottomRightImage}
+                      onChange={(e) => setBottomRightImage(e.target.value)}
+                      style={{ flex: 1, padding: "9px 12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "13px" }}
+                      placeholder="Image URL or Base64..."
+                    />
+                    <input
+                      type="file"
+                      ref={bottomRightImageInputRef}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleImageUpload(e, setBottomRightImage)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => bottomRightImageInputRef.current?.click()}
+                      style={{
+                        background: "#f1f5f9",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "8px",
+                        padding: "9px 12px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      📁 Upload
+                    </button>
+                    {bottomRightImage && (
+                      <div style={{ width: "40px", height: "40px", borderRadius: "6px", overflow: "hidden", border: "1px solid #cbd5e1", position: "relative", flexShrink: 0 }}>
+                        <img src={bottomRightImage} alt="Bottom Right Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -383,18 +693,19 @@ export function AboutView() {
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "8px" }}>
             <button
               type="submit"
+              disabled={isSaving}
               style={{
-                background: "#073e36",
+                background: isSaving ? "#94a3b8" : "#073e36",
                 color: "#ffffff",
                 border: "none",
                 padding: "11px 26px",
                 borderRadius: "8px",
                 fontSize: "13.5px",
                 fontWeight: 600,
-                cursor: "pointer",
+                cursor: isSaving ? "not-allowed" : "pointer",
               }}
             >
-              Update Welcome Statement
+              {isSaving ? "Saving..." : "Update Welcome Statement"}
             </button>
           </div>
         </form>
@@ -492,6 +803,48 @@ export function AboutView() {
               />
             </div>
           ))}
+        </div>
+
+        {/* Section 2 Save Alert */}
+        {whyChooseStatus && (
+          <div
+            style={{
+              background: whyChooseStatus.type === "success" ? "#ecfdf5" : "#fef2f2",
+              border: `1px solid ${whyChooseStatus.type === "success" ? "#a7f3d0" : "#fecaca"}`,
+              color: whyChooseStatus.type === "success" ? "#065f46" : "#991b1b",
+              padding: "10px 16px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginTop: "16px",
+            }}
+          >
+            <span>{whyChooseStatus.type === "success" ? "✓" : "⚠️"}</span>
+            <span>{whyChooseStatus.message}</span>
+          </div>
+        )}
+
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+          <button
+            type="button"
+            disabled={isSavingWhyChoose}
+            onClick={handleSaveWhyChoose}
+            style={{
+              background: isSavingWhyChoose ? "#94a3b8" : "#073e36",
+              color: "#ffffff",
+              border: "none",
+              padding: "11px 26px",
+              borderRadius: "8px",
+              fontSize: "13.5px",
+              fontWeight: 600,
+              cursor: isSavingWhyChoose ? "not-allowed" : "pointer",
+            }}
+          >
+            {isSavingWhyChoose ? "Saving Pillars..." : "Update Why Choose Us Pillars"}
+          </button>
         </div>
       </div>
     </div>

@@ -10,72 +10,66 @@ export interface ServiceItem {
   iconName: string;
 }
 
+export const DEFAULT_SERVICES: ServiceItem[] = [
+  {
+    id: "air-ticketing",
+    title: "AIR TICKETING",
+    description: "Domestic and international flight reservations at competitive prices.",
+    iconName: "Airplane / Flights",
+  },
+  {
+    id: "plan-your-trip",
+    title: "PLAN YOUR TRIP",
+    description: "Personalized travel planning according to your budget and preferences.",
+    iconName: "Map / Route",
+  },
+  {
+    id: "one-day-tours",
+    title: "ONE DAY TOURS",
+    description: "Carefully designed day trips to popular attractions across Sri Lanka.",
+    iconName: "Calendar / Day Trips",
+  },
+  {
+    id: "visa-assistance",
+    title: "VISA ASSISTANCE",
+    description: "Guidance and support for visa applications and documentation.",
+    iconName: "Passport / Clipboard",
+  },
+  {
+    id: "round-tours",
+    title: "ROUND TOURS",
+    description: "Complete tour packages for individuals, families, and groups.",
+    iconName: "Globe / Multi-day",
+  },
+  {
+    id: "activities-destinations",
+    title: "ACTIVITIES & DESTINATIONS",
+    description: "Exciting activities and carefully selected destinations for unforgettable experiences.",
+    iconName: "Mountain / Scenery",
+  },
+  {
+    id: "inbound-outbound-tours",
+    title: "INBOUND & OUTBOUND TOURS",
+    description: "Travel services for visitors coming into the country and travelers going abroad.",
+    iconName: "Arrows / In-Out",
+  },
+  {
+    id: "travellers-cheques",
+    title: "TRAVELLER'S CHEQUES",
+    description: "Safe and convenient travel money services for your security.",
+    iconName: "Payment / Currency",
+  },
+  {
+    id: "airport-transfers",
+    title: "AIRPORT TRANSFERS",
+    description: "Comfortable and reliable airport pick-up and drop-off services.",
+    iconName: "Car / Chauffeur",
+  },
+];
+
 export function ServicesView() {
-  // Page Header Text State
-  const [pageTitleWord1, setPageTitleWord1] = useState("OUR");
-  const [pageTitleWord2, setPageTitleWord2] = useState("SERVICES");
-  const [pageSubtitle, setPageSubtitle] = useState(
-    "Experience comprehensive, reliable and personalized travel solutions across Sri Lanka and worldwide destinations."
-  );
-
-  // Exact 9 services from app/services/page.tsx
-  const [services, setServices] = useState<ServiceItem[]>([
-    {
-      id: "air-ticketing",
-      title: "AIR TICKETING",
-      description: "Domestic and international flight reservations at competitive prices.",
-      iconName: "Airplane / Flights",
-    },
-    {
-      id: "plan-your-trip",
-      title: "PLAN YOUR TRIP",
-      description: "Personalized travel planning according to your budget and preferences.",
-      iconName: "Map / Route",
-    },
-    {
-      id: "one-day-tours",
-      title: "ONE DAY TOURS",
-      description: "Carefully designed day trips to popular attractions across Sri Lanka.",
-      iconName: "Calendar / Day Trips",
-    },
-    {
-      id: "visa-assistance",
-      title: "VISA ASSISTANCE",
-      description: "Guidance and support for visa applications and documentation.",
-      iconName: "Passport / Clipboard",
-    },
-    {
-      id: "round-tours",
-      title: "ROUND TOURS",
-      description: "Complete tour packages for individuals, families, and groups.",
-      iconName: "Globe / Multi-day",
-    },
-    {
-      id: "activities-destinations",
-      title: "ACTIVITIES & DESTINATIONS",
-      description: "Exciting activities and carefully selected destinations for unforgettable experiences.",
-      iconName: "Mountain / Scenery",
-    },
-    {
-      id: "inbound-outbound-tours",
-      title: "INBOUND & OUTBOUND TOURS",
-      description: "Travel services for visitors coming into the country and travelers going abroad.",
-      iconName: "Arrows / In-Out",
-    },
-    {
-      id: "travellers-cheques",
-      title: "TRAVELLER'S CHEQUES",
-      description: "Safe and convenient travel money services for your security.",
-      iconName: "Payment / Currency",
-    },
-    {
-      id: "airport-transfers",
-      title: "AIRPORT TRANSFERS",
-      description: "Comfortable and reliable airport pick-up and drop-off services.",
-      iconName: "Car / Chauffeur",
-    },
-  ]);
-
+  // Service cards from app/services/page.tsx
+  const [services, setServices] = useState<ServiceItem[]>(DEFAULT_SERVICES);
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -105,13 +99,9 @@ export function ServicesView() {
   };
 
   const handleResetDefaults = () => {
-    if (confirm("Reset Our Services page to default values?")) {
-      setPageTitleWord1("OUR");
-      setPageTitleWord2("SERVICES");
-      setPageSubtitle(
-        "Experience comprehensive, reliable and personalized travel solutions across Sri Lanka and worldwide destinations."
-      );
-      showNotice("Reset to default configuration.");
+    if (confirm("Reset Our Services cards to default values?")) {
+      setServices(DEFAULT_SERVICES);
+      showNotice("Reset to default service cards.");
     }
   };
 
@@ -151,7 +141,7 @@ export function ServicesView() {
             </span>
           </div>
           <p style={{ fontSize: "13.5px", color: "#64748b", margin: 0 }}>
-            Managing <strong>{services.length} agency service cards</strong> and heading introduction on the public <code>/services</code> page.
+            Managing <strong>{services.length} agency service cards</strong> on the public <code>/services</code> page.
           </p>
         </div>
 
@@ -235,89 +225,7 @@ export function ServicesView() {
         </div>
       )}
 
-      {/* Section 1: Page Header & Title Settings */}
-      <div
-        style={{
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          borderRadius: "16px",
-          padding: "26px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-        }}
-      >
-        <div style={{ marginBottom: "18px" }}>
-          <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#073e36", margin: "0 0 4px 0" }}>
-            1. Services Page Header & Introduction
-          </h2>
-          <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-            Configure the main headline and italicized subtitle rendered above the 3x3 service card grid.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-          <div>
-            <label style={{ display: "block", fontSize: "12.5px", fontWeight: 700, color: "#334155", marginBottom: "6px" }}>
-              Title Word #1 (Green Accent)
-            </label>
-            <input
-              type="text"
-              value={pageTitleWord1}
-              onChange={(e) => setPageTitleWord1(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "9px 12px",
-                border: "1px solid #cbd5e1",
-                borderRadius: "8px",
-                fontSize: "13px",
-                fontWeight: 700,
-                color: "#073e36",
-              }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: "block", fontSize: "12.5px", fontWeight: 700, color: "#334155", marginBottom: "6px" }}>
-              Title Word #2 (Orange Accent)
-            </label>
-            <input
-              type="text"
-              value={pageTitleWord2}
-              onChange={(e) => setPageTitleWord2(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "9px 12px",
-                border: "1px solid #cbd5e1",
-                borderRadius: "8px",
-                fontSize: "13px",
-                fontWeight: 700,
-                color: "#ed8a28",
-              }}
-            />
-          </div>
-        </div>
-
-        <div style={{ marginTop: "14px" }}>
-          <label style={{ display: "block", fontSize: "12.5px", fontWeight: 700, color: "#334155", marginBottom: "6px" }}>
-            Section Subtitle
-          </label>
-          <textarea
-            rows={2}
-            value={pageSubtitle}
-            onChange={(e) => setPageSubtitle(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              border: "1px solid #cbd5e1",
-              borderRadius: "8px",
-              fontSize: "13px",
-              lineHeight: 1.5,
-              color: "#556c75",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Section 2: Service Cards Grid (3x3 matching frontend) */}
+      {/* Service Cards Grid (3x3 matching frontend) */}
       <div
         style={{
           background: "#ffffff",
@@ -330,7 +238,7 @@ export function ServicesView() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <div>
             <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#073e36", margin: "0 0 4px 0" }}>
-              2. Core Service Cards ({services.length} Total)
+              Core Service Cards ({services.length} Total)
             </h2>
             <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
               Displayed in the responsive 3-column grid on the /services page.

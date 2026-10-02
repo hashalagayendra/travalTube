@@ -1,8 +1,49 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 
 export function WelcomeSection() {
+  const [data, setData] = useState({
+    eyebrow: "WELCOME TO",
+    titleMain: "TRAVEL TUBE LANKA",
+    titleAccent: "(PVT) LTD",
+    paragraph1:
+      "Your trusted partner for all travel and tourism services. We are committed to making your travel experience smooth, comfortable, and memorable.",
+    paragraph2:
+      "Our company provides a wide range of travel solutions for both local and international travelers. With a professional and friendly team, we help our clients plan their journeys with confidence and convenience.",
+    topImage: "/images/welcome-wildlife.jpg",
+    bottomLeftImage: "/images/welcome-coast.jpg",
+    bottomRightImage: "/images/welcome-heritage.jpg",
+  });
+
+  useEffect(() => {
+    async function loadAbout() {
+      try {
+        const res = await fetch("/api/about");
+        const json = await res.json();
+        if (json.success && json.data) {
+          setData((prev) => ({
+            ...prev,
+            eyebrow: json.data.eyebrow || prev.eyebrow,
+            titleMain: json.data.titleMain || prev.titleMain,
+            titleAccent: json.data.titleAccent || prev.titleAccent,
+            paragraph1: json.data.paragraph1 || prev.paragraph1,
+            paragraph2: json.data.paragraph2 || prev.paragraph2,
+            topImage: json.data.topImage || prev.topImage,
+            bottomLeftImage: json.data.bottomLeftImage || prev.bottomLeftImage,
+            bottomRightImage: json.data.bottomRightImage || prev.bottomRightImage,
+          }));
+        }
+      } catch (err) {
+        console.error("Could not load about data:", err);
+      }
+    }
+    loadAbout();
+  }, []);
+
   return (
     <>
       <style>{`
@@ -306,21 +347,12 @@ export function WelcomeSection() {
 
         <div className="welcomeInner">
           <div className="welcomeCopy">
-            <p className="welcomeEyebrow">WELCOME TO</p>
+            <p className="welcomeEyebrow">{data.eyebrow}</p>
             <h2 id="welcome-title">
-              TRAVEL TUBE LANKA <span>(PVT) LTD</span>
+              {data.titleMain} <span>{data.titleAccent}</span>
             </h2>
-            <p>
-              Your trusted partner for all travel and tourism services. We are
-              committed to making your travel experience smooth, comfortable, and
-              memorable.
-            </p>
-            <p>
-              Our company provides a wide range of travel solutions for both local
-              and international travelers. With a professional and friendly team,
-              we help our clients plan their journeys with confidence and
-              convenience.
-            </p>
+            <p>{data.paragraph1}</p>
+            <p>{data.paragraph2}</p>
             <Link
               className="welcomeReadMore"
               href="/about"
@@ -376,25 +408,28 @@ export function WelcomeSection() {
           <div className="welcomeCollage">
             <div className="welcomeWildlife">
               <Image
-                src="/images/welcome-wildlife.jpg"
-                alt="A leopard resting on a tree branch"
+                src={data.topImage}
+                alt="Showcase top collage photo"
                 fill
+                unoptimized
                 sizes="(max-width: 900px) 90vw, 42vw"
               />
             </div>
             <div className="welcomePhoto">
               <Image
-                src="/images/welcome-coast.jpg"
-                alt="A traveler watching sea turtles in the shallow water at a Sri Lankan beach"
+                src={data.bottomLeftImage}
+                alt="Showcase bottom left photo"
                 fill
+                unoptimized
                 sizes="(max-width: 900px) 44vw, 21vw"
               />
             </div>
             <div className="welcomePhoto">
               <Image
-                src="/images/welcome-heritage.jpg"
-                alt="An ancient brick stupa surrounded by trees in Sri Lanka"
+                src={data.bottomRightImage}
+                alt="Showcase bottom right photo"
                 fill
+                unoptimized
                 sizes="(max-width: 900px) 44vw, 21vw"
               />
             </div>
