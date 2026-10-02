@@ -438,50 +438,48 @@ export default function AboutPage() {
 
         /* Why Choose Us Section */
         .whyChooseUsSection {
-          margin-top: 64px;
-          padding-top: 48px;
-          border-top: 1px solid #eef4f2;
+          background: #fbfaf6;
+          padding: 66px 0 78px;
         }
 
         .whyChooseUsHeader {
           text-align: center;
-          max-width: 680px;
-          margin: 0 auto 38px;
+          max-width: 760px;
+          margin: 0 auto 42px;
         }
 
         .whyChooseUsEyebrow {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           color: #ed8a28;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
-          letter-spacing: 3px;
+          letter-spacing: 2.8px;
           text-transform: uppercase;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
         }
 
         .whyChooseUsEyebrow .eyebrowLine {
           display: inline-block;
-          width: 32px;
-          height: 2px;
+          width: 25px;
+          height: 1px;
           background: #ed8a28;
-          border-radius: 1px;
         }
 
         .whyChooseUsTitle {
-          margin: 0 0 12px;
-          color: #073e36;
+          margin: 0 0 8px;
+          color: #092a2a;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(28px, 3.2vw, 40px);
+          font-size: clamp(34px, 3.6vw, 48px);
           font-weight: 700;
-          letter-spacing: -0.5px;
-          line-height: 1.2;
+          letter-spacing: -1px;
+          line-height: 1.12;
         }
 
         .whyChooseUsSubtitle {
           margin: 0;
-          color: #556c75;
+          color: #667172;
           font-size: 15px;
           line-height: 1.65;
         }
@@ -489,52 +487,35 @@ export default function AboutPage() {
         .whyChooseCardsGrid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 22px;
+          gap: 16px;
         }
 
         .whyChooseCard {
-          position: relative;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          padding: 28px 24px;
+          min-height: 255px;
+          padding: 26px 24px 28px;
           background: #ffffff;
-          border: 1px solid #e7efec;
-          border-radius: 20px;
-          box-shadow: 0 4px 18px rgba(7, 62, 54, 0.03);
+          border: 1px solid #f0eee9;
+          border-radius: 14px;
+          box-shadow: 0 8px 24px rgba(31, 46, 36, 0.025);
           transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-          overflow: hidden;
-        }
-
-        .whyChooseCard::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, #073e36, #ed8a28);
-          opacity: 0;
-          transition: opacity 0.25s ease;
         }
 
         .whyChooseCard:hover {
-          border-color: #bad5ce;
+          border-color: #dce8df;
           transform: translateY(-4px);
           box-shadow: 0 12px 28px rgba(7, 62, 54, 0.08);
-        }
-
-        .whyChooseCard:hover::after {
-          opacity: 1;
         }
 
         .whyChooseIconBadge {
           display: grid;
           place-items: center;
-          width: 54px;
-          height: 54px;
-          border-radius: 16px;
-          margin-bottom: 18px;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          margin-bottom: 23px;
           flex-shrink: 0;
           transition: transform 0.25s ease;
         }
@@ -544,40 +525,40 @@ export default function AboutPage() {
         }
 
         .badgeService {
-          background: #e3f2ef;
+          background: #f1f5f0;
           color: #073e36;
         }
 
         .badgePackages {
-          background: #fef0e7;
-          color: #ed8a28;
+          background: #f1f5f0;
+          color: #073e36;
         }
 
         .badgePlanning {
-          background: #e1f2f6;
-          color: #085c6c;
+          background: #f1f5f0;
+          color: #073e36;
         }
 
         .badgeSupport {
-          background: #fbf3e0;
-          color: #c97510;
+          background: #f1f5f0;
+          color: #073e36;
         }
 
         .whyChooseCardTitle {
-          margin: 0 0 10px;
+          margin: 0 0 9px;
           color: #073e36;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: 18px;
+          font-size: 19px;
           font-weight: 700;
           letter-spacing: -0.2px;
-          line-height: 1.3;
+          line-height: 1.25;
         }
 
         .whyChooseCardDesc {
           margin: 0;
-          color: #556c75;
+          color: #687174;
           font-size: 13.5px;
-          line-height: 1.6;
+          line-height: 1.65;
         }
 
         /* Decorative Botanical Accents */
@@ -639,83 +620,134 @@ export default function AboutPage() {
 
         /* Mission & Vision Section */
         .storySection {
-          background: #ffffff;
-          padding: 50px 0 80px;
-          border-top: 1px solid #eef4f2;
+          background: #edf3e8;
+          padding: 70px 0 86px;
+        }
+
+        .storyHeader {
+          max-width: 760px;
+          margin: 0 auto 40px;
+          text-align: center;
+        }
+
+        .storyEyebrow {
+          display: block;
+          color: #ed8a28;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 2.8px;
+          text-transform: uppercase;
+          margin-bottom: 12px;
+        }
+
+        .storyHeading {
+          margin: 0 0 10px;
+          color: #092a2a;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(34px, 3.6vw, 48px);
+          line-height: 1.12;
+          letter-spacing: -1px;
+        }
+
+        .storySubtitle {
+          margin: 0;
+          color: #667172;
+          font-size: 15px;
+          line-height: 1.65;
         }
 
         .storyGrid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 32px;
+          gap: 18px;
         }
 
         .storyCard {
-          padding: 34px 38px;
-          border-radius: 20px;
-          border: 1px solid #e5edea;
+          padding: 28px 30px 30px;
+          border-radius: 14px;
+          border: 1px solid #eaf0e7;
           background: #ffffff;
-          transition: border-color 0.2s ease, transform 0.2s ease;
+          box-shadow: 0 7px 22px rgba(31, 46, 36, 0.025);
         }
 
-        .storyCard:hover {
-          border-color: #bad5ce;
-          transform: translateY(-2px);
+        .storyCardTop {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          margin-bottom: 20px;
+        }
+
+        .storyIconBadge {
+          display: grid;
+          place-items: center;
+          width: 66px;
+          height: 66px;
+          border-radius: 50%;
+          color: #073e36;
+          background: #fdf3e5;
+          flex: none;
         }
 
         .storyCardTag {
-          display: inline-block;
-          font-size: 11px;
+          display: block;
+          font-size: 10px;
           font-weight: 700;
-          letter-spacing: 2px;
+          letter-spacing: 2.4px;
           text-transform: uppercase;
           color: #ed8a28;
-          margin-bottom: 10px;
+          margin-bottom: 6px;
         }
 
         .storyCardTitle {
           font-family: Georgia, "Times New Roman", serif;
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 700;
           color: #073e36;
-          margin: 0 0 14px;
+          margin: 0;
         }
 
         .storyCardText {
-          color: #556c75;
+          color: #687174;
           font-size: 14.5px;
-          line-height: 1.75;
+          line-height: 1.7;
           margin: 0;
         }
 
         /* Stats Counter Bar */
         .statsBarSection {
-          background: #073e36;
+          background: #004f40;
           color: #ffffff;
-          padding: 44px 0;
+          padding: 46px 0;
         }
 
         .statsGrid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
+          gap: 0;
           text-align: center;
+        }
+
+        .statItem {
+          padding: 0 18px;
+        }
+
+        .statItem + .statItem {
+          border-left: 1px solid rgba(255, 255, 255, 0.26);
         }
 
         .statItemNumber {
           font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(32px, 3.5vw, 46px);
+          font-size: clamp(34px, 3.8vw, 50px);
           font-weight: 700;
-          color: #ffb321;
-          margin: 0 0 6px;
+          color: #f7b548;
+          margin: 0 0 5px;
         }
 
         .statItemLabel {
-          font-size: 13px;
-          color: #cbe0da;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          font-weight: 600;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 15px;
+          color: #ffffff;
+          font-weight: 700;
         }
 
         /* CTA Section */
@@ -799,16 +831,8 @@ export default function AboutPage() {
           .aboutTwoColGrid {
             gap: 40px;
           }
-          .whyChooseCardsGrid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-          }
           .decorPalmLeft, .decorLeafRight, .decorDotGrid {
             display: none;
-          }
-          .statsGrid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
           }
         }
 
@@ -821,32 +845,64 @@ export default function AboutPage() {
             max-width: 640px;
             margin: 0 auto;
           }
-          .whyChooseUsSection {
-            margin-top: 48px;
-            padding-top: 36px;
-          }
           .storyGrid {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 800px) {
+          .whyChooseCardsGrid,
+          .statsGrid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .statsGrid {
+            row-gap: 28px;
+          }
+          .statItem:nth-child(3) {
+            border-left: 0;
+          }
+          .whyChooseUsSection,
+          .storySection {
+            padding-top: 56px;
+            padding-bottom: 64px;
           }
         }
 
         @media (max-width: 640px) {
           .whyChooseCardsGrid {
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 14px;
           }
           .whyChooseCard {
-            padding: 22px 18px;
+            min-height: 0;
+            padding: 24px;
           }
         }
 
         @media (max-width: 600px) {
           .statsGrid {
             grid-template-columns: 1fr 1fr;
-            gap: 22px;
+            column-gap: 0;
+            row-gap: 24px;
+          }
+          .statItem {
+            padding: 0 8px;
+          }
+          .statItemNumber {
+            font-size: 32px;
+          }
+          .statItemLabel {
+            font-size: 12px;
           }
           .storyCard {
             padding: 24px;
+          }
+          .storyCardTop {
+            gap: 14px;
+          }
+          .storyIconBadge {
+            width: 58px;
+            height: 58px;
           }
         }
       `}</style>
@@ -1024,38 +1080,40 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
-
-            {/* Why Choose Us Section */}
-            <section className="whyChooseUsSection" aria-label="Why Choose Us">
-              <div className="whyChooseUsHeader">
-                <div className="whyChooseUsEyebrow">
-                  <span className="eyebrowLine" aria-hidden="true" />
-                  <span>WHY CHOOSE US</span>
-                  <span className="eyebrowLine" aria-hidden="true" />
-                </div>
-                <h2 className="whyChooseUsTitle">Why Choose Us</h2>
-                <p className="whyChooseUsSubtitle">
-                  Experience the best of Sri Lanka with our dedicated team and premium travel services.
-                </p>
-              </div>
-
-              <div className="whyChooseCardsGrid">
-                {whyChoosePillars.map((pillar, idx) => {
-                  const meta = pillarIcons[idx % pillarIcons.length];
-                  return (
-                    <div key={pillar.id || idx} className="whyChooseCard">
-                      <div className={`whyChooseIconBadge ${meta.badgeClass}`} aria-hidden="true">
-                        {meta.icon}
-                      </div>
-                      <h3 className="whyChooseCardTitle">{pillar.title}</h3>
-                      <p className="whyChooseCardDesc">{pillar.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
           </div>
         </main>
+
+        {/* Why Choose Us Section */}
+        <section className="whyChooseUsSection" aria-label="Why Choose Us">
+          <div className="aboutContainer">
+            <div className="whyChooseUsHeader">
+              <div className="whyChooseUsEyebrow">
+                <span className="eyebrowLine" aria-hidden="true" />
+                <span>WHY CHOOSE US</span>
+                <span className="eyebrowLine" aria-hidden="true" />
+              </div>
+              <h2 className="whyChooseUsTitle">Why Choose Us</h2>
+              <p className="whyChooseUsSubtitle">
+                Experience the best of Sri Lanka with our dedicated team and premium travel services.
+              </p>
+            </div>
+
+            <div className="whyChooseCardsGrid">
+              {whyChoosePillars.map((pillar, idx) => {
+                const meta = pillarIcons[idx % pillarIcons.length];
+                return (
+                  <div key={pillar.id || idx} className="whyChooseCard">
+                    <div className={`whyChooseIconBadge ${meta.badgeClass}`} aria-hidden="true">
+                      {meta.icon}
+                    </div>
+                    <h3 className="whyChooseCardTitle">{pillar.title}</h3>
+                    <p className="whyChooseCardDesc">{pillar.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
         {/* Stats Counter Bar */}
         <section className="statsBarSection" aria-label="Key Achievements">
@@ -1084,10 +1142,26 @@ export default function AboutPage() {
         {/* Mission & Vision Section */}
         <section className="storySection" aria-label="Mission and Vision">
           <div className="aboutContainer">
+            <div className="storyHeader">
+              <span className="storyEyebrow">Our Purpose</span>
+              <h2 className="storyHeading">Our Future</h2>
+              <p className="storySubtitle">
+                Guided by a deeper purpose, we look ahead to a more sustainable and inspiring future for travel in Sri Lanka.
+              </p>
+            </div>
             <div className="storyGrid">
               <div className="storyCard">
-                <span className="storyCardTag">Our Purpose</span>
-                <h2 className="storyCardTitle">Our Mission</h2>
+                <div className="storyCardTop">
+                  <span className="storyIconBadge" aria-hidden="true">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 28V17M16 21c-7 0-11-4-11-11 7 0 11 4 11 11ZM16 17c0-7 4-11 11-11 0 7-4 11-11 11Z" />
+                    </svg>
+                  </span>
+                  <div>
+                    <span className="storyCardTag">Our Mission</span>
+                    <h3 className="storyCardTitle">Our Mission</h3>
+                  </div>
+                </div>
                 <p className="storyCardText">
                   To craft inspiring, seamless, and deeply authentic travel experiences
                   across Sri Lanka. We believe every journey should nurture genuine
@@ -1097,8 +1171,17 @@ export default function AboutPage() {
               </div>
 
               <div className="storyCard">
-                <span className="storyCardTag">Our Future</span>
-                <h2 className="storyCardTitle">Our Vision</h2>
+                <div className="storyCardTop">
+                  <span className="storyIconBadge" aria-hidden="true">
+                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="16" cy="18" r="12" /><circle cx="16" cy="18" r="6" /><circle cx="16" cy="18" r="1.5" fill="currentColor" stroke="none" /><path d="m16 18 12-12m-4 0h4v4" />
+                    </svg>
+                  </span>
+                  <div>
+                    <span className="storyCardTag">Our Vision</span>
+                    <h3 className="storyCardTitle">Our Vision</h3>
+                  </div>
+                </div>
                 <p className="storyCardText">
                   To be recognized as Sri Lanka’s most trusted and sustainable inbound
                   tour operator, setting the benchmark for customized hospitality,
