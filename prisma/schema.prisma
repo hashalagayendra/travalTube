@@ -124,3 +124,18 @@ model Destination {
 
   @@map("destinations")
 }
+
+// Photo Gallery Showcase (app/gallery/page.tsx & GalleryView.tsx)
+model GalleryItem {
+  id            Int      @id @default(autoincrement())
+  title         String
+  location      String
+  category      String   @default("culture") // "nature" | "wildlife" | "culture" | "beaches" | "adventure"
+  categoryLabel String   @default("Culture")
+  image         String   @db.LongText // Direct Base64 or image URL/path
+  description   String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("gallery_items")
+}

@@ -310,17 +310,27 @@ export async function PUT(request: Request) {
       }
     }
 
-    const rows = await prisma.$queryRawUnsafe<DestinationData[]>(
-      `SELECT id, slug, title, badge, location, description, image, isHomepage, isPinned, category, highlights, duration, bestSeason, createdAt, updatedAt
-       FROM destinations
-       ORDER BY isPinned DESC, isHomepage DESC, id ASC`
-    );
-
-    const refreshed = rows.map((r) => ({
-      ...r,
-      isHomepage: Boolean(r.isHomepage),
-      isPinned: Boolean(r.isPinned),
-    }));
+    let refreshed: DestinationData[] = updatedResults;
+    try {
+      if (db.destination?.findMany) {
+        refreshed = await db.destination.findMany({
+          orderBy: [{ isPinned: "desc" }, { isHomepage: "desc" }, { id: "asc" }],
+        });
+      } else {
+        const rows = await prisma.$queryRawUnsafe<DestinationData[]>(
+          `SELECT id, slug, title, badge, location, description, image, isHomepage, isPinned, category, highlights, duration, bestSeason, createdAt, updatedAt
+           FROM destinations
+           ORDER BY isPinned DESC, isHomepage DESC, id ASC`
+        );
+        refreshed = (rows || []).map((r) => ({
+          ...r,
+          isHomepage: Boolean(r.isHomepage),
+          isPinned: Boolean(r.isPinned),
+        }));
+      }
+    } catch (refreshErr) {
+      console.warn("PUT /api/destinations refreshed query warning:", refreshErr);
+    }
 
     return NextResponse.json(
       {

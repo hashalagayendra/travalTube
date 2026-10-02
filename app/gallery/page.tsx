@@ -168,9 +168,39 @@ const galleryItems: GalleryItem[] = [
 
 export default function GalleryPage() {
   const searchDialog = useRef<HTMLDialogElement>(null);
+  const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("all");
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(8);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Fetch live items from /api/gallery database
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch("/api/gallery", { cache: "no-store" });
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setItems(
+            json.data.map((item: any) => ({
+              id: String(item.id),
+              title: item.title,
+              location: item.location,
+              category: item.category as GalleryItem["category"],
+              categoryLabel: item.categoryLabel || item.category,
+              image: item.image,
+              description: item.description,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load gallery items from database:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchGallery();
+  }, []);
 
   const handleOpenSearch = () => {
     if (typeof window !== "undefined") {
@@ -183,8 +213,8 @@ export default function GalleryPage() {
   };
 
   const filteredItems = selectedCategory === "all"
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === selectedCategory);
+    ? items
+    : items.filter((item) => item.category === selectedCategory);
 
   const displayedItems = filteredItems.slice(0, visibleCount);
 
