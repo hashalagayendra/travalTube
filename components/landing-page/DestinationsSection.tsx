@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import styles from "./LandingSections.module.css";
 import { Icon } from "@/components/ui/Icon";
 
 interface DestinationItem {
@@ -88,7 +89,7 @@ export function DestinationsSection() {
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           setItems(
-            json.data.map((d: any) => ({
+            json.data.map((d: DestinationItem) => ({
               id: d.slug || d.id,
               title: d.title,
               badge: d.badge,
@@ -106,296 +107,60 @@ export function DestinationsSection() {
     loadDestinations();
   }, []);
   return (
-    <>
-      <style>{`
-        .destinationsSection {
-          padding: 30px 0 80px;
-          background: #ffffff;
-          position: relative;
-        }
-
-        .destinationsInner {
-          width: min(1360px, 92%);
-          margin: 0 auto;
-        }
-
-        .destinationsHeader {
-          text-align: center;
-          margin-bottom: 45px;
-        }
-
-        .destinationsEyebrow {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          font-size: 11px;
-          letter-spacing: 3px;
-          font-weight: 600;
-          color: #556c75;
-          margin: 0 0 14px;
-        }
-
-        .destinationsEyebrow::before,
-        .destinationsEyebrow::after {
-          content: "";
-          display: inline-block;
-          width: 28px;
-          height: 2px;
-          background: #e8a838;
-        }
-
-        .destinationsHeader h2 {
-          margin: 0 0 10px;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(28px, 3.1vw, 42px);
-          font-weight: 700;
-          line-height: 1.2;
-          letter-spacing: -0.5px;
-          color: #073e36;
-        }
-
-        .destinationsHeader h2 span {
-          color: #f0642b;
-          white-space: nowrap;
-        }
-
-        .destinationsSubtitle {
-          margin: 0;
-          font-family: Georgia, "Times New Roman", serif;
-          font-style: italic;
-          font-size: 15px;
-          color: #556c75;
-          letter-spacing: 0.2px;
-        }
-
-        .destinationsGrid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 26px;
-        }
-
-        .destinationCard {
-          display: grid;
-          grid-template-columns: 210px 1fr;
-          gap: 20px;
-          background: #ffffff;
-          border: 1px solid #e5edeb;
-          border-radius: 18px;
-          padding: 16px;
-          text-decoration: none;
-          color: inherit;
-          transition: border-color .25s ease;
-        }
-
-        .destinationCard:hover {
-          border-color: #bad5ce;
-        }
-
-        .destinationMedia {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 4 / 3.4;
-          border-radius: 13px;
-          overflow: hidden;
-          background: #e6eee9;
-        }
-
-        .destinationImg {
-          object-fit: cover;
-          object-position: center;
-          transition: transform .45s ease;
-        }
-
-        .destinationCard:hover .destinationImg {
-          transform: scale(1.05);
-        }
-
-        .destinationBadge {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          z-index: 2;
-          background: rgba(255, 255, 255, 0.94);
-          color: #073e36;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          padding: 4px 9px;
-          border-radius: 6px;
-          border: 1px solid rgba(7, 62, 54, 0.08);
-        }
-
-        .destinationBody {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 4px 6px 4px 0;
-        }
-
-        .destinationTitle {
-          margin: 0 0 6px;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 20px;
-          font-weight: 700;
-          letter-spacing: -0.3px;
-          color: #073e36;
-          text-transform: uppercase;
-          transition: color .2s ease;
-        }
-
-        .destinationCard:hover .destinationTitle {
-          color: #086157;
-        }
-
-        .destinationLocation {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          color: #556c75;
-          margin-bottom: 10px;
-        }
-
-        .destinationLocation svg {
-          width: 14px;
-          height: 14px;
-          color: #f0642b;
-          flex-shrink: 0;
-        }
-
-        .destinationDescription {
-          margin: 0 0 14px;
-          font-size: 13px;
-          line-height: 1.62;
-          color: #556c75;
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .destinationAction {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 13px;
-          font-weight: 700;
-          color: #073e36;
-          margin-top: auto;
-          transition: color .2s ease;
-        }
-
-        .destinationAction svg {
-          width: 14px;
-          height: 14px;
-          transition: transform .25s ease, color .2s ease;
-        }
-
-        .destinationCard:hover .destinationAction {
-          color: #f06c2f;
-        }
-
-        .destinationCard:hover .destinationAction svg {
-          transform: translateX(4px);
-          color: #f06c2f;
-        }
-
-        @media (max-width: 1100px) {
-          .destinationCard {
-            grid-template-columns: 180px 1fr;
-            gap: 16px;
-          }
-          .destinationTitle {
-            font-size: 18px;
-          }
-        }
-
-        @media (max-width: 820px) {
-          .destinationsGrid {
-            grid-template-columns: 1fr;
-            max-width: 580px;
-            margin: 0 auto;
-          }
-          .destinationCard {
-            grid-template-columns: 170px 1fr;
-          }
-        }
-
-        @media (max-width: 540px) {
-          .destinationCard {
-            grid-template-columns: 1fr;
-            gap: 14px;
-          }
-          .destinationMedia {
-            aspect-ratio: 16 / 9;
-          }
-          .destinationBody {
-            padding: 0;
-          }
-          .destinationsSection {
-            padding: 30px 0 55px;
-          }
-        }
-      `}</style>
-
-      <section
-        id="destinations"
-        className="destinationsSection"
-        aria-labelledby="destinations-title"
-      >
-        <div className="destinationsInner">
-          <div className="destinationsHeader">
-            <p className="destinationsEyebrow">ICONIC ATTRACTIONS</p>
-            <h2 id="destinations-title">
-              TOP DESTINATION <span>IN SRI LANKA</span>
-            </h2>
-            <p className="destinationsSubtitle">
-              Most Beautiful and amazing Places To See In Sri Lanka
-            </p>
-          </div>
-
-          <div className="destinationsGrid">
-            {items.map((item) => (
-              <a
-                key={item.id}
-                href={item.href || "/destination"}
-                className="destinationCard"
-                aria-label={`Explore ${item.title} destination in Sri Lanka`}
-              >
-                <div className="destinationMedia">
-                  <Image
-                    src={item.image}
-                    alt={`${item.title} - Sri Lanka travel destination`}
-                    fill
-                    unoptimized={Boolean(item.image?.startsWith("data:") || item.image?.startsWith("http"))}
-                    sizes="(max-width: 820px) 100vw, (max-width: 1100px) 180px, 210px"
-                    className="destinationImg"
-                  />
-                  <span className="destinationBadge">{item.badge}</span>
-                </div>
-
-                <div className="destinationBody">
-                  <div>
-                    <h3 className="destinationTitle">{item.title}</h3>
-                    <div className="destinationLocation">
-                      <Icon name="pin" />
-                      <span>{item.location}</span>
-                    </div>
-                    <p className="destinationDescription">{item.description}</p>
-                  </div>
-
-                  <span className="destinationAction">
-                    Explore Destination <Icon name="arrow" />
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
+    <section
+      id="destinations"
+      className={styles.destinationsSection}
+      aria-labelledby="destinations-title"
+    >
+      <div className={styles.destinationsInner}>
+        <div className={styles.destinationsHeader}>
+          <p className={styles.destinationsEyebrow}>ICONIC ATTRACTIONS</p>
+          <h2 id="destinations-title">
+            TOP DESTINATION <span>IN SRI LANKA</span>
+          </h2>
+          <p className={styles.destinationsSubtitle}>
+            Most Beautiful and amazing Places To See In Sri Lanka
+          </p>
         </div>
-      </section>
-    </>
+
+        <div className={styles.destinationsGrid}>
+          {items.map((item) => (
+            <a
+              key={item.id}
+              href={item.href || "/destination"}
+              className={styles.destinationCard}
+              aria-label={`Explore ${item.title} destination in Sri Lanka`}
+            >
+              <div className={styles.destinationMedia}>
+                <Image
+                  src={item.image}
+                  alt={`${item.title} - Sri Lanka travel destination`}
+                  fill
+                  unoptimized={Boolean(item.image?.startsWith("data:") || item.image?.startsWith("http"))}
+                  sizes="(max-width: 600px) 90vw, (max-width: 900px) 44vw, (max-width: 1478px) 30vw, 440px"
+                  className={styles.destinationImg}
+                />
+                <span className={styles.destinationBadge}>{item.badge}</span>
+              </div>
+
+              <div className={styles.destinationBody}>
+                <div>
+                  <h3 className={styles.destinationTitle}>{item.title}</h3>
+                  <div className={styles.destinationLocation}>
+                    <Icon name="pin" />
+                    <span>{item.location}</span>
+                  </div>
+                  <p className={styles.destinationDescription}>{item.description}</p>
+                </div>
+
+                <span className={styles.destinationAction}>
+                  Explore Destination <Icon name="arrow" />
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

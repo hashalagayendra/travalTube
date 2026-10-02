@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import styles from "./LandingSections.module.css";
 
 interface TourPackage {
   id: number;
@@ -105,6 +106,7 @@ const defaultTourPackages: TourPackage[] = [
 export function PackagesSection() {
   const [packages, setPackages] = useState<TourPackage[]>(defaultTourPackages);
   const [showAll, setShowAll] = useState(false);
+  const [scrollEdges, setScrollEdges] = useState({ start: true, end: false });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -122,540 +124,199 @@ export function PackagesSection() {
     loadPackages();
   }, []);
 
-  function scroll(direction: "left" | "right") {
-    if (scrollContainerRef.current) {
-      const scrollAmount = direction === "left" ? -410 : 410;
-      scrollContainerRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || showAll) return;
+
+    function updateScrollEdges() {
+      if (!container) return;
+      setScrollEdges({
+        start: container.scrollLeft <= 1,
+        end: container.scrollLeft + container.clientWidth >= container.scrollWidth - 1,
       });
     }
+
+    const observer = new ResizeObserver(updateScrollEdges);
+    observer.observe(container);
+    container.addEventListener("scroll", updateScrollEdges, { passive: true });
+    return () => {
+      observer.disconnect();
+      container.removeEventListener("scroll", updateScrollEdges);
+    };
+  }, [packages.length, showAll]);
+
+  function scroll(direction: "left" | "right") {
+    const container = scrollContainerRef.current;
+    const card = container?.firstElementChild;
+    if (!container || !card) return;
+
+    const gap = parseFloat(window.getComputedStyle(container).columnGap) || 0;
+    const distance = card.getBoundingClientRect().width + gap;
+    container.scrollBy({
+      left: direction === "left" ? -distance : distance,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
   }
 
   return (
-    <>
-      <style>{`
-        .packagesSection {
-          padding: 60px 0 30px;
-          background: #ffffff;
-          overflow: hidden;
-        }
-
-        .packagesInner {
-          width: min(1360px, 92%);
-          margin: 0 auto;
-        }
-
-        .packagesHeader {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          margin-bottom: 28px;
-        }
-
-        .packagesHeading {
-          display: flex;
-          align-items: center;
-          gap: 18px;
-        }
-
-        .packagesHeading h2 {
-          margin: 0;
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 32px;
-          color: #073e36;
-          font-weight: 700;
-          line-height: 1.2;
-          letter-spacing: -.5px;
-        }
-
-        .packagesSubtitle {
-          display: flex;
-          align-items: center;
-          gap: 13px;
-          color: #556c75;
-          font-size: 11px;
-          line-height: 1.5;
-        }
-
-        .packagesSubtitle::before {
-          content: "";
-          width: 27px;
-          height: 2px;
-          flex-shrink: 0;
-          background: #e8a838;
-        }
-
-        .packagesActions {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
-
-        .scrollControls {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .scrollArrowBtn {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          border: 1px solid #d4e3e0;
-          background: #ffffff;
-          color: #073e36;
-          display: grid;
-          place-items: center;
-          cursor: pointer;
-          transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
-        }
-
-        .scrollArrowBtn:hover {
-          background: #e6f3e5;
-          border-color: #bad5ce;
-          color: #073e36;
-          transform: scale(1.05);
-        }
-
-        .scrollArrowBtn svg {
-          width: 16px;
-          height: 16px;
-        }
-
-        .viewAllButton {
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid #d4e3e0;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          color: #073e36;
-          font-size: 12px;
-          font-weight: 700;
-          padding: 8px 16px;
-          border-radius: 24px;
-          white-space: nowrap;
-          transition: color 0.2s, background 0.2s, border-color 0.2s;
-        }
-
-        .viewAllButton:hover {
-          color: #f06c2f;
-          border-color: #f06c2f;
-          background: #ffffff;
-        }
-
-        .viewAllButton svg {
-          width: 15px;
-          height: 15px;
-          transition: transform 0.25s ease;
-        }
-
-        /* Horizontal Scroll Mode */
-        .packagesScrollContainer {
-          display: flex;
-          gap: 24px;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          scroll-behavior: smooth;
-          padding: 8px 4px 24px 4px;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-
-        .packagesScrollContainer::-webkit-scrollbar {
-          display: none;
-        }
-
-        .packagesScrollContainer .packageCard {
-          flex: 0 0 380px;
-          width: 380px;
-          scroll-snap-align: start;
-        }
-
-        /* Grid View Mode */
-        .packagesGridContainer {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 26px;
-          padding: 8px 0 10px 0;
-          animation: enter .35s ease both;
-        }
-
-        .packageCard {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          border: 1px solid #e5eef0;
-          border-radius: 20px;
-          background: #ffffff;
-          overflow: hidden;
-          text-decoration: none;
-          color: inherit;
-          transition: transform .25s ease, border-color .25s ease;
-        }
-
-        .packageCard:hover {
-          transform: translateY(-5px);
-          border-color: #bad5ce;
-        }
-
-        .packageImageWrapper {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 16 / 8.2;
-          overflow: hidden;
-          background: #e2ecec;
-        }
-
-        .packageImg {
-          object-fit: cover;
-          object-position: center 60%;
-          transition: transform .45s ease;
-        }
-
-        .packageCard:hover .packageImg {
-          transform: scale(1.04);
-        }
-
-        .packageDurationPill {
-          position: absolute;
-          top: 12px;
-          left: 12px;
-          z-index: 2;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: #ffffff;
-          border-radius: 999px;
-          padding: 5px 13px;
-          font-size: 12px;
-          font-weight: 700;
-          color: #073e36;
-          border: 1px solid rgba(7, 62, 54, 0.1);
-        }
-
-        .pillCalendarIcon {
-          width: 15px;
-          height: 15px;
-          color: #073e36;
-        }
-
-        .packageBody {
-          padding: 20px 22px 18px 22px;
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-
-        .packageTitle {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: 21px;
-          font-weight: 700;
-          color: #073e36;
-          margin: 0 0 8px 0;
-          line-height: 1.25;
-        }
-
-        .packageLocation {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-          margin: 0 0 11px 0;
-          color: #556c75;
-          font-size: 13px;
-          font-weight: 500;
-          line-height: 1.35;
-        }
-
-        .locationPinIcon {
-          width: 16px;
-          height: 16px;
-          flex-shrink: 0;
-        }
-
-        .packageDescription {
-          font-size: 12.5px;
-          line-height: 1.55;
-          color: #556c75;
-          margin: 0 0 20px 0;
-        }
-
-        .packageFooterBar {
-          margin-top: auto;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 8px;
-          padding-top: 4px;
-        }
-
-        .packageRating {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          white-space: nowrap;
-        }
-
-        .ratingStar {
-          width: 16px;
-          height: 16px;
-          flex-shrink: 0;
-        }
-
-        .ratingScore {
-          font-size: 13.5px;
-          font-weight: 700;
-          color: #073e36;
-        }
-
-        .reviewsCount {
-          color: #7b8e96;
-          font-size: 12px;
-        }
-
-        .packageExploreBtn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 13px;
-          font-weight: 700;
-          color: #073e36;
-          white-space: nowrap;
-          transition: color .2s ease;
-        }
-
-        .packageCard:hover .packageExploreBtn {
-          color: #f06c2f;
-        }
-
-        .exploreArrowIcon {
-          width: 15px;
-          height: 15px;
-          transition: transform .2s ease;
-        }
-
-        .packageCard:hover .exploreArrowIcon {
-          transform: translateX(3px);
-        }
-
-        @keyframes enter {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 1100px) {
-          .packagesGridContainer {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 22px;
-          }
-        }
-
-        @media (max-width: 800px) {
-          .packagesHeader {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-          }
-          .packagesActions {
-            width: 100%;
-            justify-content: space-between;
-          }
-        }
-
-        @media (max-width: 720px) {
-          .packagesScrollContainer .packageCard {
-            flex: 0 0 86vw;
-            width: 86vw;
-            max-width: 380px;
-          }
-          .packagesGridContainer {
-            grid-template-columns: 1fr;
-            max-width: 440px;
-            margin: 0 auto;
-          }
-          .packagesSection {
-            padding: 40px 0;
-          }
-          .packagesHeading h2 {
-            font-size: 26px;
-          }
-        }
-      `}</style>
-      <section
-        id="packages"
-        className="packagesSection"
-        aria-labelledby="packages-title"
-      >
-        <div className="packagesInner">
-          <div className="packagesHeader">
-            <div className="packagesHeading">
-              <h2 id="packages-title">Our Tour Packages</h2>
-              <span className="packagesSubtitle">
-                Handpicked experiences for every traveler
-              </span>
-            </div>
-
-            <div className="packagesActions">
-              {!showAll && (
-                <div className="scrollControls">
-                  <button
-                    type="button"
-                    className="scrollArrowBtn"
-                    onClick={() => scroll("left")}
-                    aria-label="Scroll tours left"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="scrollArrowBtn"
-                    onClick={() => scroll("right")}
-                    aria-label="Scroll tours right"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-
-              <button
-                type="button"
-                className="viewAllButton"
-                onClick={() => setShowAll(!showAll)}
-              >
-                <span>{showAll ? "Show Carousel" : "View All Packages"}</span>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {showAll ? (
-                    <path d="M18 15l-6-6-6 6" />
-                  ) : (
-                    <path d="M6 9l6 6 6-6" />
-                  )}
-                </svg>
-              </button>
-            </div>
+    <section
+      id="packages"
+      className={styles.packagesSection}
+      aria-labelledby="packages-title"
+    >
+      <div className={styles.packagesInner}>
+        <div className={styles.packagesHeader}>
+          <div className={styles.packagesHeading}>
+            <h2 id="packages-title">Our Tour Packages</h2>
+            <span className={styles.packagesSubtitle}>
+              Handpicked experiences for every traveler
+            </span>
           </div>
 
-          <div
-            ref={scrollContainerRef}
-            className={
-              showAll ? "packagesGridContainer" : "packagesScrollContainer"
-            }
-          >
-            {packages.map((tour) => (
-              <a
-                key={tour.id}
-                className="packageCard"
-                href={`https://traveltube.lk/view-tour.php?id=${tour.id}`}
+          <div className={styles.packagesActions}>
+            {!showAll && (
+              <div className={styles.scrollControls}>
+                <button
+                  type="button"
+                  className={styles.scrollArrowBtn}
+                  onClick={() => scroll("left")}
+                  aria-label="Scroll tours left"
+                  aria-controls="tour-packages-list"
+                  disabled={scrollEdges.start}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className={styles.scrollArrowBtn}
+                  onClick={() => scroll("right")}
+                  aria-label="Scroll tours right"
+                  aria-controls="tour-packages-list"
+                  disabled={scrollEdges.end}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className={styles.viewAllButton}
+              onClick={() => setShowAll((previous) => !previous)}
+              aria-expanded={showAll}
+              aria-controls="tour-packages-list"
+            >
+              <span>{showAll ? "Show Carousel" : "View All Packages"}</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <div className="packageImageWrapper">
-                  <Image
-                    src={tour.image}
-                    alt={tour.alt}
-                    fill
-                    unoptimized={Boolean(tour.image?.startsWith("data:") || tour.image?.startsWith("http"))}
-                    sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 380px"
-                    className="packageImg"
-                  />
-                  <div className="packageDurationPill">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="pillCalendarIcon"
-                      aria-hidden="true"
-                    >
-                      <rect x="3" y="4" width="18" height="18" rx="3" />
-                      <path d="M16 2v4M8 2v4M3 10h18" />
-                    </svg>
-                    <span>{tour.days}</span>
-                  </div>
-                </div>
-
-                <div className="packageBody">
-                  <h3 className="packageTitle">{tour.name}</h3>
-
-                  <div className="packageLocation">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="locationPinIcon"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-                        fill="#f0642b"
-                      />
-                      <circle cx="12" cy="9" r="2.6" fill="#ffffff" />
-                    </svg>
-                    <span>{tour.locations}</span>
-                  </div>
-
-                  <p className="packageDescription">{tour.description}</p>
-
-                  <div className="packageFooterBar">
-                    <div className="packageRating">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="#e8a838"
-                        className="ratingStar"
-                        aria-hidden="true"
-                      >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                      <span className="ratingScore">{tour.rating.toFixed(1)}</span>
-                      <span className="reviewsCount">({tour.reviews})</span>
-                    </div>
-
-                    <div className="packageExploreBtn">
-                      <span>Explore Tour</span>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="exploreArrowIcon"
-                        aria-hidden="true"
-                      >
-                        <path d="M4 12h13M12 6l6 6-6 6" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
+                {showAll ? (
+                  <path d="M18 15l-6-6-6 6" />
+                ) : (
+                  <path d="M7 17 17 7M7 7h10v10" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
-      </section>
-    </>
+
+        <div
+          id="tour-packages-list"
+          ref={scrollContainerRef}
+          tabIndex={showAll ? undefined : 0}
+          role="region"
+          aria-labelledby="packages-title"
+          className={
+            showAll ? styles.packagesGridContainer : styles.packagesScrollContainer
+          }
+        >
+          {packages.map((tour) => (
+            <a
+              key={tour.id}
+              className={styles.packageCard}
+              href={`https://traveltube.lk/view-tour.php?id=${tour.id}`}
+            >
+              <div className={styles.packageImageWrapper}>
+                <Image
+                  src={tour.image}
+                  alt={tour.alt}
+                  fill
+                  unoptimized={Boolean(tour.image?.startsWith("data:") || tour.image?.startsWith("http"))}
+                  sizes="(max-width: 600px) 84vw, (max-width: 1100px) 42vw, (max-width: 1478px) 29vw, 422px"
+                  className={styles.packageImg}
+                />
+              </div>
+
+              <div className={styles.packageBody}>
+                <div className={styles.packageDurationPill}>{tour.days}</div>
+                <h3 className={styles.packageTitle}>{tour.name}</h3>
+
+                <div className={styles.packageLocation}>
+                  <span>{tour.locations}</span>
+                </div>
+
+                <p className={styles.packageDescription}>{tour.description}</p>
+
+                <div className={styles.packageFooterBar}>
+                  <div className={styles.packageRating}>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="#e8a838"
+                      className={styles.ratingStar}
+                      aria-hidden="true"
+                    >
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                    <span className={styles.ratingScore}>{tour.rating.toFixed(1)}</span>
+                    <span className={styles.reviewsCount}>({tour.reviews})</span>
+                  </div>
+
+                  <div className={styles.packageExploreBtn}>
+                    <span>Explore Tour</span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={styles.exploreArrowIcon}
+                      aria-hidden="true"
+                    >
+                      <path d="M4 12h13M12 6l6 6-6 6" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

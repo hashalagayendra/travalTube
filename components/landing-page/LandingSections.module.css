@@ -1,0 +1,1044 @@
+/* The approved landing-page design. Styles stay local to the content sections. */
+.tourOptionsSection,
+.welcomeSection,
+.packagesSection,
+.destinationsSection {
+  --ink: #103e33;
+  --muted: #4e635c;
+  --lime: #d7ee91;
+  --sage: #eff6f1;
+  --line: #e5ece6;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+}
+
+.tourCardsGrid,
+.welcomeInner,
+.packagesInner {
+  width: min(1360px, 92%);
+  margin-inline: auto;
+}
+
+.tourCard,
+.welcomeCopy,
+.packageCard,
+.destinationCard {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cardTitle,
+.welcomeCopy h2,
+.packagesHeading h2,
+.packageTitle,
+.destinationsHeader h2,
+.destinationTitle {
+  text-wrap: balance;
+}
+
+.cardImage,
+.packageImg,
+.destinationImg,
+.welcomeCollage img {
+  object-fit: cover;
+  transition: transform 450ms ease;
+}
+
+/* Tour options: one photographic feature and two smaller split panels. */
+.tourOptionsSection {
+  position: relative;
+  z-index: 5;
+  margin-top: -110px;
+  padding-bottom: 24px;
+}
+
+.tourCardsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 20px;
+}
+
+.tourCard {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  min-height: 310px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--sage);
+}
+
+.cardMedia {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.cardImageWrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #e0e8df;
+}
+
+.cardContent {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px 28px;
+}
+
+.cardPillBadge {
+  max-width: 100%;
+  margin-bottom: 13px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  background: var(--lime);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cardTitle {
+  margin: 0 0 16px;
+  font-size: clamp(28px, 2.5vw, 36px);
+  font-weight: 750;
+  letter-spacing: -1.2px;
+  line-height: 1.08;
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.cardActionText {
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cardArrow {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--ink);
+  transition: transform 220ms ease, background 220ms ease;
+}
+
+.cardArrow svg {
+  width: 19px;
+  height: 19px;
+  transform: rotate(-40deg);
+}
+
+.tourCard:first-child {
+  display: flex;
+  grid-row: span 2;
+  min-height: 640px;
+  color: #fff;
+  background: var(--ink);
+}
+
+.tourCard:first-child .cardMedia {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+
+.tourCard:first-child .cardMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 25%, #103e3320 42%, #103e33e8 73%, #103e33 100%);
+}
+
+.tourCard:first-child .cardContent {
+  flex: 1;
+  justify-content: flex-end;
+  padding: 200px 32px 32px;
+}
+
+.tourCard:first-child .cardTitle {
+  font-size: clamp(34px, 3.2vw, 46px);
+  letter-spacing: -1.3px;
+}
+
+.tourCard:first-child .cardDescription {
+  max-width: 500px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.tourCard:first-child .cardFooter {
+  margin-top: 0;
+}
+
+.tourCard:only-child {
+  grid-column: 1 / -1;
+}
+
+/* Welcome: dark introduction panel with the existing three-photo collage. */
+.welcomeSection {
+  padding-bottom: 24px;
+}
+
+.welcomeInner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.87fr) minmax(0, 1.13fr);
+  gap: 40px;
+  padding: 34px;
+  border-radius: 24px;
+  background: var(--ink);
+  color: #fff;
+}
+
+.welcomeCopy {
+  padding: 6px 4px;
+  align-self: center;
+}
+
+.welcomeEyebrow {
+  margin: 0 0 14px;
+  color: var(--lime);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.5;
+}
+
+.welcomeCopy h2 {
+  max-width: 470px;
+  margin: 0 0 22px;
+  font-size: clamp(36px, 4.1vw, 60px);
+  font-weight: 750;
+  line-height: 1.04;
+  letter-spacing: -1.8px;
+}
+
+.welcomeCopy h2 span {
+  display: block;
+  margin-top: 12px;
+  color: var(--lime);
+  font-size: 0.58em;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.welcomeCopy > p:not(.welcomeEyebrow) {
+  margin: 0 0 18px;
+  color: #edf5f0;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.welcomeReadMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 48px;
+  margin-top: 2px;
+  padding: 5px 5px 5px 22px;
+  border-radius: 100px;
+  color: var(--ink);
+  background: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  transition: background 220ms ease;
+}
+
+.welcomeReadMore svg {
+  width: 38px;
+  height: 38px;
+  padding: 10px;
+  border-radius: 50%;
+  color: var(--lime);
+  background: var(--ink);
+  transform: rotate(-40deg);
+}
+
+.welcomeSocial,
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcomeSocial {
+  margin-top: 20px;
+  gap: 12px 20px;
+}
+
+.socialHeading {
+  margin: 0;
+  color: var(--lime);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #ffffff35;
+  border-radius: 100px;
+  color: #fff;
+  font-size: 12px;
+  transition: background 220ms ease, border-color 220ms ease;
+}
+
+.socialIcon {
+  display: grid;
+  place-items: center;
+  color: var(--lime);
+}
+
+.socialIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.welcomeCollage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  min-height: 520px;
+}
+
+.welcomeWildlife,
+.welcomePhoto {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #254f3c;
+}
+
+.welcomeWildlife {
+  grid-column: 1 / -1;
+}
+
+/* Packages: light sage collection with the existing carousel and expanded view. */
+.packagesSection {
+  padding-bottom: 24px;
+}
+
+.packagesInner {
+  padding: 34px 28px 28px;
+  border-radius: 24px;
+  background: var(--sage);
+}
+
+.packagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 10px 26px;
+}
+
+.packagesHeading {
+  min-width: 0;
+}
+
+.packagesHeading h2 {
+  margin: 0 0 10px;
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 750;
+  line-height: 1.08;
+  letter-spacing: -1.5px;
+}
+
+.packagesSubtitle {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.packagesActions,
+.scrollControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.packagesActions {
+  flex-shrink: 0;
+  gap: 20px;
+}
+
+.scrollArrowBtn {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid #cfdfd4;
+  border-radius: 50%;
+  color: var(--ink);
+  background: transparent;
+  transition: background 220ms ease, color 220ms ease;
+}
+
+.scrollArrowBtn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.scrollArrowBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 48px;
+  padding: 5px 5px 5px 22px;
+  border: 0;
+  border-radius: 100px;
+  color: #fff;
+  background: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 220ms ease;
+}
+
+.viewAllButton svg {
+  width: 38px;
+  height: 38px;
+  padding: 10px;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--lime);
+}
+
+.packagesScrollContainer {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  margin-inline: -4px;
+  padding: 4px 4px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: #b1c5b7 transparent;
+}
+
+.packagesScrollContainer .packageCard {
+  flex: 0 0 calc((100% - 36px) / 3);
+  scroll-snap-align: start;
+}
+
+.packagesGridContainer {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 18px;
+}
+
+.packageCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  transition: box-shadow 220ms ease;
+}
+
+.packageImageWrapper {
+  position: relative;
+  aspect-ratio: 1.55;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #dce8de;
+}
+
+.packageBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 18px 18px;
+}
+
+.packageDurationPill {
+  max-width: 100%;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.packageTitle {
+  margin: 0 0 9px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.65px;
+  line-height: 1.25;
+}
+
+.packageLocation {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.packageDescription {
+  margin: 13px 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.packageFooterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin-top: auto;
+}
+
+.packageRating,
+.packageExploreBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.ratingStar {
+  width: 18px;
+  height: 18px;
+  fill: #f59c22;
+}
+
+.ratingScore {
+  font-weight: 600;
+}
+
+.reviewsCount {
+  color: var(--muted);
+}
+
+.packageExploreBtn {
+  gap: 10px;
+  font-weight: 700;
+}
+
+.packageExploreBtn > span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.exploreArrowIcon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  padding: 10px;
+  border-radius: 50%;
+  background: var(--lime);
+  transform: rotate(-40deg);
+  transition: transform 220ms ease;
+}
+
+/* Destinations: the approved centered heading and equal three-by-two card grid. */
+.destinationsSection {
+  width: min(1420px, 96%);
+  margin: 0 auto 64px;
+  padding: 34px 28px 28px;
+  border-radius: 26px;
+  background: #f3f8f4;
+}
+
+.destinationsInner {
+  width: min(1360px, 100%);
+  margin-inline: auto;
+}
+
+.destinationsHeader {
+  max-width: 780px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.destinationsEyebrow {
+  display: inline-block;
+  margin: 0 0 14px;
+  padding: 6px 13px;
+  border-radius: 100px;
+  background: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.destinationsHeader h2 {
+  margin: 0 0 15px;
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 750;
+  line-height: 1.04;
+  letter-spacing: -1.6px;
+}
+
+.destinationsHeader h2 span {
+  display: block;
+}
+
+.destinationsSubtitle {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.destinationsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px 18px;
+}
+
+.destinationCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #eaf0eb;
+  border-radius: 20px;
+  background: #fff;
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.destinationMedia {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #dfe9df;
+}
+
+.destinationBadge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  max-width: calc(100% - 30px);
+  padding: 6px 11px;
+  border-radius: 100px;
+  color: var(--ink);
+  background: #fffffff2;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.destinationCard:nth-child(n + 4) .destinationBadge {
+  background: var(--lime);
+}
+
+.destinationBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px;
+}
+
+.destinationTitle {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+
+.destinationLocation {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.destinationLocation svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ink);
+}
+
+.destinationDescription {
+  margin: 14px 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.destinationAction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.destinationAction svg {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  padding: 11px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--ink);
+  transform: rotate(-40deg);
+  transition: transform 220ms ease, background 220ms ease;
+}
+
+.tourCard:focus-visible,
+.packageCard:focus-visible,
+.destinationCard:focus-visible {
+  outline-offset: -3px;
+}
+
+.packagesScrollContainer:focus-visible {
+  outline: 3px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .tourCard:hover .cardImage,
+  .packageCard:hover .packageImg,
+  .destinationCard:hover .destinationImg {
+    transform: scale(1.035);
+  }
+
+  .tourCard:hover .cardArrow,
+  .packageCard:hover .exploreArrowIcon,
+  .destinationCard:hover .destinationAction svg {
+    transform: rotate(0deg);
+  }
+
+  .welcomeReadMore:hover {
+    background: #e8f7b2;
+  }
+
+  .socialLink:hover {
+    border-color: #ffffff70;
+    background: #ffffff12;
+  }
+
+  .scrollArrowBtn:hover:not(:disabled) {
+    color: #fff;
+    background: var(--ink);
+  }
+
+  .viewAllButton:hover {
+    background: #21634f;
+  }
+
+  .packageCard:hover,
+  .destinationCard:hover {
+    box-shadow: 0 8px 24px -16px #103e3360;
+  }
+
+  .destinationCard:hover {
+    border-color: #bfd1c4;
+  }
+}
+
+@media (max-width: 1100px) {
+  .tourCardsGrid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 16px;
+  }
+
+  .tourCard {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+
+  .cardContent {
+    padding: 24px;
+  }
+
+  .welcomeInner {
+    gap: 26px;
+    padding: 28px;
+  }
+
+  .welcomeCopy h2 {
+    font-size: 44px;
+  }
+
+  .packagesHeader {
+    flex-wrap: wrap;
+  }
+
+  .packagesGridContainer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .packagesScrollContainer .packageCard {
+    flex-basis: calc((100% - 18px) / 2.15);
+  }
+}
+
+@media (max-width: 900px) {
+  .tourOptionsSection {
+    margin-top: -70px;
+  }
+
+  .tourCardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tourCard:first-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-height: 470px;
+  }
+
+  .tourCard:not(:first-child) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tourCard:not(:first-child) .cardMedia {
+    aspect-ratio: 16 / 10;
+  }
+
+  .tourCard:not(:first-child) .cardContent {
+    flex: 1;
+  }
+
+  .welcomeInner {
+    grid-template-columns: 1fr;
+  }
+
+  .welcomeCopy h2 {
+    max-width: 600px;
+  }
+
+  .welcomeCollage {
+    height: 490px;
+    min-height: 0;
+  }
+
+  .destinationsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .tourCardsGrid,
+  .welcomeInner,
+  .packagesInner {
+    width: calc(100% - 32px);
+  }
+
+  .tourOptionsSection {
+    margin-top: -50px;
+    padding-bottom: 20px;
+  }
+
+  .tourCardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tourCard:first-child {
+    grid-column: auto;
+    min-height: 510px;
+  }
+
+  .tourCard:first-child .cardContent {
+    padding: 190px 24px 26px;
+  }
+
+  .tourCard:first-child .cardDescription {
+    font-size: 14px;
+  }
+
+  .cardTitle {
+    font-size: 30px;
+  }
+
+  .welcomeSection,
+  .packagesSection {
+    padding-bottom: 20px;
+  }
+
+  .welcomeInner {
+    gap: 28px;
+    padding: 26px 22px;
+    border-radius: 20px;
+  }
+
+  .welcomeCopy {
+    padding: 0;
+  }
+
+  .welcomeCopy h2 {
+    font-size: clamp(34px, 9vw, 44px);
+    letter-spacing: -1.2px;
+  }
+
+  .welcomeCopy > p:not(.welcomeEyebrow) {
+    font-size: 14px;
+  }
+
+  .welcomeSocial {
+    gap: 12px;
+  }
+
+  .socialLinks {
+    gap: 8px;
+  }
+
+  .socialLink {
+    padding-inline: 12px;
+  }
+
+  .welcomeCollage {
+    height: 350px;
+    gap: 12px;
+  }
+
+  .welcomeWildlife,
+  .welcomePhoto {
+    border-radius: 14px;
+  }
+
+  .packagesInner {
+    padding: 28px 16px 18px;
+    border-radius: 20px;
+  }
+
+  .packagesHeader {
+    margin-inline: 0;
+    gap: 20px;
+  }
+
+  .packagesHeading h2 {
+    font-size: 32px;
+    letter-spacing: -1px;
+  }
+
+  .packagesSubtitle {
+    font-size: 14px;
+  }
+
+  .packagesActions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .scrollControls {
+    gap: 6px;
+  }
+
+  .scrollArrowBtn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .viewAllButton {
+    gap: 10px;
+    padding-left: 14px;
+    font-size: 11px;
+  }
+
+  .packagesScrollContainer {
+    gap: 14px;
+  }
+
+  .packagesScrollContainer .packageCard {
+    flex-basis: 94%;
+  }
+
+  .packagesGridContainer,
+  .destinationsGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .packageBody {
+    padding-inline: 14px;
+  }
+
+  .packageTitle {
+    font-size: 21px;
+  }
+
+  .packageExploreBtn {
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .destinationsSection {
+    width: calc(100% - 20px);
+    margin-bottom: 40px;
+    padding: 28px 12px 18px;
+    border-radius: 22px;
+  }
+
+  .destinationsHeader h2 {
+    font-size: clamp(28px, 7.8vw, 36px);
+    letter-spacing: -1px;
+  }
+
+  .destinationsSubtitle {
+    font-size: 14px;
+  }
+
+  .destinationTitle {
+    font-size: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardImage,
+  .packageImg,
+  .destinationImg,
+  .cardArrow,
+  .exploreArrowIcon,
+  .destinationAction svg {
+    transition: none;
+  }
+}
