@@ -139,3 +139,50 @@ model GalleryItem {
 
   @@map("gallery_items")
 }
+
+// Contact Us Page Content & Core Contact Cards (ContactView.tsx & app/contact/page.tsx)
+model ContactInfo {
+  id              Int      @id @default(1)
+  // Section 1: Header Greeting
+  eyebrow         String   @default("WE ARE HERE FOR YOU")
+  headingWord     String   @default("Get In")
+  headingAccent   String   @default("Touch")
+  subheading      String   @db.Text
+
+  // Section 2: Core 3 Info Cards
+  // Card 1: Office Location
+  officeTitle     String   @default("Our Office Location")
+  companyName     String   @default("Travel Tube Lanka(Pvt) Ltd")
+  addressLine1    String   @default("452/01/A/01, Kandy Road")
+  addressCity     String   @default("Kadawatha, Sri Lanka")
+
+  // Card 2: Phone Numbers
+  phoneTitle      String   @default("Contact Number")
+  phone1          String   @default("+94 76 2399399")
+  phone2          String   @default("+94 11 4399699")
+
+  // Card 3: Email Addresses
+  emailTitle      String   @default("Email Address")
+  primaryEmail    String   @default("info@traveltube.lk")
+  secondaryEmail  String   @default("support@traveltube.lk")
+
+  updatedAt       DateTime @updatedAt
+
+  @@map("contact_info")
+}
+
+// User Contact Messages & Inquiries (app/contact/page.tsx & InquiriesView.tsx)
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  message   String   @db.Text
+  subject   String?  @default("General Contact Message")
+  status    String   @default("New Lead") // "New Lead" | "In Review" | "Quote Sent" | "Confirmed" | "Archived"
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_messages")
+}

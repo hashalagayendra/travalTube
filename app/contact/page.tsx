@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar/Navbar";
@@ -20,8 +20,61 @@ interface FormErrors {
   phone?: string;
 }
 
+interface ContactInfoData {
+  eyebrow: string;
+  headingWord: string;
+  headingAccent: string;
+  subheading: string;
+  officeTitle: string;
+  companyName: string;
+  addressLine1: string;
+  addressCity: string;
+  phoneTitle: string;
+  phone1: string;
+  phone2: string;
+  emailTitle: string;
+  primaryEmail: string;
+  secondaryEmail: string;
+}
+
+const DEFAULT_CONTACT: ContactInfoData = {
+  eyebrow: "WE ARE HERE FOR YOU",
+  headingWord: "Get In",
+  headingAccent: "Touch",
+  subheading:
+    "We'd love to hear from you! Whether you have a question, need a custom travel plan, or simply want to learn more about our services, our team is always ready to assist you.",
+  officeTitle: "Our Office Location",
+  companyName: "Travel Tube Lanka(Pvt) Ltd",
+  addressLine1: "452/01/A/01, Kandy Road",
+  addressCity: "Kadawatha, Sri Lanka",
+  phoneTitle: "Contact Number",
+  phone1: "+94 76 2399399",
+  phone2: "+94 11 4399699",
+  emailTitle: "Email Address",
+  primaryEmail: "info@traveltube.lk",
+  secondaryEmail: "support@traveltube.lk",
+};
+
 export default function ContactPage() {
   const searchDialog = useRef<HTMLDialogElement>(null);
+
+  // Live Contact Info from Database
+  const [contactInfo, setContactInfo] = useState<ContactInfoData>(DEFAULT_CONTACT);
+
+  useEffect(() => {
+    async function fetchContact() {
+      try {
+        const res = await fetch("/api/contact", { cache: "no-store" });
+        const json = await res.json();
+        if (json.success && json.data) {
+          setContactInfo(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to load contact info:", err);
+      }
+    }
+    fetchContact();
+  }, []);
 
   // Form State
   const [formData, setFormData] = useState<ContactFormData>({
@@ -55,7 +108,7 @@ export default function ContactPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: FormErrors = {};
 
@@ -79,18 +132,35 @@ export default function ContactPage() {
     }
 
     setIsSubmitting(true);
-
-    // Simulate reliable submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
+    try {
+      const res = await fetch("/api/contact/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          message: formData.message.trim(),
+        }),
       });
-    }, 600);
+      const json = await res.json();
+      if (json.success) {
+        setIsSuccess(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        alert(json.message || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("An unexpected error occurred while sending your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -1041,16 +1111,16 @@ export default function ContactPage() {
 
               <div className="contactEyebrow">
                 <span className="contactEyebrowLine" aria-hidden="true" />
-                <span>WE ARE HERE FOR YOU</span>
+                <span>{contactInfo.eyebrow}</span>
                 <span className="contactEyebrowLine" aria-hidden="true" />
               </div>
 
               <h2 className="contactMainHeading">
-                Get In <span className="headingAccent">Touch</span>
+                {contactInfo.headingWord} <span className="headingAccent">{contactInfo.headingAccent}</span>
               </h2>
 
               <p className="contactSubheading">
-                We&apos;d love to hear from you! Whether you have a question, need a custom travel plan, or simply want to learn more about our services, our team is always ready to assist you.
+                {contactInfo.subheading}
               </p>
             </div>
 
@@ -1074,17 +1144,13 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div className="infoCardContent">
-                  <h3 className="infoCardTitle">Our Office Location</h3>
+                  <h3 className="infoCardTitle">{contactInfo.officeTitle}</h3>
                   <p className="infoCardText">
-                    Travel Tube Lanka(Pvt) Ltd,
+                    {contactInfo.companyName},
                     <br />
-                    452/01/A/01,
+                    {contactInfo.addressLine1},
                     <br />
-                    Kandy Road,
-                    <br />
-                    Kadawatha,
-                    <br />
-                    Sri Lanka
+                    {contactInfo.addressCity}
                   </p>
                 </div>
               </div>
@@ -1106,11 +1172,15 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div className="infoCardContent">
-                  <h3 className="infoCardTitle">Contact Number</h3>
+                  <h3 className="infoCardTitle">{contactInfo.phoneTitle}</h3>
                   <p className="infoCardText">
-                    <a href="tel:+94762399399">+94 76 2399399</a>
-                    <br />
-                    <a href="tel:+94114399699">+94 11 4399699</a>
+                    <a href={`tel:${contactInfo.phone1.replace(/\s+/g, "")}`}>{contactInfo.phone1}</a>
+                    {contactInfo.phone2 && (
+                      <>
+                        <br />
+                        <a href={`tel:${contactInfo.phone2.replace(/\s+/g, "")}`}>{contactInfo.phone2}</a>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
@@ -1133,9 +1203,15 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div className="infoCardContent">
-                  <h3 className="infoCardTitle">Email Address</h3>
+                  <h3 className="infoCardTitle">{contactInfo.emailTitle}</h3>
                   <p className="infoCardText">
-                    <a href="mailto:info@traveltube.lk">info@traveltube.lk</a>
+                    <a href={`mailto:${contactInfo.primaryEmail}`}>{contactInfo.primaryEmail}</a>
+                    {contactInfo.secondaryEmail && (
+                      <>
+                        <br />
+                        <a href={`mailto:${contactInfo.secondaryEmail}`}>{contactInfo.secondaryEmail}</a>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>

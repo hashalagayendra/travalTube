@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export function ContactView() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
   // Section 1: Header Intro
   const [eyebrow, setEyebrow] = useState("WE ARE HERE FOR YOU");
   const [headingWord, setHeadingWord] = useState("Get In");
@@ -32,32 +35,127 @@ export function ContactView() {
   // Notification state
   const [savedNotification, setSavedNotification] = useState<string | null>(null);
 
-  const handleSave = (e?: React.FormEvent) => {
+  // Load from database on mount
+  useEffect(() => {
+    async function loadContactInfo() {
+      try {
+        setIsLoading(true);
+        const res = await fetch("/api/contact", { cache: "no-store" });
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          if (d.eyebrow) setEyebrow(d.eyebrow);
+          if (d.headingWord) setHeadingWord(d.headingWord);
+          if (d.headingAccent) setHeadingAccent(d.headingAccent);
+          if (d.subheading) setSubheading(d.subheading);
+          if (d.officeTitle) setOfficeTitle(d.officeTitle);
+          if (d.companyName) setCompanyName(d.companyName);
+          if (d.addressLine1) setAddressLine1(d.addressLine1);
+          if (d.addressCity) setAddressCity(d.addressCity);
+          if (d.phoneTitle) setPhoneTitle(d.phoneTitle);
+          if (d.phone1) setPhone1(d.phone1);
+          if (d.phone2) setPhone2(d.phone2);
+          if (d.emailTitle) setEmailTitle(d.emailTitle);
+          if (d.primaryEmail) setPrimaryEmail(d.primaryEmail);
+          if (d.secondaryEmail) setSecondaryEmail(d.secondaryEmail);
+        }
+      } catch (err) {
+        console.error("Failed to load contact info from database:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadContactInfo();
+  }, []);
+
+  const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setSavedNotification("Contact Us page configuration saved successfully!");
-    setTimeout(() => setSavedNotification(null), 3500);
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eyebrow,
+          headingWord,
+          headingAccent,
+          subheading,
+          officeTitle,
+          companyName,
+          addressLine1,
+          addressCity,
+          phoneTitle,
+          phone1,
+          phone2,
+          emailTitle,
+          primaryEmail,
+          secondaryEmail,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSavedNotification("Contact Us page configuration saved successfully!");
+      } else {
+        alert("Failed to save: " + (json.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      alert("An error occurred while saving contact information.");
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => setSavedNotification(null), 3500);
+    }
   };
 
-  const handleResetDefaults = () => {
+  const handleResetDefaults = async () => {
     if (confirm("Reset Contact Us page content to default values?")) {
-      setEyebrow("WE ARE HERE FOR YOU");
-      setHeadingWord("Get In");
-      setHeadingAccent("Touch");
-      setSubheading(
-        "We'd love to hear from you! Whether you have a question, need a custom travel plan, or simply want to learn more about our services, our team is always ready to assist you."
-      );
-      setOfficeTitle("Our Office Location");
-      setCompanyName("Travel Tube Lanka(Pvt) Ltd");
-      setAddressLine1("452/01/A/01, Kandy Road");
-      setAddressCity("Kadawatha, Sri Lanka");
-      setPhoneTitle("Contact Number");
-      setPhone1("+94 76 2399399");
-      setPhone2("+94 11 4399699");
-      setEmailTitle("Email Address");
-      setPrimaryEmail("info@traveltube.lk");
-      setSecondaryEmail("support@traveltube.lk");
-      setSavedNotification("Reset to default configuration.");
-      setTimeout(() => setSavedNotification(null), 3000);
+      const defaults = {
+        eyebrow: "WE ARE HERE FOR YOU",
+        headingWord: "Get In",
+        headingAccent: "Touch",
+        subheading:
+          "We'd love to hear from you! Whether you have a question, need a custom travel plan, or simply want to learn more about our services, our team is always ready to assist you.",
+        officeTitle: "Our Office Location",
+        companyName: "Travel Tube Lanka(Pvt) Ltd",
+        addressLine1: "452/01/A/01, Kandy Road",
+        addressCity: "Kadawatha, Sri Lanka",
+        phoneTitle: "Contact Number",
+        phone1: "+94 76 2399399",
+        phone2: "+94 11 4399699",
+        emailTitle: "Email Address",
+        primaryEmail: "info@traveltube.lk",
+        secondaryEmail: "support@traveltube.lk",
+      };
+
+      setEyebrow(defaults.eyebrow);
+      setHeadingWord(defaults.headingWord);
+      setHeadingAccent(defaults.headingAccent);
+      setSubheading(defaults.subheading);
+      setOfficeTitle(defaults.officeTitle);
+      setCompanyName(defaults.companyName);
+      setAddressLine1(defaults.addressLine1);
+      setAddressCity(defaults.addressCity);
+      setPhoneTitle(defaults.phoneTitle);
+      setPhone1(defaults.phone1);
+      setPhone2(defaults.phone2);
+      setEmailTitle(defaults.emailTitle);
+      setPrimaryEmail(defaults.primaryEmail);
+      setSecondaryEmail(defaults.secondaryEmail);
+
+      setIsSaving(true);
+      try {
+        await fetch("/api/contact", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(defaults),
+        });
+        setSavedNotification("Reset to default configuration.");
+      } catch (err) {
+        console.error("Reset error:", err);
+      } finally {
+        setIsSaving(false);
+        setTimeout(() => setSavedNotification(null), 3000);
+      }
     }
   };
 
@@ -91,9 +189,10 @@ export function ContactView() {
                 borderRadius: "4px",
                 background: "#ecfdf5",
                 color: "#065f46",
+                border: "1px solid #a7f3d0",
               }}
             >
-              Controls: app/contact/page.tsx
+              Database Connected
             </span>
           </div>
           <p style={{ fontSize: "13.5px", color: "#64748b", margin: 0 }}>
@@ -122,6 +221,7 @@ export function ContactView() {
           <button
             type="button"
             onClick={handleResetDefaults}
+            disabled={isSaving}
             style={{
               background: "#ffffff",
               border: "1px solid #cbd5e1",
@@ -130,15 +230,16 @@ export function ContactView() {
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isSaving ? "not-allowed" : "pointer",
             }}
           >
-            Reset
+            Reset Defaults
           </button>
 
           <button
             type="button"
             onClick={() => handleSave()}
+            disabled={isSaving}
             style={{
               background: "#073e36",
               color: "#ffffff",
@@ -147,10 +248,11 @@ export function ContactView() {
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isSaving ? "not-allowed" : "pointer",
+              boxShadow: "0 2px 4px rgba(7,62,54,0.2)",
             }}
           >
-            Save Contact Changes
+            {isSaving ? "Saving..." : "Save Contact Changes"}
           </button>
         </div>
       </div>
@@ -495,6 +597,7 @@ export function ContactView() {
         <button
           type="button"
           onClick={handleResetDefaults}
+          disabled={isSaving}
           style={{
             background: "#ffffff",
             border: "1px solid #cbd5e1",
@@ -503,7 +606,7 @@ export function ContactView() {
             borderRadius: "8px",
             fontSize: "13px",
             fontWeight: 600,
-            cursor: "pointer",
+            cursor: isSaving ? "not-allowed" : "pointer",
           }}
         >
           Reset to Defaults
@@ -511,6 +614,7 @@ export function ContactView() {
         <button
           type="button"
           onClick={() => handleSave()}
+          disabled={isSaving}
           style={{
             background: "#073e36",
             color: "#ffffff",
@@ -519,10 +623,11 @@ export function ContactView() {
             borderRadius: "8px",
             fontSize: "13.5px",
             fontWeight: 600,
-            cursor: "pointer",
+            cursor: isSaving ? "not-allowed" : "pointer",
+            boxShadow: "0 2px 4px rgba(7,62,54,0.2)",
           }}
         >
-          Save Contact Changes
+          {isSaving ? "Saving..." : "Save Contact Changes"}
         </button>
       </div>
     </div>
